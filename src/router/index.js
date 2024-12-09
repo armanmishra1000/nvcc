@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import AppHome from '../views/Home.vue'
 import AppLogin from '../views/Login.vue'
 import AppRegister from '../views/Register.vue'
-import AppDashboard from '../views/AppDashboard.vue'
+import WalletDashboard from '../views/WalletDashboard.vue'
 import AccountSettings from '@/views/AccountSettings.vue'
 import UserAccounts from '@/views/UserAccounts.vue'
 import UserCards from '@/views/UserCards.vue'
@@ -38,7 +38,7 @@ const routes = [
   {
     path: '/dashboard',
     name: 'Dashboard',
-    component: AppDashboard,
+    component: WalletDashboard,
     meta: { requiresAuth: true }
   },
   {
@@ -49,37 +49,37 @@ const routes = [
   },
   {
     path: '/accounts',
-    name: 'Accounts',
+    name: 'UserAccounts',
     component: UserAccounts,
     meta: { requiresAuth: true }
   },
   {
     path: '/cards',
-    name: 'Cards',
+    name: 'UserCards',
     component: UserCards,
     meta: { requiresAuth: true }
   },
   {
     path: '/friends',
-    name: 'Friends',
+    name: 'UserFriends',
     component: UserFriends,
     meta: { requiresAuth: true }
   },
   {
     path: '/payments',
-    name: 'Payments',
+    name: 'UserPayments',
     component: UserPayments,
     meta: { requiresAuth: true }
   },
   {
     path: '/private',
-    name: 'Private',
+    name: 'UserPrivate',
     component: UserPrivate,
     meta: { requiresAuth: true }
   },
   {
     path: '/team',
-    name: 'Team',
+    name: 'UserTeam',
     component: UserTeam,
     meta: { requiresAuth: true }
   }
