@@ -1,70 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-100">
-    <!-- Dashboard Navigation -->
-    <nav class="bg-white shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-          <div class="flex">
-            <div class="flex-shrink-0 flex items-center">
-              <!-- Logo -->
-              <div class="flex space-x-1">
-                <div class="w-4 h-4 bg-orange-500 rounded-sm"></div>
-                <div class="w-4 h-4 bg-orange-500/80 rounded-sm"></div>
-                <div class="w-4 h-4 bg-orange-500/60 rounded-sm"></div>
-              </div>
-              <span class="ml-2 text-xl font-semibold text-gray-900">Dashboard</span>
-            </div>
-            <!-- Navigation Links -->
-            <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-              <a href="#" class="border-orange-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                Overview
-              </a>
-              <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                Projects
-              </a>
-              <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                Tasks
-              </a>
-              <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                Reports
-              </a>
-            </div>
-          </div>
-          <!-- User Menu -->
-          <div class="flex items-center">
-            <button @click="toggleNotifications" class="p-2 text-gray-500 hover:text-gray-700 relative">
-              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-              <span v-if="notifications.length" class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
-            </button>
-            <div class="ml-3 relative">
-              <div>
-                <button @click="toggleUserMenu" class="flex items-center max-w-xs bg-white rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500" id="user-menu-button">
-                  <img class="h-8 w-8 rounded-full" :src="user.avatar || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'" alt="">
-                  <span class="ml-2 text-sm text-gray-700">{{ user.name }}</span>
-                  <svg class="ml-1 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-              </div>
-              <!-- Dropdown menu -->
-              <div v-if="showUserMenu" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100">
-                <div class="py-1">
-                  <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Your Profile</a>
-                  <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
-                </div>
-                <div class="py-1">
-                  <a href="#" @click.prevent="logout" class="block px-4 py-2 text-sm text-red-700 hover:bg-gray-100">Sign out</a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </nav>
-
-    <!-- Main Content -->
+    <DashboardNav />
     <main class="py-6">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Stats Cards -->
@@ -135,9 +71,13 @@
 <script>
 import { ref, defineComponent, h } from 'vue'
 import { useRouter } from 'vue-router'
+import DashboardNav from '@/components/DashboardNav.vue'
 
 export default defineComponent({
   name: 'AppDashboard',
+  components: {
+    DashboardNav
+  },
   setup() {
     const router = useRouter()
     const showUserMenu = ref(false)
