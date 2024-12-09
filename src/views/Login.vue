@@ -20,11 +20,11 @@
           </router-link>
         </p>
       </div>
-      <Form @submit="handleLogin" class="space-y-6" v-slot="{ errors }">
+      <Form :validation-schema="schema" @submit="handleLogin" class="space-y-6" v-slot="{ errors }">
         <div class="rounded-md shadow-sm space-y-4">
           <div>
             <label for="email" class="sr-only">Email address</label>
-            <input
+            <Field
               id="email"
               name="email"
               type="email"
@@ -37,7 +37,7 @@
           </div>
           <div>
             <label for="password" class="sr-only">Password</label>
-            <input
+            <Field
               id="password"
               name="password"
               type="password"
@@ -84,14 +84,15 @@
 </template>
 
 <script>
-import { Form } from 'vee-validate'
+import { Form, Field } from 'vee-validate'
 import * as yup from 'yup'
 import { useRouter } from 'vue-router'
 
 export default {
   name: 'AppLogin',
   components: {
-    Form
+    Form,
+    Field
   },
   setup() {
     const router = useRouter()
@@ -103,7 +104,6 @@ export default {
 
     const handleLogin = async (values) => {
       try {
-        // This should be replaced with actual API call
         console.log('Login values:', values)
         
         // Store user data
