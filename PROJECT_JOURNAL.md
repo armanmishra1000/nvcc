@@ -690,5 +690,34 @@ nvcc-app/
 5. Implement password reset functionality
 6. Add email verification
 
+### Git Commits (2024-12-09 16:56:06 IST)
+
+1. **Navigation and User Display Update**
+   ```
+   commit: [Hash to be added]
+   Message: "refactor: Update navigation structure and user display"
+   
+   Changes:
+   - Add DashboardNav component for sub-navigation
+   - Update Header component to show user name
+   - Remove duplicate header from dashboard
+   - Improve user menu UI and interactions
+   - Update PROJECT_JOURNAL with latest changes
+   
+   Files Changed:
+   - src/components/Header.vue
+   - src/components/DashboardNav.vue (new)
+   - src/views/AppDashboard.vue
+   - PROJECT_JOURNAL.md
+   ```
+
+   Key Implementation Details:
+   - Created dedicated DashboardNav component for better separation of concerns
+   - Updated Header to properly display logged-in user's name from localStorage
+   - Added rotating dropdown arrow and improved user menu styling
+   - Implemented proper user state management with localStorage
+   - Fixed ESLint errors by removing unused imports and variables
+   - Added comprehensive documentation in PROJECT_JOURNAL.md
+
 ---
-*Last Updated: December 9, 2024, 16:29:47 IST*
+*Last Updated: December 9, 2024, 16:56:06 IST*

@@ -3,6 +3,7 @@ import AppHome from '../views/Home.vue'
 import AppLogin from '../views/Login.vue'
 import AppRegister from '../views/Register.vue'
 import AppDashboard from '../views/AppDashboard.vue'
+import AccountSettings from '@/views/AccountSettings.vue'
 
 // Simulated auth guard
 const isAuthenticated = () => {
@@ -32,6 +33,12 @@ const routes = [
     path: '/dashboard',
     name: 'Dashboard',
     component: AppDashboard,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/account/settings',
+    name: 'AccountSettings',
+    component: AccountSettings,
     meta: { requiresAuth: true }
   }
 ]

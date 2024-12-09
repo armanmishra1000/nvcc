@@ -67,45 +67,58 @@
 
           <!-- User Menu -->
           <div class="ml-3 relative" v-if="isAuthenticated()">
-            <div>
-              <button
-                @click="toggleUserMenu"
-                class="flex items-center space-x-2 text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-                id="user-menu-button"
-              >
-                <div class="h-8 w-8 rounded-full bg-orange-500 flex items-center justify-center text-white">
-                  {{ userName.charAt(0).toUpperCase() }}
-                </div>
-                <span class="text-gray-700 font-medium">{{ userName }}</span>
-                <svg class="h-5 w-5 text-gray-400" :class="{ 'transform rotate-180': isUserMenuOpen }" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-              </button>
+            <div
+              @click="toggleUserMenu"
+              class="flex items-center space-x-2 text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 p-2 hover:bg-gray-50 transition-colors duration-200 cursor-pointer"
+              id="user-menu-button"
+              role="button"
+              tabindex="0"
+              @keydown.enter="toggleUserMenu"
+              @keydown.space="toggleUserMenu"
+            >
+              <div class="h-8 w-8 rounded-full bg-orange-500 flex items-center justify-center text-white">
+                {{ userName.charAt(0).toUpperCase() }}
+              </div>
+              <span class="text-gray-700 font-medium">{{ userName }}</span>
+              <svg class="h-5 w-5 text-gray-400" :class="{ 'transform rotate-180': isUserMenuOpen }" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
             </div>
 
             <!-- Dropdown menu -->
             <div
               v-if="isUserMenuOpen"
               v-click-outside="closeUserMenu"
-              class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+              class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-gray-100"
               role="menu"
             >
-              <a
-                href="#"
-                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                role="menuitem"
-              >Your Profile</a>
-              <a
-                href="#"
-                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                role="menuitem"
-              >Settings</a>
-              <a
-                href="#"
-                @click="handleLogout"
-                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                role="menuitem"
-              >Sign out</a>
+              <div class="py-1">
+                <router-link
+                  to="/profile"
+                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                  role="menuitem"
+                  @click="closeUserMenu"
+                >
+                  Your Profile
+                </router-link>
+                <router-link
+                  to="/account/settings"
+                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                  role="menuitem"
+                  @click="closeUserMenu"
+                >
+                  Account Settings
+                </router-link>
+              </div>
+              <div class="py-1">
+                <button
+                  @click="handleLogout"
+                  class="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-gray-100 cursor-pointer"
+                  role="menuitem"
+                >
+                  Sign out
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -158,6 +171,13 @@ export default {
     'click-outside': {
       mounted(el, binding) {
         el.clickOutsideEvent = (event) => {
+          // Get the button element
+          const button = document.getElementById('user-menu-button')
+          // Don't close if clicking the button or its children
+          if (button && (button === event.target || button.contains(event.target))) {
+            return
+          }
+          // Close if clicking outside both the menu and button
           if (!(el === event.target || el.contains(event.target))) {
             binding.value()
           }
