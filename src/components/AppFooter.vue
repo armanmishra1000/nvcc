@@ -69,29 +69,29 @@
 
         <!-- Navigation Links -->
         <div class="footer-links-column">
-          <h3 class="footer-heading">Private</h3>
-          <ul class="footer-links">
-            <li><a href="#" class="footer-link">PST Pulse</a></li>
-            <li><a href="#" class="footer-link">For partners</a></li>
-            <li><a href="#" class="footer-link">Blog</a></li>
-            <li><a href="#" class="footer-link">Support</a></li>
+          <h3 class="footer-heading text-lg font-semibold text-white mb-6">Private</h3>
+          <ul class="footer-links space-y-4">
+            <li><a href="#" class="footer-link text-gray-400 hover:text-white transition-colors duration-200 block">PST Pulse</a></li>
+            <li><a href="#" class="footer-link text-gray-400 hover:text-white transition-colors duration-200 block">For partners</a></li>
+            <li><a href="#" class="footer-link text-gray-400 hover:text-white transition-colors duration-200 block">Blog</a></li>
+            <li><a href="#" class="footer-link text-gray-400 hover:text-white transition-colors duration-200 block">Support</a></li>
           </ul>
         </div>
 
         <div class="footer-links-column">
-          <h3 class="footer-heading">Legal</h3>
-          <ul class="footer-links">
-            <li><a href="#" class="footer-link">Terms of Service</a></li>
-            <li><a href="#" class="footer-link">Privacy Policy</a></li>
-            <li><a href="#" class="footer-link">Security</a></li>
-            <li><a href="#" class="footer-link">FAQ</a></li>
+          <h3 class="footer-heading text-lg font-semibold text-white mb-6">Legal</h3>
+          <ul class="footer-links space-y-4">
+            <li><a href="#" class="footer-link text-gray-400 hover:text-white transition-colors duration-200 block">Terms of Service</a></li>
+            <li><a href="#" class="footer-link text-gray-400 hover:text-white transition-colors duration-200 block">Privacy Policy</a></li>
+            <li><a href="#" class="footer-link text-gray-400 hover:text-white transition-colors duration-200 block">Security</a></li>
+            <li><a href="#" class="footer-link text-gray-400 hover:text-white transition-colors duration-200 block">FAQ</a></li>
           </ul>
         </div>
 
         <!-- Language and App Links -->
         <div class="space-y-8">
           <div>
-            <h3 class="footer-heading">Language</h3>
+            <h3 class="footer-heading text-lg font-semibold text-white mb-6">Language</h3>
             <button class="mt-3 w-full flex items-center justify-between px-4 py-3 rounded-lg border border-gray-700 hover:border-orange-500 hover:bg-gray-800/50 transition-all duration-200 group">
               <div class="flex items-center space-x-3">
                 <img src="@/assets/us-flag.png" alt="US Flag" class="w-5 h-5 rounded-sm" />
@@ -130,33 +130,3 @@ export default {
   name: 'AppFooter'
 }
 </script>
-
-<style scoped lang="postcss">
-.footer-heading {
-  @apply text-lg font-semibold text-white mb-6;
-}
-
-.footer-links {
-  @apply space-y-4;
-}
-
-.footer-link {
-  @apply text-gray-400 hover:text-white transition-colors duration-200 block;
-}
-
-.social-link {
-  @apply text-gray-400 hover:text-white transition-colors duration-200;
-}
-
-.social-icon-container {
-  @apply px-4 py-2 border border-gray-700 rounded-lg flex items-center space-x-2 hover:border-orange-500 hover:bg-gray-800/50 transition-all duration-200;
-}
-
-.social-icon-badge {
-  @apply px-2 py-0.5 bg-gray-800 text-xs rounded-full text-orange-500 group-hover:bg-orange-500 group-hover:text-white transition-all duration-200;
-}
-
-.footer-links-column:hover .footer-heading {
-  @apply text-orange-500;
-}
-</style>
