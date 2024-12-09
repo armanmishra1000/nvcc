@@ -131,7 +131,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="postcss">
 .footer-heading {
   @apply text-lg font-semibold text-white mb-6;
 }
