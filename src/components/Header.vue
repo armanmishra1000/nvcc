@@ -94,14 +94,6 @@
             >
               <div class="py-1">
                 <router-link
-                  to="/profile"
-                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
-                  role="menuitem"
-                  @click="closeUserMenu"
-                >
-                  Your Profile
-                </router-link>
-                <router-link
                   to="/account/settings"
                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
                   role="menuitem"

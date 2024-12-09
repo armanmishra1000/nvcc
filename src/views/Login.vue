@@ -105,7 +105,17 @@ export default {
       try {
         // This should be replaced with actual API call
         console.log('Login values:', values)
+        
+        // Store user data
+        const userData = {
+          email: values.email,
+          username: values.email.split('@')[0], // Temporary username from email
+        }
+        localStorage.setItem('userData', JSON.stringify(userData))
+        localStorage.setItem('userEmail', values.email)
+        localStorage.setItem('userName', userData.username)
         localStorage.setItem('isAuthenticated', 'true')
+        
         router.push('/dashboard')
       } catch (error) {
         console.error('Login error:', error)

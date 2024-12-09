@@ -34,8 +34,9 @@
                       type="email" 
                       id="email" 
                       v-model="formData.email"
-                      class="shadow-sm focus:ring-orange-500 focus:border-orange-500 block w-full sm:text-sm border-gray-300 rounded-md bg-gray-50"
+                      class="shadow-sm block w-full sm:text-sm border-gray-300 rounded-md bg-gray-50 text-gray-600"
                       readonly
+                      disabled
                     />
                   </div>
                 </div>
@@ -153,8 +154,8 @@ export default {
       const userData = JSON.parse(localStorage.getItem('userData') || '{}')
       formData.value = {
         ...formData.value,
-        username: userData.username || '',
-        email: userData.email || '',
+        username: userData.username || localStorage.getItem('userName') || '',
+        email: userData.email || localStorage.getItem('userEmail') || 'user@example.com',
         firstName: userData.firstName || '',
         lastName: userData.lastName || ''
       }
@@ -179,6 +180,7 @@ export default {
         }
         localStorage.setItem('userData', JSON.stringify(userData))
         localStorage.setItem('userName', formData.value.username)
+        localStorage.setItem('userEmail', formData.value.email)
 
         alert('Settings updated successfully')
         

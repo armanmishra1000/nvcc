@@ -131,7 +131,24 @@ export default {
       try {
         // This should be replaced with actual API call
         console.log('Register values:', values)
+        
+        // Split full name into first and last name
+        const [firstName, ...lastNameParts] = values.fullName.split(' ')
+        const lastName = lastNameParts.join(' ')
+        
+        // Store user data
+        const userData = {
+          email: values.email,
+          username: values.email.split('@')[0],
+          firstName: firstName,
+          lastName: lastName || '',
+        }
+        
+        localStorage.setItem('userData', JSON.stringify(userData))
+        localStorage.setItem('userEmail', values.email)
+        localStorage.setItem('userName', userData.username)
         localStorage.setItem('isAuthenticated', 'true')
+        
         router.push('/dashboard')
       } catch (error) {
         console.error('Registration error:', error)

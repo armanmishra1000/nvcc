@@ -216,6 +216,153 @@ module.exports = {
 5. Add loading states
 6. Implement proper form validation
 
+### 8. User Account Management Implementation (2024-12-09 17:06 IST)
+
+1. **Header User Menu Enhancement**
+   - Improved user menu dropdown functionality
+   - Fixed clickability issues in the user menu button
+   - Added proper click-outside handling
+   - Enhanced accessibility with keyboard navigation
+   - Added visual feedback for interactions
+   ```javascript
+   // Click-outside directive improvement
+   directives: {
+     'click-outside': {
+       mounted(el, binding) {
+         el.clickOutsideEvent = (event) => {
+           const button = document.getElementById('user-menu-button')
+           if (button && (button === event.target || button.contains(event.target))) {
+             return
+           }
+           if (!(el === event.target || el.contains(event.target))) {
+             binding.value()
+           }
+         }
+       }
+     }
+   }
+   ```
+
+2. **Account Settings Component (`src/views/AccountSettings.vue`)**
+   - Created comprehensive account settings page with sections:
+     - Profile Information (username, email, first/last name)
+     - Password Management
+   - Implemented features:
+     - Form validation
+     - Loading states
+     - Success/error feedback
+     - Responsive design
+   - Used localStorage for data persistence (temporary solution)
+   - Maintained consistent orange theme and UI patterns
+
+3. **Navigation Updates**
+   - Added new routes:
+     - `/account/settings` → AccountSettings
+     - `/profile` → Profile view (placeholder)
+   - Updated header navigation with new account-related links
+   - Protected routes with authentication check
+
+4. **Design Improvements**
+   - Enhanced dropdown menu styling
+   - Added visual separation between menu sections
+   - Improved button hover states
+   - Consistent form input styling
+   - Loading spinner for form submissions
+
+5. **Code Organization**
+   - Separated concerns between components
+   - Improved state management with Vue 3 Composition API
+   - Added proper TypeScript interfaces for user data
+   - Implemented reusable form components
+
+### Project Structure Update
+```
+nvcc-app/
+├── src/
+│   ├── views/
+│   │   ├── AccountSettings.vue  [NEW]
+│   │   └── ...
+│   ├── components/
+│   │   ├── Header.vue  [UPDATED]
+│   │   └── ...
+│   └── router/
+│       └── index.js  [UPDATED]
+```
+
+### Next Steps
+1. Implement backend API integration for user management
+2. Add form validation library (e.g., Vuelidate)
+3. Implement proper state management solution
+4. Add user profile image upload functionality
+5. Enhance error handling and user feedback
+
+### 9. User Data Management and UI Improvements (2024-12-09 17:12 IST)
+
+1. **Header Component Enhancements**
+   - Removed "Your Profile" option from user menu for simplification
+   - Fixed user menu clickability issues
+   - Improved click-outside directive to handle button clicks properly
+   ```javascript
+   // Enhanced click-outside directive
+   'click-outside': {
+     mounted(el, binding) {
+       el.clickOutsideEvent = (event) => {
+         const button = document.getElementById('user-menu-button')
+         if (button && (button === event.target || button.contains(event.target))) {
+           return
+         }
+         if (!(el === event.target || el.contains(event.target))) {
+           binding.value()
+         }
+       }
+     }
+   }
+   ```
+
+2. **User Data Persistence**
+   - Updated Login component to properly store user data:
+     - Email storage
+     - Username generation from email
+     - Consistent data structure in localStorage
+   - Enhanced Register component:
+     - Full name splitting into first and last name
+     - Proper email storage
+     - Username generation
+   ```javascript
+   // User data structure
+   const userData = {
+     email: values.email,
+     username: values.email.split('@')[0],
+     firstName: firstName,
+     lastName: lastName || ''
+   }
+   ```
+
+3. **Account Settings Improvements**
+   - Fixed email display in readonly field
+   - Enhanced form field styling for better UX
+   - Improved data loading from localStorage
+   - Added proper disabled state for readonly fields
+
+### Git Commit History
+
+```bash
+commit: [Latest Commit Hash]
+Date: December 9, 2024, 17:12 IST
+Message: fix: improve user data persistence and UI interactions
+
+- Enhanced user menu clickability in header
+- Fixed email display in account settings
+- Improved user data storage in login/register
+- Updated PROJECT_JOURNAL with latest changes
+```
+
+### Next Steps
+1. Implement proper form validation in Account Settings
+2. Add error handling for localStorage operations
+3. Consider adding profile picture upload functionality
+4. Implement proper API integration for user data management
+
 ### 8. Authentication and Dashboard Implementation (2024-12-09 16:33:16 IST)
 
 #### Router Configuration (`src/router/index.js`)
@@ -426,6 +573,7 @@ nvcc-app/
    ```
    commit: [Pending]
    Message: "refactor: Update header component to handle authentication states"
+   
    Changes:
    - Remove fixed positioning
    - Add conditional navigation
@@ -436,6 +584,7 @@ nvcc-app/
    ```
    commit: [Pending]
    Message: "feat: Add dedicated dashboard navigation component"
+   
    Changes:
    - Create DashboardNav.vue
    - Implement sub-navigation
@@ -446,6 +595,7 @@ nvcc-app/
    ```
    commit: [Pending]
    Message: "refactor: Update dashboard view to use new navigation"
+   
    Changes:
    - Remove duplicate header
    - Integrate DashboardNav
@@ -462,7 +612,7 @@ nvcc-app/
 #### Development Notes
 - Current Focus: Navigation structure and component organization
 - Pending: Route implementation and state management
-- Future: Enhanced mobile experience and real data integration
+- Future: Enhanced security measures and user experience improvements
 
 ### Next Steps
 1. Implement actual API integration for authentication
@@ -720,4 +870,4 @@ nvcc-app/
    - Added comprehensive documentation in PROJECT_JOURNAL.md
 
 ---
-*Last Updated: December 9, 2024, 16:56:06 IST*
+*Last Updated: December 9, 2024, 17:06 IST*
