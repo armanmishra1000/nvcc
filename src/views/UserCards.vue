@@ -1,103 +1,152 @@
 <template>
   <div class="min-h-screen bg-gray-100">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div class="flex justify-between items-center">
-        <h1 class="text-2xl font-semibold text-gray-900">My Cards</h1>
-        <button
-          @click="openNewCardModal"
-          class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-        >
-          <PlusIcon class="h-5 w-5 mr-2" />
-          Add New Card
-        </button>
+    <div class="flex">
+      <!-- Sidebar -->
+      <div class="w-64 flex-shrink-0">
+        <AppSidebar />
       </div>
 
-      <!-- Cards Grid -->
-      <div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <div v-for="card in cards" :key="card.id" class="bg-white rounded-lg shadow-md overflow-hidden">
-          <div class="p-6 space-y-6">
-            <!-- Card Design -->
-            <div :class="['h-48 rounded-lg p-6 flex flex-col justify-between', card.design]">
-              <div class="flex justify-between items-start">
-                <div class="text-white">
-                  <p class="font-medium">{{ card.type }}</p>
-                  <p class="mt-1 text-sm opacity-80">{{ card.bank }}</p>
-                </div>
-                <component :is="getCardIcon(card.network)" class="h-8 w-8 text-white" />
-              </div>
-              <div class="text-white">
-                <p class="text-lg tracking-wider">•••• •••• •••• {{ card.lastFour }}</p>
-                <div class="mt-4 flex justify-between items-center">
-                  <div>
-                    <p class="text-xs opacity-80">Card Holder</p>
-                    <p class="font-medium">{{ card.cardHolder }}</p>
-                  </div>
-                  <div>
-                    <p class="text-xs opacity-80">Expires</p>
-                    <p class="font-medium">{{ card.expiry }}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+      <!-- Main Content -->
+      <div class="flex-1">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div class="flex justify-between items-center">
+            <h1 class="text-2xl font-semibold text-gray-900">My Cards</h1>
+            <button
+              @click="openNewCardModal"
+              class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+              :disabled="loading"
+            >
+              <PlusIcon class="h-5 w-5 mr-2" />
+              Add New Card
+            </button>
+          </div>
 
-            <!-- Card Actions -->
-            <div class="flex justify-between items-center">
-              <button
-                @click="viewTransactions(card.id)"
-                class="text-sm font-medium text-orange-600 hover:text-orange-500"
-              >
-                View Transactions
-              </button>
-              <div class="flex space-x-2">
-                <button
-                  @click="toggleFreeze(card)"
-                  :class="[
-                    'p-2 rounded-full',
-                    card.frozen ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-600'
-                  ]"
-                >
-                  <component :is="card.frozen ? 'LockClosedIcon' : 'LockOpenIcon'" class="h-5 w-5" />
-                </button>
-                <button
-                  @click="showCardDetails(card)"
-                  class="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200"
-                >
-                  <EllipsisHorizontalIcon class="h-5 w-5" />
-                </button>
+          <!-- Error Alert -->
+          <div v-if="error" class="mt-4 p-4 bg-red-50 border border-red-200 rounded-md">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm text-red-700">{{ error }}</p>
               </div>
             </div>
           </div>
 
-          <!-- Card Transactions (Expandable) -->
-          <div v-if="expandedCard === card.id" class="border-t border-gray-200">
-            <div class="p-4">
-              <h3 class="text-lg font-medium text-gray-900">Recent Transactions</h3>
-              <ul class="mt-4 space-y-4">
-                <li v-for="transaction in card.transactions" :key="transaction.id" class="flex justify-between items-center">
-                  <div class="flex items-center">
-                    <div :class="[
-                      transaction.type === 'credit' ? 'bg-green-100' : 'bg-red-100',
-                      'rounded-full p-2'
-                    ]">
-                      <component 
-                        :is="transaction.type === 'credit' ? 'ArrowDownIcon' : 'ArrowUpIcon'"
-                        class="h-5 w-5"
-                        :class="transaction.type === 'credit' ? 'text-green-600' : 'text-red-600'"
-                      />
+          <!-- Loading State -->
+          <div v-if="loading" class="mt-8 flex justify-center">
+            <svg class="animate-spin h-8 w-8 text-orange-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </div>
+
+          <!-- No Cards State -->
+          <div v-else-if="!cards.length" class="mt-8 text-center">
+            <CreditCardIcon class="mx-auto h-12 w-12 text-gray-400" />
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No cards</h3>
+            <p class="mt-1 text-sm text-gray-500">Get started by adding a new card.</p>
+            <div class="mt-6">
+              <button
+                @click="openNewCardModal"
+                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+              >
+                <PlusIcon class="h-5 w-5 mr-2" />
+                Add New Card
+              </button>
+            </div>
+          </div>
+
+          <!-- Cards Grid -->
+          <div v-else class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div v-for="card in cards" :key="card.id" class="bg-white rounded-lg shadow-md overflow-hidden">
+              <div class="p-6 space-y-6">
+                <!-- Card Design -->
+                <div :class="['h-48 rounded-lg p-6 flex flex-col justify-between', card.design]">
+                  <div class="flex justify-between items-start">
+                    <div class="text-white">
+                      <p class="font-medium">{{ card.type }}</p>
+                      <p class="mt-1 text-sm opacity-80">{{ card.bank }}</p>
                     </div>
-                    <div class="ml-4">
-                      <p class="text-sm font-medium text-gray-900">{{ transaction.merchant }}</p>
-                      <p class="text-xs text-gray-500">{{ transaction.date }}</p>
+                    <component :is="getCardIcon(card.network)" class="h-8 w-8 text-white" />
+                  </div>
+                  <div class="text-white">
+                    <p class="text-lg tracking-wider">•••• •••• •••• {{ card.lastFour }}</p>
+                    <div class="mt-4 flex justify-between items-center">
+                      <div>
+                        <p class="text-xs opacity-80">Card Holder</p>
+                        <p class="font-medium">{{ card.cardHolder }}</p>
+                      </div>
+                      <div>
+                        <p class="text-xs opacity-80">Expires</p>
+                        <p class="font-medium">{{ card.expiry }}</p>
+                      </div>
                     </div>
                   </div>
-                  <p :class="[
-                    transaction.type === 'credit' ? 'text-green-600' : 'text-red-600',
-                    'text-sm font-semibold'
-                  ]">
-                    {{ transaction.type === 'credit' ? '+' : '-' }}${{ transaction.amount }}
-                  </p>
-                </li>
-              </ul>
+                </div>
+
+                <!-- Card Actions -->
+                <div class="flex justify-between items-center">
+                  <button
+                    @click="viewTransactions(card.id)"
+                    class="text-sm font-medium text-orange-600 hover:text-orange-500"
+                  >
+                    View Transactions
+                  </button>
+                  <div class="flex space-x-2">
+                    <button
+                      @click="toggleFreeze(card)"
+                      :class="[
+                        'p-2 rounded-full',
+                        card.frozen ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-600'
+                      ]"
+                    >
+                      <component :is="card.frozen ? 'LockClosedIcon' : 'LockOpenIcon'" class="h-5 w-5" />
+                    </button>
+                    <button
+                      @click="showCardDetails(card)"
+                      class="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    >
+                      <EllipsisHorizontalIcon class="h-5 w-5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card Transactions (Expandable) -->
+              <div v-if="expandedCard === card.id" class="border-t border-gray-200">
+                <div class="p-4">
+                  <h3 class="text-lg font-medium text-gray-900">Recent Transactions</h3>
+                  <ul class="mt-4 space-y-4">
+                    <li v-for="transaction in card.transactions" :key="transaction.id" class="flex justify-between items-center">
+                      <div class="flex items-center">
+                        <div :class="[
+                          transaction.type === 'credit' ? 'bg-green-100' : 'bg-red-100',
+                          'rounded-full p-2'
+                        ]">
+                          <component 
+                            :is="transaction.type === 'credit' ? 'ArrowDownIcon' : 'ArrowUpIcon'"
+                            class="h-5 w-5"
+                            :class="transaction.type === 'credit' ? 'text-green-600' : 'text-red-600'"
+                          />
+                        </div>
+                        <div class="ml-4">
+                          <p class="text-sm font-medium text-gray-900">{{ transaction.merchant }}</p>
+                          <p class="text-xs text-gray-500">{{ transaction.date }}</p>
+                        </div>
+                      </div>
+                      <p :class="[
+                        transaction.type === 'credit' ? 'text-green-600' : 'text-red-600',
+                        'text-sm font-semibold'
+                      ]">
+                        {{ transaction.type === 'credit' ? '+' : '-' }}${{ transaction.amount }}
+                      </p>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -186,8 +235,16 @@
                     <button
                       type="submit"
                       class="px-4 py-2 text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 rounded-md"
+                      :disabled="loading"
                     >
-                      Add Card
+                      <span v-if="loading" class="flex items-center">
+                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Adding...
+                      </span>
+                      <span v-else>Add Card</span>
                     </button>
                   </div>
                 </form>
@@ -201,7 +258,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import {
   PlusIcon,
@@ -212,6 +269,8 @@ import {
   ArrowDownIcon,
   CreditCardIcon
 } from '@heroicons/vue/24/outline'
+import AppSidebar from '@/components/AppSidebar.vue'
+import { cardService } from '@/services/cardService'
 
 export default {
   name: 'UserCards',
@@ -227,66 +286,11 @@ export default {
     EllipsisHorizontalIcon,
     ArrowUpIcon,
     ArrowDownIcon,
-    CreditCardIcon
+    CreditCardIcon,
+    AppSidebar
   },
   setup() {
-    const cards = ref([
-      {
-        id: 1,
-        type: 'Credit Card',
-        bank: 'Universal Bank',
-        network: 'visa',
-        lastFour: '4567',
-        cardHolder: 'JOHN DOE',
-        expiry: '12/25',
-        frozen: false,
-        design: 'bg-gradient-to-r from-purple-500 to-pink-500',
-        transactions: [
-          {
-            id: 1,
-            merchant: 'Amazon',
-            amount: '299.99',
-            type: 'debit',
-            date: '2024-12-09'
-          },
-          {
-            id: 2,
-            merchant: 'Refund - Nike',
-            amount: '89.99',
-            type: 'credit',
-            date: '2024-12-08'
-          }
-        ]
-      },
-      {
-        id: 2,
-        type: 'Debit Card',
-        bank: 'City Bank',
-        network: 'mastercard',
-        lastFour: '8901',
-        cardHolder: 'JOHN DOE',
-        expiry: '09/26',
-        frozen: true,
-        design: 'bg-gradient-to-r from-blue-500 to-cyan-500',
-        transactions: [
-          {
-            id: 1,
-            merchant: 'Starbucks',
-            amount: '5.99',
-            type: 'debit',
-            date: '2024-12-09'
-          },
-          {
-            id: 2,
-            merchant: 'Target',
-            amount: '156.78',
-            type: 'debit',
-            date: '2024-12-07'
-          }
-        ]
-      }
-    ])
-
+    const cards = ref([])
     const isNewCardModalOpen = ref(false)
     const expandedCard = ref(null)
     const newCard = ref({
@@ -294,6 +298,22 @@ export default {
       expiry: '',
       cvv: '',
       cardHolder: ''
+    })
+    const loading = ref(false)
+    const error = ref(null)
+
+    // Fetch cards on component mount
+    onMounted(async () => {
+      try {
+        loading.value = true
+        const fetchedCards = await cardService.getAllCards()
+        cards.value = fetchedCards
+      } catch (err) {
+        error.value = 'Failed to load cards. Please try again later.'
+        console.error('Error loading cards:', err)
+      } finally {
+        loading.value = false
+      }
     })
 
     const openNewCardModal = () => {
@@ -310,17 +330,59 @@ export default {
       }
     }
 
-    const addNewCard = () => {
-      // Add validation and card creation logic here
-      closeNewCardModal()
+    const addNewCard = async () => {
+      try {
+        loading.value = true
+        const cardData = {
+          number: newCard.value.number.replace(/\s/g, ''),
+          expiry: newCard.value.expiry,
+          cvv: newCard.value.cvv,
+          cardHolder: newCard.value.cardHolder.toUpperCase()
+        }
+        const addedCard = await cardService.addCard(cardData)
+        cards.value.push(addedCard)
+        closeNewCardModal()
+      } catch (err) {
+        error.value = 'Failed to add card. Please try again.'
+        console.error('Error adding card:', err)
+      } finally {
+        loading.value = false
+      }
     }
 
-    const toggleFreeze = (card) => {
-      card.frozen = !card.frozen
+    const toggleFreeze = async (card) => {
+      try {
+        loading.value = true
+        await cardService.updateCardStatus(card.id, !card.frozen)
+        card.frozen = !card.frozen
+      } catch (err) {
+        error.value = 'Failed to update card status. Please try again.'
+        console.error('Error updating card status:', err)
+      } finally {
+        loading.value = false
+      }
     }
 
-    const viewTransactions = (cardId) => {
-      expandedCard.value = expandedCard.value === cardId ? null : cardId
+    const viewTransactions = async (cardId) => {
+      if (expandedCard.value === cardId) {
+        expandedCard.value = null
+        return
+      }
+
+      try {
+        loading.value = true
+        const transactions = await cardService.getCardTransactions(cardId)
+        const cardIndex = cards.value.findIndex(c => c.id === cardId)
+        if (cardIndex !== -1) {
+          cards.value[cardIndex].transactions = transactions
+        }
+        expandedCard.value = cardId
+      } catch (err) {
+        error.value = 'Failed to load transactions. Please try again.'
+        console.error('Error loading transactions:', err)
+      } finally {
+        loading.value = false
+      }
     }
 
     const showCardDetails = (card) => {
@@ -337,6 +399,8 @@ export default {
       isNewCardModalOpen,
       expandedCard,
       newCard,
+      loading,
+      error,
       openNewCardModal,
       closeNewCardModal,
       addNewCard,
