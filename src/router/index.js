@@ -9,8 +9,6 @@ import UserCards from '@/views/UserCards.vue'
 import UserFriends from '@/views/UserFriends.vue'
 import UserPrivate from '@/views/UserPrivate.vue'
 import UserTeam from '@/views/UserTeam.vue'
-import Reports from '@/views/Reports.vue'
-import Settings from '@/views/Settings.vue'
 import Payments from '@/views/Payments.vue'
 
 // Simulated auth guard
@@ -41,18 +39,6 @@ const routes = [
     path: '/dashboard',
     name: 'Dashboard',
     component: WalletDashboard,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/reports',
-    name: 'Reports',
-    component: Reports,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/settings',
-    name: 'Settings',
-    component: Settings,
     meta: { requiresAuth: true }
   },
   {

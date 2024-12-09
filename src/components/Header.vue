@@ -16,24 +16,7 @@
 
         <!-- Navigation Links -->
         <div class="hidden sm:ml-6 sm:flex sm:space-x-8" v-if="isAuthenticated()">
-          <router-link 
-            to="/dashboard" 
-            class="border-orange-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-          >
-            Dashboard
-          </router-link>
-          <router-link 
-            to="/reports" 
-            class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-          >
-            Reports
-          </router-link>
-          <router-link 
-            to="/settings" 
-            class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-          >
-            Settings
-          </router-link>
+        <!-- Navigation links removed - now handled by sidebar and user dropdown -->
         </div>
 
         <div v-else class="hidden sm:ml-6 sm:flex sm:space-x-8">
