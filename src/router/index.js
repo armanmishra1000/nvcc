@@ -7,11 +7,11 @@ import AccountSettings from '@/views/AccountSettings.vue'
 import UserAccounts from '@/views/UserAccounts.vue'
 import UserCards from '@/views/UserCards.vue'
 import UserFriends from '@/views/UserFriends.vue'
-import UserPayments from '@/views/UserPayments.vue'
 import UserPrivate from '@/views/UserPrivate.vue'
 import UserTeam from '@/views/UserTeam.vue'
 import Reports from '@/views/Reports.vue'
 import Settings from '@/views/Settings.vue'
+import Payments from '@/views/Payments.vue'
 
 // Simulated auth guard
 const isAuthenticated = () => {
@@ -81,8 +81,8 @@ const routes = [
   },
   {
     path: '/payments',
-    name: 'UserPayments',
-    component: UserPayments,
+    name: 'Payments',
+    component: Payments,
     meta: { requiresAuth: true }
   },
   {
