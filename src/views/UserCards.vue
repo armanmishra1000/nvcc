@@ -62,7 +62,7 @@
                   <p class="font-medium">{{ card.type }}</p>
                   <p class="mt-1 text-sm opacity-80">{{ card.bank }}</p>
                 </div>
-                <component :is="getCardIcon(card.network)" class="h-8 w-8 text-white" />
+                <component :is="getCardIcon()" class="h-8 w-8 text-white" />
               </div>
               <div class="text-white">
                 <p class="text-lg tracking-wider">•••• •••• •••• {{ card.lastFour }}</p>
@@ -98,7 +98,7 @@
                   <component :is="card.frozen ? 'LockClosedIcon' : 'LockOpenIcon'" class="h-5 w-5" />
                 </button>
                 <button
-                  @click="showCardDetails(card)"
+                  @click="showCardDetails()"
                   class="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200"
                 >
                   <EllipsisHorizontalIcon class="h-5 w-5" />
@@ -373,11 +373,11 @@ export default {
       }
     }
 
-    const showCardDetails = (card) => {
+    const showCardDetails = () => {
       // Add card details view logic here
     }
 
-    const getCardIcon = (network) => {
+    const getCardIcon = () => {
       // Add logic to return appropriate card network icon
       return CreditCardIcon
     }
