@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50 flex flex-col">
     <AppHeader />
-    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <main class="flex-grow max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
       <div class="px-4 py-6 sm:px-0">
         <div class="bg-white rounded-lg shadow p-6">
           <h2 class="text-xl font-semibold mb-4">Welcome to NVCC</h2>
@@ -11,16 +11,19 @@
         </div>
       </div>
     </main>
+    <AppFooter />
   </div>
 </template>
 
 <script>
 import AppHeader from './components/Header.vue'
+import AppFooter from './components/AppFooter.vue'
 
 export default {
   name: 'App',
   components: {
-    AppHeader
+    AppHeader,
+    AppFooter
   }
 }
 </script>
