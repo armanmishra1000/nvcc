@@ -1,81 +1,68 @@
 import { eventBus } from '@/utils/eventBus';
+import axios from 'axios';
 
-const API_URL = 'http://localhost:5001/api/auth';
+const API_URL = process.env.VUE_APP_API_BASE_URL;
 
 export const authService = {
   async register(userData) {
-    const response = await fetch(`${API_URL}/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData),
-    });
-    
-    const data = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(data.message || 'Registration failed');
+    try {
+      const response = await axios.post(
+        `${API_URL}/api/auth/register`,
+        userData
+      );
+      
+      const data = response.data;
+      
+      // Store token and basic auth state
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('isAuthenticated', 'true');
+      
+      // Emit auth change event
+      eventBus.emit('auth-change', {
+        isAuthenticated: true,
+        userId: data.user.id
+      });
+      
+      return data;
+    } catch (error) {
+      throw error.response?.data?.message || error.message || 'Registration failed';
     }
-    
-    // Store token and user data
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('isAuthenticated', 'true');
-    localStorage.setItem('userName', data.user.name);
-    localStorage.setItem('isAdmin', data.user.isAdmin);
-    
-    // Emit auth change event
-    eventBus.emit('auth-change', {
-      isAuthenticated: true,
-      userName: data.user.name,
-      isAdmin: data.user.isAdmin
-    });
-    
-    return data;
   },
 
   async login(credentials) {
-    const response = await fetch(`${API_URL}/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(credentials),
-    });
-    
-    const data = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(data.message || 'Login failed');
+    try {
+      const response = await axios.post(
+        `${API_URL}/api/auth/login`,
+        credentials
+      );
+      
+      const data = response.data;
+      
+      // Store token and basic auth state
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('isAuthenticated', 'true');
+      
+      // Emit auth change event
+      eventBus.emit('auth-change', {
+        isAuthenticated: true,
+        userId: data.user.id
+      });
+      
+      return data;
+    } catch (error) {
+      throw error.response?.data?.message || error.message || 'Login failed';
     }
-    
-    // Store token and user data
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('isAuthenticated', 'true');
-    localStorage.setItem('userName', data.user.name);
-    localStorage.setItem('isAdmin', data.user.isAdmin);
-    
-    // Emit auth change event
-    eventBus.emit('auth-change', {
-      isAuthenticated: true,
-      userName: data.user.name,
-      isAdmin: data.user.isAdmin
-    });
-    
-    return data;
   },
 
   logout() {
+    // Clear auth state
     localStorage.removeItem('token');
     localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('userName');
-    localStorage.removeItem('isAdmin');
     
     // Emit auth change event
     eventBus.emit('auth-change', {
       isAuthenticated: false,
-      userName: null,
-      isAdmin: false
+      userId: null
     });
   }
 };

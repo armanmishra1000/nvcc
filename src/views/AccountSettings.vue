@@ -10,7 +10,11 @@
 
         <!-- Form -->
         <div class="px-4 py-5 sm:p-6">
-          <form @submit.prevent="handleSubmit" class="space-y-6">
+          <div v-if="loading" class="flex justify-center items-center py-8">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+
+          <form v-else @submit.prevent="handleSubmit" class="space-y-6">
             <!-- Profile Information -->
             <div>
               <h4 class="text-md font-medium text-gray-900 mb-4">Profile Information</h4>
@@ -134,11 +138,13 @@
 
 <script>
 import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import { useToast } from 'vue-toastification'
 
 export default {
   name: 'AccountSettings',
   setup() {
-    const loading = ref(false)
+    const toast = useToast()
     const formData = ref({
       username: '',
       email: '',
@@ -149,15 +155,30 @@ export default {
       confirmPassword: ''
     })
 
-    onMounted(() => {
-      // Load user data from localStorage or your auth store
-      const userData = JSON.parse(localStorage.getItem('userData') || '{}')
-      formData.value = {
-        ...formData.value,
-        username: userData.username || localStorage.getItem('userName') || '',
-        email: userData.email || localStorage.getItem('userEmail') || 'user@example.com',
-        firstName: userData.firstName || '',
-        lastName: userData.lastName || ''
+    const loading = ref(false)
+
+    onMounted(async () => {
+      try {
+        loading.value = true
+        const token = localStorage.getItem('token')
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/api/users/profile`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        const userData = response.data
+        formData.value = {
+          username: userData.name,
+          email: userData.email,
+          firstName: userData.firstName || '',
+          lastName: userData.lastName || '',
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        }
+      } catch (error) {
+        toast.error('Failed to load user data')
+        console.error('Error loading user data:', error)
+      } finally {
+        loading.value = false
       }
     })
 

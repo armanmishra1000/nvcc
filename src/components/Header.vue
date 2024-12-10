@@ -58,9 +58,9 @@
               aria-haspopup="true"
             >
               <div class="h-8 w-8 rounded-full bg-orange-500 flex items-center justify-center text-white">
-                {{ userName.charAt(0).toUpperCase() }}
+                {{ userData.name.charAt(0).toUpperCase() }}
               </div>
-              <span class="text-gray-700 font-medium group-hover:text-gray-900">{{ userName }}</span>
+              <span class="text-gray-700 font-medium group-hover:text-gray-900">{{ userData.name }}</span>
               <svg 
                 class="h-5 w-5 text-gray-400 group-hover:text-gray-500 transition-transform duration-200" 
                 :class="{ 'transform rotate-180': isUserMenuOpen }" 
@@ -116,6 +116,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
 import { authService } from '@/services/authService'
 import { eventBus } from '@/utils/eventBus'
 import { clickOutside } from '@/directives/clickOutside'
@@ -123,16 +124,40 @@ import { clickOutside } from '@/directives/clickOutside'
 const router = useRouter()
 const isUserMenuOpen = ref(false)
 const isAuthenticated = ref(localStorage.getItem('isAuthenticated') === 'true')
-const userName = ref(localStorage.getItem('userName') || 'John Doe')
+const userData = ref({
+  name: '',
+  email: ''
+})
+
+const fetchUserData = async () => {
+  if (!isAuthenticated.value) return
+  
+  try {
+    const token = localStorage.getItem('token')
+    const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/api/users/profile`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    userData.value = response.data
+  } catch (error) {
+    console.error('Error fetching user data:', error)
+  }
+}
 
 // Listen for auth changes
-const handleAuthChange = (data) => {
+const handleAuthChange = async (data) => {
   isAuthenticated.value = data.isAuthenticated
-  userName.value = data.isAuthenticated ? data.userName : 'John Doe'
+  if (data.isAuthenticated) {
+    await fetchUserData()
+  } else {
+    userData.value = { name: '', email: '' }
+  }
 }
 
 onMounted(() => {
   eventBus.on('auth-change', handleAuthChange)
+  if (isAuthenticated.value) {
+    fetchUserData()
+  }
 })
 
 onUnmounted(() => {
