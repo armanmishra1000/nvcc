@@ -10,11 +10,18 @@ import UserFriends from '@/views/UserFriends.vue'
 import UserTeam from '@/views/UserTeam.vue'
 import Payments from '@/views/Payments.vue'
 import NvccPlans from '@/views/NvccPlans.vue'
+import AdminLogin from '@/views/admin/Login.vue'
+import AdminDashboard from '@/views/admin/Dashboard.vue'
 
 // Simulated auth guard
 const isAuthenticated = () => {
   // This should be replaced with actual authentication logic
   return localStorage.getItem('isAuthenticated') === 'true'
+}
+
+// Admin auth guard
+const isAdmin = () => {
+  return localStorage.getItem('isAdmin') === 'true'
 }
 
 const routes = [
@@ -82,6 +89,43 @@ const routes = [
     name: 'NvccPlans',
     component: NvccPlans,
     meta: { requiresAuth: true }
+  },
+  // Admin routes
+  {
+    path: '/admin/login',
+    name: 'AdminLogin',
+    component: AdminLogin,
+    meta: { requiresGuest: true }
+  },
+  {
+    path: '/admin',
+    name: 'AdminDashboard',
+    component: AdminDashboard,
+    meta: { requiresAdmin: true }
+  },
+  {
+    path: '/admin/users',
+    name: 'AdminUsers',
+    component: () => import('@/views/admin/Users.vue'),
+    meta: { requiresAdmin: true }
+  },
+  {
+    path: '/admin/subscriptions',
+    name: 'AdminSubscriptions',
+    component: () => import('@/views/admin/Subscriptions.vue'),
+    meta: { requiresAdmin: true }
+  },
+  {
+    path: '/admin/cards',
+    name: 'AdminCards',
+    component: () => import('@/views/admin/Cards.vue'),
+    meta: { requiresAdmin: true }
+  },
+  {
+    path: '/admin/wallets',
+    name: 'AdminWallets',
+    component: () => import('@/views/admin/Wallets.vue'),
+    meta: { requiresAdmin: true }
   }
 ]
 
@@ -90,15 +134,34 @@ const router = createRouter({
   routes
 })
 
-// Navigation guards
 router.beforeEach((to, from, next) => {
-  const authenticated = isAuthenticated()
-
-  if (to.meta.requiresAuth && !authenticated) {
-    next('/login')
-  } else if (to.meta.requiresGuest && authenticated) {
-    next('/dashboard')
-  } else {
+  // Check for requiresAdmin meta field
+  if (to.matched.some(record => record.meta.requiresAdmin)) {
+    if (!isAdmin()) {
+      next('/admin/login')
+    } else {
+      next()
+    }
+  }
+  // Check for requiresAuth meta field
+  else if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (!isAuthenticated()) {
+      next('/login')
+    } else {
+      next()
+    }
+  }
+  // Check for requiresGuest meta field
+  else if (to.matched.some(record => record.meta.requiresGuest)) {
+    if (to.path === '/admin/login' && isAdmin()) {
+      next('/admin')
+    } else if (isAuthenticated()) {
+      next('/')
+    } else {
+      next()
+    }
+  }
+  else {
     next()
   }
 })
