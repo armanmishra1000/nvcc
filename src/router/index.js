@@ -10,6 +10,7 @@ import UserFriends from '@/views/UserFriends.vue'
 import UserTeam from '@/views/UserTeam.vue'
 import Payments from '@/views/Payments.vue'
 import NvccPlans from '@/views/NvccPlans.vue'
+import GetCard from '@/views/GetCard.vue'
 import AdminLogin from '@/views/admin/Login.vue'
 import AdminDashboard from '@/views/admin/Dashboard.vue'
 
@@ -88,6 +89,12 @@ const routes = [
     path: '/plans',
     name: 'NvccPlans',
     component: NvccPlans,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/get-card',
+    name: 'GetCard',
+    component: GetCard,
     meta: { requiresAuth: true }
   },
   // Admin routes
