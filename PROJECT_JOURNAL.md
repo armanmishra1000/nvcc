@@ -484,3 +484,90 @@ nvcc-app/
 │   └── router/
 │       └── index.js
 └── .eslintrc.js
+
+```
+
+### 13. Real-Time Profile Updates Implementation (2024-12-10)
+
+#### WebSocket Integration
+1. **Backend WebSocket Server**
+   - Added WebSocket server using `ws` package
+   - Integrated with existing HTTP server on port 5002
+   - Implemented message handling for profile updates
+   ```javascript
+   const wss = new WebSocket.Server({ server, path: '/ws' });
+   ```
+
+2. **Frontend WebSocket Service**
+   - Created `websocketService.js` for WebSocket client management
+   - Features:
+     - Automatic reconnection
+     - Event-based message handling
+     - Connection state management
+   ```javascript
+   class WebSocketService {
+     constructor() {
+       this.ws = null;
+       this.reconnectAttempts = 0;
+       this.maxReconnectAttempts = 5;
+       this.listeners = new Map();
+     }
+     // ... methods for connection and message handling
+   }
+   ```
+
+3. **Profile Update Flow**
+   - Enhanced User model with update history tracking
+   - Added real-time notifications for profile changes
+   - Implemented broadcast system for profile updates
+
+4. **Port Configuration**
+   - Backend server (HTTP + WebSocket): Port 5002
+   - Frontend server: Port 5003
+   - Updated WebSocket client URL in `vue.config.js`
+
+#### Git Commit History
+```bash
+212eeab feat: Add real-time profile updates using WebSocket
+a647fe2 feat: Implement real user data fetching
+cbd8d3f docs: update PROJECT_JOURNAL with MongoDB integration and auth state
+9fa8228 feat: add MongoDB integration and real-time auth state
+```
+
+#### Code Structure Updates
+1. **New Files**
+   - `src/services/websocketService.js`: WebSocket client service
+   - Updated server dependencies for WebSocket support
+
+2. **Modified Components**
+   - `AccountSettings.vue`: Added real-time update functionality
+   - `User.js`: Enhanced model with update history
+   - `app.js`: Integrated WebSocket server
+   - `Header.vue`: Real-time profile data updates
+
+#### Technical Decisions
+1. **WebSocket Implementation**
+   - Chose `ws` package for its simplicity and reliability
+   - Implemented reconnection logic for better user experience
+   - Used event-based architecture for message handling
+
+2. **Data Flow**
+   - Profile updates trigger WebSocket broadcasts
+   - Changes are tracked in MongoDB with timestamps
+   - Real-time notifications for connected users
+
+3. **Security Considerations**
+   - WebSocket connections require authentication
+   - Update history maintains audit trail
+   - Sensitive data filtered from broadcasts
+
+#### Future Improvements
+1. **WebSocket Features**
+   - Add heartbeat mechanism
+   - Implement message queuing
+   - Add support for more real-time features
+
+2. **Performance Optimization**
+   - Message batching for multiple updates
+   - Connection pooling
+   - Rate limiting for broadcasts
