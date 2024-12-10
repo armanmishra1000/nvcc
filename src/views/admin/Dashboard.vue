@@ -12,11 +12,11 @@
               <dl>
                 <dt class="text-sm font-medium text-gray-500 truncate">Total Users</dt>
                 <dd class="flex items-baseline">
-                  <div class="text-2xl font-semibold text-gray-900">1,234</div>
-                  <div class="ml-2 flex items-baseline text-sm font-semibold text-green-600">
+                  <div class="text-2xl font-semibold text-gray-900">{{ totalUsers }}</div>
+                  <div v-if="userGrowth > 0" class="ml-2 flex items-baseline text-sm font-semibold text-green-600">
                     <ArrowUpIcon class="self-center flex-shrink-0 h-5 w-5 text-green-500" aria-hidden="true" />
                     <span class="sr-only">Increased by</span>
-                    12%
+                    {{ userGrowth }}%
                   </div>
                 </dd>
               </dl>
@@ -134,8 +134,9 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import AdminLayout from '@/layouts/AdminLayout.vue'
+import { userService } from '@/services/userService'
 import {
   UsersIcon,
   CreditCardIcon,
@@ -158,6 +159,8 @@ export default {
     ArrowUpIcon
   },
   setup() {
+    const totalUsers = ref(0)
+    const userGrowth = ref(0)
     const recentActivity = ref([
       {
         id: 1,
@@ -189,7 +192,24 @@ export default {
       }
     ])
 
+    const fetchDashboardData = async () => {
+      try {
+        const response = await userService.getAllUsers()
+        totalUsers.value = response.data.length
+        // Calculate growth (this is a placeholder - you might want to implement actual growth calculation)
+        userGrowth.value = ((totalUsers.value - (totalUsers.value * 0.9)) / (totalUsers.value * 0.9) * 100).toFixed(1)
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error)
+      }
+    }
+
+    onMounted(() => {
+      fetchDashboardData()
+    })
+
     return {
+      totalUsers,
+      userGrowth,
       recentActivity
     }
   }
