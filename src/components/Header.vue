@@ -145,24 +145,24 @@ const fetchUserData = async () => {
 
 // Listen for auth changes
 const handleAuthChange = async (data) => {
-  isAuthenticated.value = data.isAuthenticated
+  isAuthenticated.value = data.isAuthenticated;
   if (data.isAuthenticated) {
-    await fetchUserData()
+    await fetchUserData();
   } else {
-    userData.value = { name: '', email: '' }
+    userData.value = { name: '', email: '' };
   }
-}
+};
 
 onMounted(() => {
-  eventBus.on('auth-change', handleAuthChange)
+  eventBus.on('auth-change', handleAuthChange);
   if (isAuthenticated.value) {
-    fetchUserData()
+    fetchUserData();
   }
-})
+});
 
 onUnmounted(() => {
-  eventBus.off('auth-change', handleAuthChange)
-})
+  eventBus.off('auth-change', handleAuthChange);
+});
 
 const logout = () => {
   authService.logout()

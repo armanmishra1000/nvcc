@@ -137,14 +137,16 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import axios from 'axios'
 import { useToast } from 'vue-toastification'
+import { websocketService } from '@/services/websocketService'
 
 export default {
   name: 'AccountSettings',
   setup() {
     const toast = useToast()
+    const loading = ref(false)
     const formData = ref({
       username: '',
       email: '',
@@ -155,8 +157,6 @@ export default {
       confirmPassword: ''
     })
 
-    const loading = ref(false)
-
     onMounted(async () => {
       try {
         loading.value = true
@@ -166,6 +166,60 @@ export default {
         })
         const userData = response.data
         formData.value = {
+          username: userData.name || '',
+          email: userData.email,
+          firstName: userData.firstName || '',
+          lastName: userData.lastName || '',
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        }
+
+        // Connect to WebSocket
+        websocketService.connect();
+
+        // Listen for profile updates
+        websocketService.addListener('profile_update', (data) => {
+          if (data.userId !== userData._id) {
+            toast.info(`${data.username} updated their profile`);
+          }
+        });
+
+      } catch (error) {
+        toast.error('Error loading profile')
+        console.error('Profile loading error:', error)
+      } finally {
+        loading.value = false
+      }
+    })
+
+    onUnmounted(() => {
+      websocketService.disconnect();
+    })
+
+    const handleSubmit = async () => {
+      try {
+        loading.value = true
+        const token = localStorage.getItem('token')
+        
+        // Update profile information
+        const profileData = {
+          username: formData.value.username,
+          firstName: formData.value.firstName,
+          lastName: formData.value.lastName
+        }
+
+        const response = await axios.put(
+          `${process.env.VUE_APP_API_BASE_URL}/api/users/profile`,
+          profileData,
+          {
+            headers: { Authorization: `Bearer ${token}` }
+          }
+        )
+
+        // Update local state with new user data
+        const userData = response.data.user
+        formData.value = {
           username: userData.name,
           email: userData.email,
           firstName: userData.firstName || '',
@@ -174,52 +228,25 @@ export default {
           newPassword: '',
           confirmPassword: ''
         }
+
+        // Notify other users via WebSocket
+        websocketService.send('profile_update', {
+          userId: userData._id,
+          username: userData.name
+        });
+
+        toast.success('Profile updated successfully')
       } catch (error) {
-        toast.error('Failed to load user data')
-        console.error('Error loading user data:', error)
-      } finally {
-        loading.value = false
-      }
-    })
-
-    const handleSubmit = async () => {
-      loading.value = true
-      try {
-        // Validate passwords match
-        if (formData.value.newPassword && formData.value.newPassword !== formData.value.confirmPassword) {
-          alert('New passwords do not match')
-          return
-        }
-
-        // Here you would typically make an API call to update the user's information
-        // For now, we'll just update localStorage
-        const userData = {
-          username: formData.value.username,
-          email: formData.value.email,
-          firstName: formData.value.firstName,
-          lastName: formData.value.lastName
-        }
-        localStorage.setItem('userData', JSON.stringify(userData))
-        localStorage.setItem('userName', formData.value.username)
-        localStorage.setItem('userEmail', formData.value.email)
-
-        alert('Settings updated successfully')
-        
-        // Clear password fields
-        formData.value.currentPassword = ''
-        formData.value.newPassword = ''
-        formData.value.confirmPassword = ''
-      } catch (error) {
-        alert('Error updating settings')
-        console.error(error)
+        toast.error('Error updating profile')
+        console.error('Profile update error:', error)
       } finally {
         loading.value = false
       }
     }
 
     return {
-      formData,
       loading,
+      formData,
       handleSubmit
     }
   }
