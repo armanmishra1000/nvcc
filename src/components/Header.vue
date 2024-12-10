@@ -15,7 +15,7 @@
         </div>
 
         <!-- Navigation Links -->
-        <div class="hidden sm:ml-6 sm:flex sm:space-x-8" v-if="isAuthenticated()">
+        <div class="hidden sm:ml-6 sm:flex sm:space-x-8" v-if="isAuthenticated">
         <!-- Navigation links removed - now handled by sidebar and user dropdown -->
         </div>
 
@@ -49,37 +49,45 @@
           </div>
 
           <!-- User Menu -->
-          <div class="ml-3 relative" v-if="isAuthenticated()">
-            <div
+          <div class="ml-3 relative" v-if="isAuthenticated">
+            <button
               @click="toggleUserMenu"
-              class="flex items-center space-x-2 text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 p-2 hover:bg-gray-50 transition-colors duration-200 cursor-pointer"
+              class="flex items-center space-x-2 text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 p-2 hover:bg-gray-50 transition-colors duration-200 cursor-pointer group"
               id="user-menu-button"
-              role="button"
-              tabindex="0"
-              @keydown.enter="toggleUserMenu"
-              @keydown.space="toggleUserMenu"
+              aria-expanded="false"
+              aria-haspopup="true"
             >
               <div class="h-8 w-8 rounded-full bg-orange-500 flex items-center justify-center text-white">
                 {{ userName.charAt(0).toUpperCase() }}
               </div>
-              <span class="text-gray-700 font-medium">{{ userName }}</span>
-              <svg class="h-5 w-5 text-gray-400" :class="{ 'transform rotate-180': isUserMenuOpen }" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <span class="text-gray-700 font-medium group-hover:text-gray-900">{{ userName }}</span>
+              <svg 
+                class="h-5 w-5 text-gray-400 group-hover:text-gray-500 transition-transform duration-200" 
+                :class="{ 'transform rotate-180': isUserMenuOpen }" 
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 20 20" 
+                fill="currentColor"
+              >
                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
               </svg>
-            </div>
+            </button>
 
             <!-- Dropdown menu -->
             <div
-              v-if="isUserMenuOpen"
+              v-show="isUserMenuOpen"
               v-click-outside="closeUserMenu"
-              class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-gray-100"
+              class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-gray-100 transform opacity-100 scale-100 transition-all duration-200"
               role="menu"
+              aria-orientation="vertical"
+              aria-labelledby="user-menu-button"
+              tabindex="-1"
             >
               <div class="py-1">
                 <router-link
                   to="/account/settings"
                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
                   role="menuitem"
+                  tabindex="-1"
                   @click="closeUserMenu"
                 >
                   Account Settings
@@ -87,9 +95,10 @@
               </div>
               <div class="py-1">
                 <button
-                  @click="handleLogout"
+                  @click="logout"
                   class="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-gray-100 cursor-pointer"
                   role="menuitem"
+                  tabindex="-1"
                 >
                   Sign out
                 </button>
@@ -113,10 +122,22 @@ export default {
   setup() {
     const router = useRouter()
     const isUserMenuOpen = ref(false)
+    const isAuthenticated = ref(localStorage.getItem('isAuthenticated') === 'true')
     const userName = ref(localStorage.getItem('userName') || 'John Doe')
 
-    const isAuthenticated = () => {
-      return localStorage.getItem('isAuthenticated') === 'true'
+    // Watch for authentication changes
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'isAuthenticated') {
+        isAuthenticated.value = e.newValue === 'true'
+      }
+    })
+
+    const logout = () => {
+      localStorage.removeItem('isAuthenticated')
+      localStorage.removeItem('userName')
+      isAuthenticated.value = false
+      isUserMenuOpen.value = false
+      router.push('/login')
     }
 
     const toggleUserMenu = () => {
@@ -127,32 +148,23 @@ export default {
       isUserMenuOpen.value = false
     }
 
-    const handleLogout = () => {
-      localStorage.removeItem('isAuthenticated')
-      localStorage.removeItem('userName')
-      router.push('/login')
-    }
-
     return {
-      isAuthenticated,
       isUserMenuOpen,
+      isAuthenticated,
       userName,
+      logout,
       toggleUserMenu,
-      closeUserMenu,
-      handleLogout
+      closeUserMenu
     }
   },
   directives: {
     'click-outside': {
       mounted(el, binding) {
         el.clickOutsideEvent = (event) => {
-          // Get the button element
           const button = document.getElementById('user-menu-button')
-          // Don't close if clicking the button or its children
           if (button && (button === event.target || button.contains(event.target))) {
             return
           }
-          // Close if clicking outside both the menu and button
           if (!(el === event.target || el.contains(event.target))) {
             binding.value()
           }
@@ -168,8 +180,11 @@ export default {
 </script>
 
 <style scoped>
-/* Optional: Add smooth scroll behavior */
-html {
-  scroll-behavior: smooth;
+.group:hover .group-hover\:text-gray-900 {
+  color: rgb(17, 24, 39);
+}
+
+.group:hover .group-hover\:text-gray-500 {
+  color: rgb(107, 114, 128);
 }
 </style>

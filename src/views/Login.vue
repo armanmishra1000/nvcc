@@ -83,49 +83,48 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { Form, Field } from 'vee-validate'
 import * as yup from 'yup'
-import { useRouter } from 'vue-router'
 
-export default {
-  name: 'AppLogin',
-  components: {
-    Form,
-    Field
-  },
-  setup() {
-    const router = useRouter()
+const router = useRouter()
+const loading = ref(false)
+const error = ref(null)
 
-    const schema = yup.object({
-      email: yup.string().required().email(),
-      password: yup.string().required().min(6)
-    })
+const schema = yup.object({
+  email: yup.string().required('Email is required').email('Must be a valid email'),
+  password: yup.string().required('Password is required')
+})
 
-    const handleLogin = async (values) => {
-      try {
-        console.log('Login values:', values)
-        
-        // Store user data
-        const userData = {
-          email: values.email,
-          username: values.email.split('@')[0], // Temporary username from email
-        }
-        localStorage.setItem('userData', JSON.stringify(userData))
-        localStorage.setItem('userEmail', values.email)
-        localStorage.setItem('userName', userData.username)
-        localStorage.setItem('isAuthenticated', 'true')
-        
-        router.push('/dashboard')
-      } catch (error) {
-        console.error('Login error:', error)
-      }
+const handleLogin = async (formValues) => {
+  try {
+    loading.value = true
+    error.value = null
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    // Store user data
+    const userData = {
+      email: formValues.email,
+      username: formValues.email.split('@')[0]
     }
-
-    return {
-      schema,
-      handleLogin
-    }
+    localStorage.setItem('userName', userData.username)
+    localStorage.setItem('isAuthenticated', 'true')
+    
+    // Dispatch a storage event for other components
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: 'isAuthenticated',
+      newValue: 'true'
+    }))
+    
+    router.push('/dashboard')
+  } catch (err) {
+    error.value = err.message || 'Failed to login'
+  } finally {
+    loading.value = false
   }
 }
 </script>
