@@ -201,15 +201,14 @@ export default {
         const response = await userService.getAllUsers()
         console.log('Response data:', JSON.stringify(response.data, null, 2));
         
-        // Extract users array from response
-        const userData = response.data.users || []
-        users.value = Array.isArray(userData) ? userData : []
+        // Set users directly from response.data since it's already an array
+        users.value = Array.isArray(response.data) ? response.data : []
         console.log('Users set:', users.value);
         console.log('Users length:', users.value.length);
 
-        // Update pagination data
-        totalItems.value = response.data.total || 0
-        totalPages.value = response.data.pages || 1
+        // Update pagination data based on actual users length
+        totalItems.value = users.value.length
+        totalPages.value = Math.ceil(users.value.length / itemsPerPage)
       } catch (error) {
         console.error('Failed to fetch users:', error)
         users.value = []

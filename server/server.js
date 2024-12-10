@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+const WebSocket = require('ws');
 
 // Load environment variables from root directory
 dotenv.config({ path: path.join(__dirname, '../.env') });
@@ -29,6 +30,7 @@ mongoose.connect(MONGODB_URI)
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/users', require('./routes/users'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -36,7 +38,46 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Something went wrong!' });
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+const PORT = process.env.PORT || 5002;
+const server = app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+});
+
+// WebSocket Server
+const wss = new WebSocket.Server({ 
+  server,
+  path: '/ws'
+});
+
+wss.on('connection', (ws) => {
+  console.log('New WebSocket connection');
+
+  ws.on('message', (message) => {
+    try {
+      const data = JSON.parse(message);
+      console.log('Received:', data);
+      
+      // Handle different message types
+      switch (data.type) {
+        case 'userUpdate':
+          // Broadcast user updates to all connected clients
+          wss.clients.forEach(client => {
+            if (client !== ws && client.readyState === WebSocket.OPEN) {
+              client.send(JSON.stringify(data));
+            }
+          });
+          break;
+        // Add more message type handlers here
+      }
+    } catch (error) {
+      console.error('WebSocket message handling error:', error);
+    }
+  });
+
+  ws.on('close', () => {
+    console.log('Client disconnected');
+  });
+
+  // Send initial connection success message
+  ws.send(JSON.stringify({ type: 'connected', message: 'WebSocket connection established' }));
 });
