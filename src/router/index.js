@@ -7,9 +7,9 @@ import AccountSettings from '@/views/AccountSettings.vue'
 import UserAccounts from '@/views/UserAccounts.vue'
 import UserCards from '@/views/UserCards.vue'
 import UserFriends from '@/views/UserFriends.vue'
-import UserPrivate from '@/views/UserPrivate.vue'
 import UserTeam from '@/views/UserTeam.vue'
 import Payments from '@/views/Payments.vue'
+import NvccPlans from '@/views/NvccPlans.vue'
 
 // Simulated auth guard
 const isAuthenticated = () => {
@@ -72,15 +72,15 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/private',
-    name: 'UserPrivate',
-    component: UserPrivate,
-    meta: { requiresAuth: true }
-  },
-  {
     path: '/team',
     name: 'UserTeam',
     component: UserTeam,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/plans',
+    name: 'NvccPlans',
+    component: NvccPlans,
     meta: { requiresAuth: true }
   }
 ]

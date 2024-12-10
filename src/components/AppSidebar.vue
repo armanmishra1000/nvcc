@@ -64,7 +64,7 @@ export default {
       { name: 'My accounts', href: '/accounts', icon: UserIcon },
       { name: 'My cards', href: '/cards', icon: CreditCardIcon },
       { name: 'Payments', href: '/payments', icon: BanknotesIcon },
-      { name: 'Private', href: '/private', icon: LockClosedIcon, badge: 'HOT' },
+      { name: 'NVCC Plans', href: '/plans', icon: LockClosedIcon, badge: 'HOT' },
       { name: 'For friends', href: '/friends', icon: UsersIcon }
     ]
 
