@@ -4,6 +4,7 @@
       <div class="flex justify-between items-center">
         <h1 class="text-2xl font-semibold text-gray-900">My Cards</h1>
         <button
+          v-if="hasActivePlan"
           @click="openNewCardModal"
           class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
           :disabled="loading"
@@ -28,80 +29,94 @@
       </div>
 
       <!-- Loading State -->
-      <div v-if="loading" class="mt-8 flex justify-center">
-        <svg class="animate-spin h-8 w-8 text-orange-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
+      <div v-if="loading && !hasCheckedPlan" class="mt-8 flex justify-center">
+        <div class="text-center">
+          <svg class="animate-spin h-12 w-12 text-orange-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <p class="mt-4 text-gray-600">Loading your cards...</p>
+        </div>
       </div>
 
-      <!-- No Cards State -->
-      <div v-else-if="!cards.length" class="mt-8 text-center">
-        <CreditCardIcon class="mx-auto h-12 w-12 text-gray-400" />
-        <h3 class="mt-2 text-sm font-medium text-gray-900">No cards</h3>
-        <p class="mt-1 text-sm text-gray-500">Get started by adding a new card.</p>
-        <div class="mt-6">
-          <button
-            @click="openNewCardModal"
-            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-          >
-            <PlusIcon class="h-5 w-5 mr-2" />
-            Add New Card
-          </button>
+      <!-- Welcome State (No Plan) -->
+      <div v-else-if="hasCheckedPlan && !hasActivePlan" class="mt-8 flex flex-col items-center justify-center text-center">
+        <div class="w-24 h-24 bg-orange-100 rounded-full flex items-center justify-center mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1M3 6h3M3 14h3M3 18h3M21 6h-3M21 14h-3M21 18h-3M3 22h18a2 2 0 002-2V4a2 2 0 00-2-2H3a2 2 0 00-2 2v16a2 2 0 002 2z" />
+          </svg>
         </div>
+        <h2 class="text-2xl font-semibold text-gray-900 mb-3">Welcome to NVCC!</h2>
+        <p class="text-gray-600 mb-8 max-w-md">To start managing your cards, you'll need to purchase a plan first. Choose a plan that suits your needs.</p>
+        <button
+          @click="navigateToPlans"
+          class="inline-flex items-center px-6 py-3 bg-orange-600 text-white font-medium rounded-lg hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors duration-200"
+        >
+          View Available Plans
+        </button>
       </div>
 
       <!-- Cards Grid -->
       <div v-else class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <div v-for="card in cards" :key="card.id" class="bg-white rounded-lg shadow-md overflow-hidden">
-          <div class="p-6 space-y-6">
+        <div v-for="card in cards" :key="card.id" class="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div class="p-6">
             <!-- Card Design -->
-            <div :class="['h-48 rounded-lg p-6 flex flex-col justify-between', card.design]">
+            <div 
+              :class="[
+                card.type === 'Credit Card' ? 'card-gradient-1' : 'card-gradient-2',
+                'h-48 rounded-2xl p-6 flex flex-col justify-between'
+              ]"
+            >
               <div class="flex justify-between items-start">
                 <div class="text-white">
-                  <p class="font-medium">{{ card.type }}</p>
+                  <h3 class="text-xl font-semibold">{{ card.type }}</h3>
                   <p class="mt-1 text-sm opacity-80">{{ card.bank }}</p>
                 </div>
-                <component :is="getCardIcon()" class="h-8 w-8 text-white" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white opacity-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="5" width="20" height="14" rx="2" />
+                  <line x1="2" y1="10" x2="22" y2="10" />
+                </svg>
               </div>
-              <div class="text-white">
-                <p class="text-lg tracking-wider">•••• •••• •••• {{ card.lastFour }}</p>
-                <div class="mt-4 flex justify-between items-center">
+              
+              <div class="text-white mt-4">
+                <p class="text-lg tracking-[0.3em] font-mono">•••• •••• •••• {{ card.lastFour }}</p>
+                <div class="mt-4 flex justify-between items-end">
                   <div>
                     <p class="text-xs opacity-80">Card Holder</p>
-                    <p class="font-medium">{{ card.cardHolder }}</p>
+                    <p class="font-semibold tracking-wide mt-1">{{ card.cardHolder }}</p>
                   </div>
-                  <div>
+                  <div class="text-right">
                     <p class="text-xs opacity-80">Expires</p>
-                    <p class="font-medium">{{ card.expiry }}</p>
+                    <p class="font-semibold mt-1">{{ card.expiry }}</p>
                   </div>
                 </div>
               </div>
             </div>
 
             <!-- Card Actions -->
-            <div class="flex justify-between items-center">
+            <div class="flex justify-between items-center mt-4">
               <button
                 @click="viewTransactions(card.id)"
-                class="text-sm font-medium text-orange-600 hover:text-orange-500"
+                class="text-sm font-medium text-orange-600 hover:text-orange-700 transition-colors duration-200"
               >
                 View Transactions
               </button>
               <div class="flex space-x-2">
                 <button
+                  v-if="card.type === 'Credit Card'"
                   @click="toggleFreeze(card)"
-                  :class="[
-                    'p-2 rounded-full',
-                    card.frozen ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-600'
-                  ]"
+                  class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
                 >
-                  <component :is="card.frozen ? 'LockClosedIcon' : 'LockOpenIcon'" class="h-5 w-5" />
+                  <component :is="card.frozen ? LockClosedIcon : LockOpenIcon" class="h-5 w-5 text-gray-600" />
                 </button>
                 <button
-                  @click="showCardDetails()"
-                  class="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  v-if="card.type === 'Debit Card'"
+                  class="p-2 rounded-full bg-orange-100"
                 >
-                  <EllipsisHorizontalIcon class="h-5 w-5" />
+                  <LockClosedIcon class="h-5 w-5 text-orange-600" />
+                </button>
+                <button class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200">
+                  <EllipsisHorizontalIcon class="h-5 w-5 text-gray-600" />
                 </button>
               </div>
             </div>
@@ -247,165 +262,111 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import {
-  PlusIcon,
-  LockClosedIcon,
-  LockOpenIcon,
-  EllipsisHorizontalIcon,
-  ArrowUpIcon,
-  ArrowDownIcon,
-  CreditCardIcon
-} from '@heroicons/vue/24/outline'
-import { cardService } from '@/services/cardService'
+import { PlusIcon, LockClosedIcon, LockOpenIcon, EllipsisHorizontalIcon } from '@heroicons/vue/24/outline'
 
-export default {
-  name: 'UserCards',
-  components: {
-    Dialog,
-    DialogPanel,
-    DialogTitle,
-    TransitionChild,
-    TransitionRoot,
-    PlusIcon,
-    LockClosedIcon,
-    LockOpenIcon,
-    EllipsisHorizontalIcon,
-    ArrowUpIcon,
-    ArrowDownIcon,
-    CreditCardIcon
-  },
-  setup() {
-    const cards = ref([])
-    const isNewCardModalOpen = ref(false)
-    const expandedCard = ref(null)
-    const newCard = ref({
-      number: '',
-      expiry: '',
-      cvv: '',
-      cardHolder: ''
-    })
-    const loading = ref(false)
-    const error = ref(null)
+const router = useRouter()
+const loading = ref(true)
+const hasActivePlan = ref(false)
+const hasCheckedPlan = ref(false)
+const error = ref(null)
+const cards = ref([])
+const expandedCard = ref(null)
+const isNewCardModalOpen = ref(false)
+const newCard = ref({
+  number: '',
+  expiry: '',
+  cvv: '',
+  cardHolder: ''
+})
 
-    // Fetch cards on component mount
-    onMounted(async () => {
-      try {
-        loading.value = true
-        const fetchedCards = await cardService.getAllCards()
-        cards.value = fetchedCards
-      } catch (err) {
-        error.value = 'Failed to load cards. Please try again later.'
-        console.error('Error loading cards:', err)
-      } finally {
-        loading.value = false
-      }
-    })
+onMounted(async () => {
+  try {
+    // Simulating API call to check plan status
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    hasActivePlan.value = false // Set to false since no plan is purchased yet
+    hasCheckedPlan.value = true
+    loading.value = false
+  } catch (err) {
+    error.value = 'Failed to load card information'
+    loading.value = false
+  }
+})
 
-    const openNewCardModal = () => {
-      isNewCardModalOpen.value = true
-    }
+const navigateToPlans = () => {
+  router.push('/plans')
+}
 
-    const closeNewCardModal = () => {
-      isNewCardModalOpen.value = false
-      newCard.value = {
-        number: '',
-        expiry: '',
-        cvv: '',
-        cardHolder: ''
-      }
-    }
+const openNewCardModal = () => {
+  isNewCardModalOpen.value = true
+}
 
-    const addNewCard = async () => {
-      try {
-        loading.value = true
-        const cardData = {
-          number: newCard.value.number.replace(/\s/g, ''),
-          expiry: newCard.value.expiry,
-          cvv: newCard.value.cvv,
-          cardHolder: newCard.value.cardHolder.toUpperCase()
-        }
-        const addedCard = await cardService.addCard(cardData)
-        cards.value.push(addedCard)
-        closeNewCardModal()
-      } catch (err) {
-        error.value = 'Failed to add card. Please try again.'
-        console.error('Error adding card:', err)
-      } finally {
-        loading.value = false
-      }
-    }
+const closeNewCardModal = () => {
+  isNewCardModalOpen.value = false
+  newCard.value = {
+    number: '',
+    expiry: '',
+    cvv: '',
+    cardHolder: ''
+  }
+}
 
-    const toggleFreeze = async (card) => {
-      try {
-        loading.value = true
-        await cardService.updateCardStatus(card.id, !card.frozen)
-        card.frozen = !card.frozen
-      } catch (err) {
-        error.value = 'Failed to update card status. Please try again.'
-        console.error('Error updating card status:', err)
-      } finally {
-        loading.value = false
-      }
-    }
+const addNewCard = async () => {
+  try {
+    loading.value = true
+    // This will be implemented later when we have the cardService
+    console.log('Adding new card:', newCard.value)
+    closeNewCardModal()
+  } catch (err) {
+    error.value = 'Failed to add card. Please try again.'
+    console.error('Error adding card:', err)
+  } finally {
+    loading.value = false
+  }
+}
 
-    const viewTransactions = async (cardId) => {
-      if (expandedCard.value === cardId) {
-        expandedCard.value = null
-        return
-      }
+const toggleFreeze = async (card) => {
+  try {
+    loading.value = true
+    // This will be implemented later when we have the cardService
+    console.log('Toggling freeze for card:', card.id)
+    card.frozen = !card.frozen
+  } catch (err) {
+    error.value = 'Failed to update card status. Please try again.'
+    console.error('Error updating card status:', err)
+  } finally {
+    loading.value = false
+  }
+}
 
-      try {
-        loading.value = true
-        const transactions = await cardService.getCardTransactions(cardId)
-        const cardIndex = cards.value.findIndex(c => c.id === cardId)
-        if (cardIndex !== -1) {
-          cards.value[cardIndex].transactions = transactions
-        }
-        expandedCard.value = cardId
-      } catch (err) {
-        error.value = 'Failed to load transactions. Please try again.'
-        console.error('Error loading transactions:', err)
-      } finally {
-        loading.value = false
-      }
-    }
+const viewTransactions = async (cardId) => {
+  if (expandedCard.value === cardId) {
+    expandedCard.value = null
+    return
+  }
 
-    const showCardDetails = () => {
-      // Add card details view logic here
-    }
-
-    const getCardIcon = () => {
-      // Add logic to return appropriate card network icon
-      return CreditCardIcon
-    }
-
-    return {
-      cards,
-      isNewCardModalOpen,
-      expandedCard,
-      newCard,
-      loading,
-      error,
-      openNewCardModal,
-      closeNewCardModal,
-      addNewCard,
-      toggleFreeze,
-      viewTransactions,
-      showCardDetails,
-      getCardIcon
-    }
+  try {
+    loading.value = true
+    // This will be implemented later when we have the cardService
+    console.log('Viewing transactions for card:', cardId)
+    expandedCard.value = cardId
+  } catch (err) {
+    error.value = 'Failed to load transactions. Please try again.'
+    console.error('Error loading transactions:', err)
+  } finally {
+    loading.value = false
   }
 }
 </script>
 
 <style scoped>
 .card-gradient-1 {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
 }
 .card-gradient-2 {
-  background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
 }
 </style>
