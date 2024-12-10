@@ -357,7 +357,6 @@ nvcc-app/
 ├── src/
 │   ├── components/
 │   │   ├── AppHeader.vue
-│   │   ├── AppFooter.vue
 │   │   └── AppSidebar.vue
 │   ├── views/
 │   │   ├── UserAccounts.vue
@@ -730,1056 +729,6 @@ nvcc-app/
 ---
 *Last Updated: December 9, 2024, 17:06 IST*
 
-### 8. Authentication Implementation (2024-12-09 16:23:38 IST)
-
-#### 1. Dependencies Installation
-```bash
-npm install vue-router@4 vee-validate@4 yup
-```
-- Added Vue Router for navigation
-- VeeValidate for form handling
-- Yup for schema validation
-
-#### 2. Router Setup (`src/router/index.js`)
-- Created router configuration with routes:
-  - `/` → AppHome
-  - `/login` → AppLogin
-  - `/register` → AppRegister
-- Implemented history mode for clean URLs
-- Added route names for programmatic navigation
-
-#### 3. Authentication Views Development
-
-##### a. Login Component (`src/views/Login.vue`) - 16:25:45 IST
-1. **Features**
-   - Email and password form
-   - Remember me checkbox
-   - Forgot password link
-   - Form validation with Yup
-   - Loading states
-   - Error handling
-   - Responsive design
-
-2. **Validation Rules**
-   ```javascript
-   const schema = yup.object({
-     email: yup.string().required('Email is required').email('Must be a valid email'),
-     password: yup.string().required('Password is required').min(6, 'Password must be at least 6 characters')
-   })
-   ```
-
-3. **Design Elements**
-   - Dark theme with gradient background
-   - Orange accent colors
-   - Animated loading states
-   - Input focus states with ring effect
-   - Error message display
-
-##### b. Register Component (`src/views/Register.vue`) - 16:26:57 IST
-1. **Features**
-   - Full name, email, password fields
-   - Password confirmation
-   - Terms acceptance checkbox
-   - Strong password requirements
-   - Real-time validation
-
-2. **Enhanced Validation**
-   ```javascript
-   const schema = yup.object({
-     name: yup.string().required('Full name is required').min(2, 'Name must be at least 2 characters'),
-     email: yup.string().required('Email is required').email('Must be a valid email'),
-     password: yup.string()
-       .required('Password is required')
-       .min(8, 'Password must be at least 8 characters')
-       .matches(/[0-9]/, 'Password must contain at least one number')
-       .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
-       .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
-   })
-   ```
-
-3. **UX Improvements**
-   - Password strength indicators
-   - Clear error messages
-   - Terms and conditions links
-   - Smooth transitions
-
-##### c. Home Component (`src/views/Home.vue`)
-- Welcome message
-- Call-to-action buttons
-- Consistent branding
-- Responsive layout
-
-#### 4. Component Naming Convention Issues (16:27:45 IST)
-1. **Initial Problem**
-   - ESLint errors for single-word component names
-   - Affected Login and Register components
-   - Vue/multi-word-component-names rule violation
-
-2. **Solution Steps**
-   - Renamed components to follow Vue conventions:
-     - `Login` → `AppLogin`
-     - `Register` → `AppRegister`
-   - Updated router configuration
-   - Maintained consistent naming pattern
-
-#### 5. Styling Challenges (16:29:00 IST)
-1. **PostCSS Integration**
-   - Initially used `lang="postcss"` in style blocks
-   - Encountered syntax highlighting warnings
-   - Attempted CSS language block
-
-2. **Final Solution**
-   - Removed style blocks completely
-   - Moved all styles to Tailwind utility classes
-   - Maintained consistent design
-   - Better maintainability
-
-### Updated Project Structure
-```
-nvcc-app/
-├── src/
-│   ├── assets/
-│   │   ├── tailwind.css
-│   │   └── images/
-│   ├── components/
-│   │   ├── AppHeader.vue
-│   │   └── AppFooter.vue
-│   ├── views/
-│   │   ├── AppHome.vue
-│   │   ├── AppLogin.vue
-│   │   └── AppRegister.vue
-│   ├── router/
-│   │   └── index.js
-│   ├── App.vue
-│   └── main.js
-├── public/
-├── tailwind.config.js
-├── postcss.config.js
-└── package.json
-```
-
-### Git Commit History
-
-#### December 9, 2024
-
-1. **Initial Repository Setup** (16:21:29 IST)
-   ```
-   commit: 05ce1eaa0a9bedf8006a92b3c1bb01ea8bf23125
-   Author: DEV-KALIA <armanmishra1115@gmail.com>
-   Message: init
-   ```
-   - Initial repository setup
-   - Basic project structure
-
-2. **Vue.js and TailwindCSS Setup** (16:22:31 IST)
-   ```
-   commit: aa3dcc46c36c121860f467170a3de26090580a61
-   Message: Initial commit: Vue.js app with TailwindCSS and header component
-   ```
-   - Created Vue.js project structure
-   - Integrated TailwindCSS
-   - Added header component
-
-3. **Project Documentation** (16:24:47 IST)
-   ```
-   commit: 35d0af5b259ec4773e6496230a4ca1c14c0bf9e9
-   Message: Add PROJECT_JOURNAL.md with comprehensive project documentation
-   ```
-   - Added detailed project documentation
-   - Included setup instructions
-   - Documented component structure
-
-4. **Footer Component** (16:26:51 IST)
-   ```
-   commit: 3f61644769b7245c80f7c5eff5cb1d202dca640d
-   Message: Add footer component with dark theme and matching design
-   ```
-   - Created footer component
-   - Implemented dark theme
-   - Added newsletter section
-   - Included social media links
-
-5. **Footer Refinement** (16:32:05 IST)
-   ```
-   commit: 7293772140d59a333618846c4fa22c21f058283b
-   Message: refactor: Remove 'Get the App' section from footer and update PROJECT_JOURNAL
-   ```
-   - Removed 'Get the App' section
-   - Updated documentation
-   - Streamlined footer design
-
-6. **Basic Dashboard Implementation** (Latest)
-   ```
-   commit: Current changes pending commit
-   Message: implimentad basic user dashboard
-   ```
-   - Added dashboard layout
-   - Implemented stats cards
-   - Created recent activity feed
-
-### Commit Guidelines
-- Use semantic commit messages (feat:, fix:, docs:, style:, refactor:, etc.)
-- Include detailed descriptions in commit body when necessary
-- Reference issue numbers if applicable
-- Keep commits focused and atomic
-
-### Branch Strategy
-- Main branch: Production-ready code
-- Development branch: Integration and testing
-- Feature branches: New features and improvements
-
-### Recent Git Commits
-1. "feat: Add authentication views and router setup"
-   - Added Login and Register components
-   - Implemented Vue Router
-   - Fixed component naming
-   - Updated styles to use Tailwind utilities
-
-### Next Steps
-1. Implement actual authentication logic
-2. Add form submission handling
-3. Create protected routes
-4. Add user state management
-5. Implement password reset functionality
-6. Add email verification
-
-### Git Commits (2024-12-09 16:56:06 IST)
-
-1. **Navigation and User Display Update**
-   ```
-   commit: [Hash to be added]
-   Message: "refactor: Update navigation structure and user display"
-   
-   Changes:
-   - Add DashboardNav component for sub-navigation
-   - Update Header component to show user name
-   - Remove duplicate header from dashboard
-   - Improve user menu UI and interactions
-   - Update PROJECT_JOURNAL with latest changes
-   
-   Files Changed:
-   - src/components/Header.vue
-   - src/components/DashboardNav.vue (new)
-   - src/views/AppDashboard.vue
-   - PROJECT_JOURNAL.md
-   ```
-
-   Key Implementation Details:
-   - Created dedicated DashboardNav component for better separation of concerns
-   - Updated Header to properly display logged-in user's name from localStorage
-   - Added rotating dropdown arrow and improved user menu styling
-   - Implemented proper user state management with localStorage
-   - Fixed ESLint errors by removing unused imports and variables
-   - Added comprehensive documentation in PROJECT_JOURNAL.md
-
----
-*Last Updated: December 9, 2024, 17:06 IST*
-
-### 11. Router Configuration and Development Server Updates (2024-12-09 21:06:40 IST)
-
-#### New Components Created
-1. **Reports View (`src/views/Reports.vue`)**
-   - Created placeholder for reports dashboard
-   - Basic layout with title and content area
-   - Protected route requiring authentication
-
-2. **Settings View (`src/views/Settings.vue`)**
-   - Created placeholder for settings page
-   - Consistent styling with other views
-   - Protected route requiring authentication
-
-#### Router Updates (`src/router/index.js`)
-1. **New Routes Added**
-   ```javascript
-   {
-     path: '/reports',
-     name: 'Reports',
-     component: Reports,
-     meta: { requiresAuth: true }
-   },
-   {
-     path: '/settings',
-     name: 'Settings',
-     component: Settings,
-     meta: { requiresAuth: true }
-   }
-   ```
-   - Both routes protected with authentication guard
-   - Consistent meta configuration with other routes
-
-#### Development Server Configuration
-1. **Vue Configuration Update (`vue.config.js`)**
-   - Fixed WebSocket connection issues
-   - Updated development server settings:
-     ```javascript
-     devServer: {
-       host: 'localhost',
-       port: 8080,
-       client: {
-         webSocketURL: 'ws://localhost:8080/ws'
-       }
-     }
-     ```
-   - Switched from IP-based to localhost configuration
-   - Explicit port and WebSocket URL settings
-
-#### Git Commits
-```bash
-commit: [2024-12-09]
-Message: "feat: add reports and settings routes, fix dev server config
-
-- Create Reports.vue and Settings.vue components
-- Add routes for /reports and /settings
-- Update vue.config.js for proper WebSocket connection
-- Fix development server configuration"
-```
-
-#### Next Steps
-1. Implement actual reports functionality
-2. Add content and features to settings page
-3. Consider adding breadcrumb navigation
-4. Add loading states for route transitions
-
-#### Development Notes
-- Current Focus: Router configuration and development server updates
-- Pending: Actual reports and settings implementation
-- Future: Enhanced security measures and user experience improvements
-
-### 10. Wallet Dashboard Implementation (2024-12-09 21:00:51 IST)
-
-#### Components Created/Modified
-1. **WalletDashboard Component (`src/views/WalletDashboard.vue`)**
-   - Displays multiple wallet types (USD, Euro, GBP, Crypto)
-   - Shows wallet balances and currencies
-   - Includes "Top Up" functionality
-   - Recent transactions list for each wallet
-
-2. **WalletTopUpModal Component (`src/components/WalletTopUpModal.vue`)**
-   - Modal for wallet top-up functionality
-   - Amount input with currency symbol
-   - Payment method selection (Credit Card, Bank Transfer, Crypto)
-   - Responsive design with TailwindCSS
-
-3. **Router Update (`src/router/index.js`)**
-   - Replaced AppDashboard with new WalletDashboard component
-   - Updated route configuration for better navigation
-
-#### Design Features
-1. **Wallet Cards**
-   - Distinct styling for different wallet types
-   - Currency symbols and balance display
-   - Interactive "Top Up" buttons
-   - Hover effects and transitions
-
-2. **Recent Transactions**
-   - Chronological list of transactions
-   - Transaction type indicators
-   - Amount and date display
-   - Scrollable transaction history
-
-3. **Top-Up Modal**
-   - Clean and intuitive interface
-   - Dynamic currency symbol based on wallet type
-   - Form validation for amount input
-   - Multiple payment method options
-
-#### Technical Updates
-1. **Dependencies**
-   - Updated Heroicons to v2 syntax (@heroicons/vue/24/outline)
-   - Fixed component registration and usage
-
-2. **Git Commits**
-   ```
-   commit: [2024-12-09]
-   Message: "feat: Implement wallet dashboard with top-up functionality"
-   - Added WalletDashboard.vue
-   - Created WalletTopUpModal.vue
-   - Updated router configuration
-   - Fixed Heroicons imports
-   ```
-
-#### Next Steps
-1. Implement actual wallet operations backend integration
-2. Add transaction history pagination
-3. Enhance error handling in top-up process
-4. Add wallet-specific transaction filters
-
-### Updated Project Structure
-```
-nvcc-app/
-├── src/
-│   ├── views/
-│   │   ├── WalletDashboard.vue
-│   │   └── ...
-│   ├── components/
-│   │   ├── WalletTopUpModal.vue
-│   │   └── ...
-│   └── router/
-│       └── index.js
-```
-
-### Git Commit History
-
-#### December 9, 2024
-
-1. **Initial Repository Setup** (16:21:29 IST)
-   ```
-   commit: 05ce1eaa0a9bedf8006a92b3c1bb01ea8bf23125
-   Author: DEV-KALIA <armanmishra1115@gmail.com>
-   Message: init
-   ```
-   - Initial repository setup
-   - Basic project structure
-
-2. **Vue.js and TailwindCSS Setup** (16:22:31 IST)
-   ```
-   commit: aa3dcc46c36c121860f467170a3de26090580a61
-   Message: Initial commit: Vue.js app with TailwindCSS and header component
-   ```
-   - Created Vue.js project structure
-   - Integrated TailwindCSS
-   - Added header component
-
-3. **Project Documentation** (16:24:47 IST)
-   ```
-   commit: 35d0af5b259ec4773e6496230a4ca1c14c0bf9e9
-   Message: Add PROJECT_JOURNAL.md with comprehensive project documentation
-   ```
-   - Added detailed project documentation
-   - Included setup instructions
-   - Documented component structure
-
-4. **Footer Component** (16:26:51 IST)
-   ```
-   commit: 3f61644769b7245c80f7c5eff5cb1d202dca640d
-   Message: Add footer component with dark theme and matching design
-   ```
-   - Created footer component
-   - Implemented dark theme
-   - Added newsletter section
-   - Included social media links
-
-5. **Footer Refinement** (16:32:05 IST)
-   ```
-   commit: 7293772140d59a333618846c4fa22c21f058283b
-   Message: refactor: Remove 'Get the App' section from footer and update PROJECT_JOURNAL
-   ```
-   - Removed 'Get the App' section
-   - Updated documentation
-   - Streamlined footer design
-
-6. **Basic Dashboard Implementation** (Latest)
-   ```
-   commit: Current changes pending commit
-   Message: implimentad basic user dashboard
-   ```
-   - Added dashboard layout
-   - Implemented stats cards
-   - Created recent activity feed
-
-### Commit Guidelines
-- Use semantic commit messages (feat:, fix:, docs:, style:, refactor:, etc.)
-- Include detailed descriptions in commit body when necessary
-- Reference issue numbers if applicable
-- Keep commits focused and atomic
-
-### Branch Strategy
-- Main branch: Production-ready code
-- Development branch: Integration and testing
-- Feature branches: New features and improvements
-
-### Recent Git Commits
-1. "feat: Add authentication views and router setup"
-   - Added Login and Register components
-   - Implemented Vue Router
-   - Fixed component naming
-   - Updated styles to use Tailwind utilities
-
-### Next Steps
-1. Implement actual authentication logic
-2. Add form submission handling
-3. Create protected routes
-4. Add user state management
-5. Implement password reset functionality
-6. Add email verification
-
-### Git Commits (2024-12-09 16:56:06 IST)
-
-1. **Navigation and User Display Update**
-   ```
-   commit: [Hash to be added]
-   Message: "refactor: Update navigation structure and user display"
-   
-   Changes:
-   - Add DashboardNav component for sub-navigation
-   - Update Header component to show user name
-   - Remove duplicate header from dashboard
-   - Improve user menu UI and interactions
-   - Update PROJECT_JOURNAL with latest changes
-   
-   Files Changed:
-   - src/components/Header.vue
-   - src/components/DashboardNav.vue (new)
-   - src/views/AppDashboard.vue
-   - PROJECT_JOURNAL.md
-   ```
-
-   Key Implementation Details:
-   - Created dedicated DashboardNav component for better separation of concerns
-   - Updated Header to properly display logged-in user's name from localStorage
-   - Added rotating dropdown arrow and improved user menu styling
-   - Implemented proper user state management with localStorage
-   - Fixed ESLint errors by removing unused imports and variables
-   - Added comprehensive documentation in PROJECT_JOURNAL.md
-
----
-*Last Updated: December 9, 2024, 17:06 IST*
-
-### 8. Authentication Implementation (2024-12-09 16:23:38 IST)
-
-#### 1. Dependencies Installation
-```bash
-npm install vue-router@4 vee-validate@4 yup
-```
-- Added Vue Router for navigation
-- VeeValidate for form handling
-- Yup for schema validation
-
-#### 2. Router Setup (`src/router/index.js`)
-- Created router configuration with routes:
-  - `/` → AppHome
-  - `/login` → AppLogin
-  - `/register` → AppRegister
-- Implemented history mode for clean URLs
-- Added route names for programmatic navigation
-
-#### 3. Authentication Views Development
-
-##### a. Login Component (`src/views/Login.vue`) - 16:25:45 IST
-1. **Features**
-   - Email and password form
-   - Remember me checkbox
-   - Forgot password link
-   - Form validation with Yup
-   - Loading states
-   - Error handling
-   - Responsive design
-
-2. **Validation Rules**
-   ```javascript
-   const schema = yup.object({
-     email: yup.string().required('Email is required').email('Must be a valid email'),
-     password: yup.string().required('Password is required').min(6, 'Password must be at least 6 characters')
-   })
-   ```
-
-3. **Design Elements**
-   - Dark theme with gradient background
-   - Orange accent colors
-   - Animated loading states
-   - Input focus states with ring effect
-   - Error message display
-
-##### b. Register Component (`src/views/Register.vue`) - 16:26:57 IST
-1. **Features**
-   - Full name, email, password fields
-   - Password confirmation
-   - Terms acceptance checkbox
-   - Strong password requirements
-   - Real-time validation
-
-2. **Enhanced Validation**
-   ```javascript
-   const schema = yup.object({
-     name: yup.string().required('Full name is required').min(2, 'Name must be at least 2 characters'),
-     email: yup.string().required('Email is required').email('Must be a valid email'),
-     password: yup.string()
-       .required('Password is required')
-       .min(8, 'Password must be at least 8 characters')
-       .matches(/[0-9]/, 'Password must contain at least one number')
-       .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
-       .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
-   })
-   ```
-
-3. **UX Improvements**
-   - Password strength indicators
-   - Clear error messages
-   - Terms and conditions links
-   - Smooth transitions
-
-##### c. Home Component (`src/views/Home.vue`)
-- Welcome message
-- Call-to-action buttons
-- Consistent branding
-- Responsive layout
-
-#### 4. Component Naming Convention Issues (16:27:45 IST)
-1. **Initial Problem**
-   - ESLint errors for single-word component names
-   - Affected Login and Register components
-   - Vue/multi-word-component-names rule violation
-
-2. **Solution Steps**
-   - Renamed components to follow Vue conventions:
-     - `Login` → `AppLogin`
-     - `Register` → `AppRegister`
-   - Updated router configuration
-   - Maintained consistent naming pattern
-
-#### 5. Styling Challenges (16:29:00 IST)
-1. **PostCSS Integration**
-   - Initially used `lang="postcss"` in style blocks
-   - Encountered syntax highlighting warnings
-   - Attempted CSS language block
-
-2. **Final Solution**
-   - Removed style blocks completely
-   - Moved all styles to Tailwind utility classes
-   - Maintained consistent design
-   - Better maintainability
-
-### Updated Project Structure
-```
-nvcc-app/
-├── src/
-│   ├── assets/
-│   │   ├── tailwind.css
-│   │   └── images/
-│   ├── components/
-│   │   ├── AppHeader.vue
-│   │   └── AppFooter.vue
-│   ├── views/
-│   │   ├── AppHome.vue
-│   │   ├── AppLogin.vue
-│   │   └── AppRegister.vue
-│   ├── router/
-│   │   └── index.js
-│   ├── App.vue
-│   └── main.js
-├── public/
-├── tailwind.config.js
-├── postcss.config.js
-└── package.json
-```
-
-### Git Commit History
-
-#### December 9, 2024
-
-1. **Initial Repository Setup** (16:21:29 IST)
-   ```
-   commit: 05ce1eaa0a9bedf8006a92b3c1bb01ea8bf23125
-   Author: DEV-KALIA <armanmishra1115@gmail.com>
-   Message: init
-   ```
-   - Initial repository setup
-   - Basic project structure
-
-2. **Vue.js and TailwindCSS Setup** (16:22:31 IST)
-   ```
-   commit: aa3dcc46c36c121860f467170a3de26090580a61
-   Message: Initial commit: Vue.js app with TailwindCSS and header component
-   ```
-   - Created Vue.js project structure
-   - Integrated TailwindCSS
-   - Added header component
-
-3. **Project Documentation** (16:24:47 IST)
-   ```
-   commit: 35d0af5b259ec4773e6496230a4ca1c14c0bf9e9
-   Message: Add PROJECT_JOURNAL.md with comprehensive project documentation
-   ```
-   - Added detailed project documentation
-   - Included setup instructions
-   - Documented component structure
-
-4. **Footer Component** (16:26:51 IST)
-   ```
-   commit: 3f61644769b7245c80f7c5eff5cb1d202dca640d
-   Message: Add footer component with dark theme and matching design
-   ```
-   - Created footer component
-   - Implemented dark theme
-   - Added newsletter section
-   - Included social media links
-
-5. **Footer Refinement** (16:32:05 IST)
-   ```
-   commit: 7293772140d59a333618846c4fa22c21f058283b
-   Message: refactor: Remove 'Get the App' section from footer and update PROJECT_JOURNAL
-   ```
-   - Removed 'Get the App' section
-   - Updated documentation
-   - Streamlined footer design
-
-6. **Basic Dashboard Implementation** (Latest)
-   ```
-   commit: Current changes pending commit
-   Message: implimentad basic user dashboard
-   ```
-   - Added dashboard layout
-   - Implemented stats cards
-   - Created recent activity feed
-
-### Commit Guidelines
-- Use semantic commit messages (feat:, fix:, docs:, style:, refactor:, etc.)
-- Include detailed descriptions in commit body when necessary
-- Reference issue numbers if applicable
-- Keep commits focused and atomic
-
-### Branch Strategy
-- Main branch: Production-ready code
-- Development branch: Integration and testing
-- Feature branches: New features and improvements
-
-### Recent Git Commits
-1. "feat: Add authentication views and router setup"
-   - Added Login and Register components
-   - Implemented Vue Router
-   - Fixed component naming
-   - Updated styles to use Tailwind utilities
-
-### Next Steps
-1. Implement actual authentication logic
-2. Add form submission handling
-3. Create protected routes
-4. Add user state management
-5. Implement password reset functionality
-6. Add email verification
-
-### Git Commits (2024-12-09 16:56:06 IST)
-
-1. **Navigation and User Display Update**
-   ```
-   commit: [Hash to be added]
-   Message: "refactor: Update navigation structure and user display"
-   
-   Changes:
-   - Add DashboardNav component for sub-navigation
-   - Update Header component to show user name
-   - Remove duplicate header from dashboard
-   - Improve user menu UI and interactions
-   - Update PROJECT_JOURNAL with latest changes
-   
-   Files Changed:
-   - src/components/Header.vue
-   - src/components/DashboardNav.vue (new)
-   - src/views/AppDashboard.vue
-   - PROJECT_JOURNAL.md
-   ```
-
-   Key Implementation Details:
-   - Created dedicated DashboardNav component for better separation of concerns
-   - Updated Header to properly display logged-in user's name from localStorage
-   - Added rotating dropdown arrow and improved user menu styling
-   - Implemented proper user state management with localStorage
-   - Fixed ESLint errors by removing unused imports and variables
-   - Added comprehensive documentation in PROJECT_JOURNAL.md
-
----
-*Last Updated: December 9, 2024, 17:06 IST*
-
-### 9. Navigation Structure Optimization (2024-12-09 23:16 IST)
-
-1. **Header Navigation Cleanup**
-   ```
-   commit: 872dddd
-   Message: "refactor: streamline navigation structure"
-   ```
-   - Removed redundant navigation links from header:
-     - Dashboard (now in sidebar)
-     - Reports (now in sidebar)
-     - Settings (now in user dropdown)
-   - Improved code organization:
-     - Removed unused components (`Reports.vue`, `Settings.vue`)
-     - Updated router configuration
-     - Fixed component indentation
-
-2. **Component Consolidation**
-   - Removed standalone views:
-     - `src/views/Reports.vue` (functionality moved to sidebar)
-     - `src/views/Settings.vue` (functionality moved to user dropdown)
-   - Updated router configuration:
-     - Removed unused routes
-     - Cleaned up imports
-     - Maintained authentication guards
-
-3. **Navigation Structure**
-   The application now has a cleaner navigation structure:
-   - **Header**: 
-     - Branding (NVCC logo)
-     - Language selector
-     - User profile
-   - **Sidebar**:
-     - Dashboard navigation
-     - Reports section
-     - Main app features
-   - **User Dropdown**:
-     - Account settings
-     - User preferences
-     - Logout option
-
-### Recent Git Commits
-```
-872dddd refactor: streamline navigation structure
-40bb214 docs: update PROJECT_JOURNAL with latest changes
-9e56f3c fix: resolve ESLint errors
-ef8e147 fix: Remove duplicate sidebars and improve layout
-b7357ff feat: Implement card management with mock data and error handling
-```
-
-### Next Steps
-1. Enhance sidebar navigation with active state indicators
-2. Add breadcrumbs for improved navigation context
-3. Implement mobile-responsive navigation drawer
-4. Add loading states for route transitions
-
-### 8. Authentication Implementation (2024-12-09 16:23:38 IST)
-
-#### 1. Dependencies Installation
-```bash
-npm install vue-router@4 vee-validate@4 yup
-```
-- Added Vue Router for navigation
-- VeeValidate for form handling
-- Yup for schema validation
-
-#### 2. Router Setup (`src/router/index.js`)
-- Created router configuration with routes:
-  - `/` → AppHome
-  - `/login` → AppLogin
-  - `/register` → AppRegister
-- Implemented history mode for clean URLs
-- Added route names for programmatic navigation
-
-#### 3. Authentication Views Development
-
-##### a. Login Component (`src/views/Login.vue`) - 16:25:45 IST
-1. **Features**
-   - Email and password form
-   - Remember me checkbox
-   - Forgot password link
-   - Form validation with Yup
-   - Loading states
-   - Error handling
-   - Responsive design
-
-2. **Validation Rules**
-   ```javascript
-   const schema = yup.object({
-     email: yup.string().required('Email is required').email('Must be a valid email'),
-     password: yup.string().required('Password is required').min(6, 'Password must be at least 6 characters')
-   })
-   ```
-
-3. **Design Elements**
-   - Dark theme with gradient background
-   - Orange accent colors
-   - Animated loading states
-   - Input focus states with ring effect
-   - Error message display
-
-##### b. Register Component (`src/views/Register.vue`) - 16:26:57 IST
-1. **Features**
-   - Full name, email, password fields
-   - Password confirmation
-   - Terms acceptance checkbox
-   - Strong password requirements
-   - Real-time validation
-
-2. **Enhanced Validation**
-   ```javascript
-   const schema = yup.object({
-     name: yup.string().required('Full name is required').min(2, 'Name must be at least 2 characters'),
-     email: yup.string().required('Email is required').email('Must be a valid email'),
-     password: yup.string()
-       .required('Password is required')
-       .min(8, 'Password must be at least 8 characters')
-       .matches(/[0-9]/, 'Password must contain at least one number')
-       .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
-       .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
-   })
-   ```
-
-3. **UX Improvements**
-   - Password strength indicators
-   - Clear error messages
-   - Terms and conditions links
-   - Smooth transitions
-
-##### c. Home Component (`src/views/Home.vue`)
-- Welcome message
-- Call-to-action buttons
-- Consistent branding
-- Responsive layout
-
-#### 4. Component Naming Convention Issues (16:27:45 IST)
-1. **Initial Problem**
-   - ESLint errors for single-word component names
-   - Affected Login and Register components
-   - Vue/multi-word-component-names rule violation
-
-2. **Solution Steps**
-   - Renamed components to follow Vue conventions:
-     - `Login` → `AppLogin`
-     - `Register` → `AppRegister`
-   - Updated router configuration
-   - Maintained consistent naming pattern
-
-#### 5. Styling Challenges (16:29:00 IST)
-1. **PostCSS Integration**
-   - Initially used `lang="postcss"` in style blocks
-   - Encountered syntax highlighting warnings
-   - Attempted CSS language block
-
-2. **Final Solution**
-   - Removed style blocks completely
-   - Moved all styles to Tailwind utility classes
-   - Maintained consistent design
-   - Better maintainability
-
-### Updated Project Structure
-```
-nvcc-app/
-├── src/
-│   ├── assets/
-│   │   ├── tailwind.css
-│   │   └── images/
-│   ├── components/
-│   │   ├── AppHeader.vue
-│   │   └── AppFooter.vue
-│   ├── views/
-│   │   ├── AppHome.vue
-│   │   ├── AppLogin.vue
-│   │   └── AppRegister.vue
-│   ├── router/
-│   │   └── index.js
-│   ├── App.vue
-│   └── main.js
-├── public/
-├── tailwind.config.js
-├── postcss.config.js
-└── package.json
-```
-
-### Git Commit History
-
-#### December 9, 2024
-
-1. **Initial Repository Setup** (16:21:29 IST)
-   ```
-   commit: 05ce1eaa0a9bedf8006a92b3c1bb01ea8bf23125
-   Author: DEV-KALIA <armanmishra1115@gmail.com>
-   Message: init
-   ```
-   - Initial repository setup
-   - Basic project structure
-
-2. **Vue.js and TailwindCSS Setup** (16:22:31 IST)
-   ```
-   commit: aa3dcc46c36c121860f467170a3de26090580a61
-   Message: Initial commit: Vue.js app with TailwindCSS and header component
-   ```
-   - Created Vue.js project structure
-   - Integrated TailwindCSS
-   - Added header component
-
-3. **Project Documentation** (16:24:47 IST)
-   ```
-   commit: 35d0af5b259ec4773e6496230a4ca1c14c0bf9e9
-   Message: Add PROJECT_JOURNAL.md with comprehensive project documentation
-   ```
-   - Added detailed project documentation
-   - Included setup instructions
-   - Documented component structure
-
-4. **Footer Component** (16:26:51 IST)
-   ```
-   commit: 3f61644769b7245c80f7c5eff5cb1d202dca640d
-   Message: Add footer component with dark theme and matching design
-   ```
-   - Created footer component
-   - Implemented dark theme
-   - Added newsletter section
-   - Included social media links
-
-5. **Footer Refinement** (16:32:05 IST)
-   ```
-   commit: 7293772140d59a333618846c4fa22c21f058283b
-   Message: refactor: Remove 'Get the App' section from footer and update PROJECT_JOURNAL
-   ```
-   - Removed 'Get the App' section
-   - Updated documentation
-   - Streamlined footer design
-
-6. **Basic Dashboard Implementation** (Latest)
-   ```
-   commit: Current changes pending commit
-   Message: implimentad basic user dashboard
-   ```
-   - Added dashboard layout
-   - Implemented stats cards
-   - Created recent activity feed
-
-### Commit Guidelines
-- Use semantic commit messages (feat:, fix:, docs:, style:, refactor:, etc.)
-- Include detailed descriptions in commit body when necessary
-- Reference issue numbers if applicable
-- Keep commits focused and atomic
-
-### Branch Strategy
-- Main branch: Production-ready code
-- Development branch: Integration and testing
-- Feature branches: New features and improvements
-
-### Recent Git Commits
-1. "feat: Add authentication views and router setup"
-   - Added Login and Register components
-   - Implemented Vue Router
-   - Fixed component naming
-   - Updated styles to use Tailwind utilities
-
-### Next Steps
-1. Implement actual authentication logic
-2. Add form submission handling
-3. Create protected routes
-4. Add user state management
-5. Implement password reset functionality
-6. Add email verification
-
-### Git Commits (2024-12-09 16:56:06 IST)
-
-1. **Navigation and User Display Update**
-   ```
-   commit: [Hash to be added]
-   Message: "refactor: Update navigation structure and user display"
-   
-   Changes:
-   - Add DashboardNav component for sub-navigation
-   - Update Header component to show user name
-   - Remove duplicate header from dashboard
-   - Improve user menu UI and interactions
-   - Update PROJECT_JOURNAL with latest changes
-   
-   Files Changed:
-   - src/components/Header.vue
-   - src/components/DashboardNav.vue (new)
-   - src/views/AppDashboard.vue
-   - PROJECT_JOURNAL.md
-   ```
-
-   Key Implementation Details:
-   - Created dedicated DashboardNav component for better separation of concerns
-   - Updated Header to properly display logged-in user's name from localStorage
-   - Added rotating dropdown arrow and improved user menu styling
-   - Implemented proper user state management with localStorage
-   - Fixed ESLint errors by removing unused imports and variables
-   - Added comprehensive documentation in PROJECT_JOURNAL.md
-
----
-*Last Updated: December 9, 2024, 17:06 IST*
-
 ### 11. Router Configuration and Development Server Updates (2024-12-09 21:06:40 IST)
 
 #### New Components Created
@@ -4361,6 +3310,1016 @@ nvcc-app/
 ---
 *Last Updated: December 9, 2024, 17:06 IST*
 
+### 11. Router Configuration and Development Server Updates (2024-12-09 21:06:40 IST)
+
+#### New Components Created
+1. **Reports View (`src/views/Reports.vue`)**
+   - Created placeholder for reports dashboard
+   - Basic layout with title and content area
+   - Protected route requiring authentication
+
+2. **Settings View (`src/views/Settings.vue`)**
+   - Created placeholder for settings page
+   - Consistent styling with other views
+   - Protected route requiring authentication
+
+#### Router Updates (`src/router/index.js`)
+1. **New Routes Added**
+   ```javascript
+   {
+     path: '/reports',
+     name: 'Reports',
+     component: Reports,
+     meta: { requiresAuth: true }
+   },
+   {
+     path: '/settings',
+     name: 'Settings',
+     component: Settings,
+     meta: { requiresAuth: true }
+   }
+   ```
+   - Both routes protected with authentication guard
+   - Consistent meta configuration with other routes
+
+#### Development Server Configuration
+1. **Vue Configuration Update (`vue.config.js`)**
+   - Fixed WebSocket connection issues
+   - Updated development server settings:
+     ```javascript
+     devServer: {
+       host: 'localhost',
+       port: 8080,
+       client: {
+         webSocketURL: 'ws://localhost:8080/ws'
+       }
+     }
+     ```
+   - Switched from IP-based to localhost configuration
+   - Explicit port and WebSocket URL settings
+
+#### Git Commits
+```bash
+commit: [2024-12-09]
+Message: "feat: add reports and settings routes, fix dev server config
+
+- Create Reports.vue and Settings.vue components
+- Add routes for /reports and /settings
+- Update vue.config.js for proper WebSocket connection
+- Fix development server configuration"
+```
+
+#### Next Steps
+1. Implement actual reports functionality
+2. Add content and features to settings page
+3. Consider adding breadcrumb navigation
+4. Add loading states for route transitions
+
+#### Development Notes
+- Current Focus: Router configuration and development server updates
+- Pending: Actual reports and settings implementation
+- Future: Enhanced security measures and user experience improvements
+
+### 10. Wallet Dashboard Implementation (2024-12-09 21:00:51 IST)
+
+#### Components Created/Modified
+1. **WalletDashboard Component (`src/views/WalletDashboard.vue`)**
+   - Displays multiple wallet types (USD, Euro, GBP, Crypto)
+   - Shows wallet balances and currencies
+   - Includes "Top Up" functionality
+   - Recent transactions list for each wallet
+
+2. **WalletTopUpModal Component (`src/components/WalletTopUpModal.vue`)**
+   - Modal for wallet top-up functionality
+   - Amount input with currency symbol
+   - Payment method selection (Credit Card, Bank Transfer, Crypto)
+   - Responsive design with TailwindCSS
+
+3. **Router Update (`src/router/index.js`)**
+   - Replaced AppDashboard with new WalletDashboard component
+   - Updated route configuration for better navigation
+
+#### Design Features
+1. **Wallet Cards**
+   - Distinct styling for different wallet types
+   - Currency symbols and balance display
+   - Interactive "Top Up" buttons
+   - Hover effects and transitions
+
+2. **Recent Transactions**
+   - Chronological list of transactions
+   - Transaction type indicators
+   - Amount and date display
+   - Scrollable transaction history
+
+3. **Top-Up Modal**
+   - Clean and intuitive interface
+   - Dynamic currency symbol based on wallet type
+   - Form validation for amount input
+   - Multiple payment method options
+
+#### Technical Updates
+1. **Dependencies**
+   - Updated Heroicons to v2 syntax (@heroicons/vue/24/outline)
+   - Fixed component registration and usage
+
+2. **Git Commits**
+   ```
+   commit: [2024-12-09]
+   Message: "feat: Implement wallet dashboard with top-up functionality"
+   - Added WalletDashboard.vue
+   - Created WalletTopUpModal.vue
+   - Updated router configuration
+   - Fixed Heroicons imports
+   ```
+
+#### Next Steps
+1. Implement actual wallet operations backend integration
+2. Add transaction history pagination
+3. Enhance error handling in top-up process
+4. Add wallet-specific transaction filters
+
+### Updated Project Structure
+```
+nvcc-app/
+├── src/
+│   ├── views/
+│   │   ├── WalletDashboard.vue
+│   │   └── ...
+│   ├── components/
+│   │   ├── WalletTopUpModal.vue
+│   │   └── ...
+│   └── router/
+│       └── index.js
+```
+
+### Git Commit History
+
+#### December 9, 2024
+
+1. **Initial Repository Setup** (16:21:29 IST)
+   ```
+   commit: 05ce1eaa0a9bedf8006a92b3c1bb01ea8bf23125
+   Author: DEV-KALIA <armanmishra1115@gmail.com>
+   Message: init
+   ```
+   - Initial repository setup
+   - Basic project structure
+
+2. **Vue.js and TailwindCSS Setup** (16:22:31 IST)
+   ```
+   commit: aa3dcc46c36c121860f467170a3de26090580a61
+   Message: Initial commit: Vue.js app with TailwindCSS and header component
+   ```
+   - Created Vue.js project structure
+   - Integrated TailwindCSS
+   - Added header component
+
+3. **Project Documentation** (16:24:47 IST)
+   ```
+   commit: 35d0af5b259ec4773e6496230a4ca1c14c0bf9e9
+   Message: Add PROJECT_JOURNAL.md with comprehensive project documentation
+   ```
+   - Added detailed project documentation
+   - Included setup instructions
+   - Documented component structure
+
+4. **Footer Component** (16:26:51 IST)
+   ```
+   commit: 3f61644769b7245c80f7c5eff5cb1d202dca640d
+   Message: Add footer component with dark theme and matching design
+   ```
+   - Created footer component
+   - Implemented dark theme
+   - Added newsletter section
+   - Included social media links
+
+5. **Footer Refinement** (16:32:05 IST)
+   ```
+   commit: 7293772140d59a333618846c4fa22c21f058283b
+   Message: refactor: Remove 'Get the App' section from footer and update PROJECT_JOURNAL
+   ```
+   - Removed 'Get the App' section
+   - Updated documentation
+   - Streamlined footer design
+
+6. **Basic Dashboard Implementation** (Latest)
+   ```
+   commit: Current changes pending commit
+   Message: implimentad basic user dashboard
+   ```
+   - Added dashboard layout
+   - Implemented stats cards
+   - Created recent activity feed
+
+### Commit Guidelines
+- Use semantic commit messages (feat:, fix:, docs:, style:, refactor:, etc.)
+- Include detailed descriptions in commit body when necessary
+- Reference issue numbers if applicable
+- Keep commits focused and atomic
+
+### Branch Strategy
+- Main branch: Production-ready code
+- Development branch: Integration and testing
+- Feature branches: New features and improvements
+
+### Recent Git Commits
+1. "feat: Add authentication views and router setup"
+   - Added Login and Register components
+   - Implemented Vue Router
+   - Fixed component naming
+   - Updated styles to use Tailwind utilities
+
+### Next Steps
+1. Implement actual authentication logic
+2. Add form submission handling
+3. Create protected routes
+4. Add user state management
+5. Implement password reset functionality
+6. Add email verification
+
+### Git Commits (2024-12-09 16:56:06 IST)
+
+1. **Navigation and User Display Update**
+   ```
+   commit: [Hash to be added]
+   Message: "refactor: Update navigation structure and user display"
+   
+   Changes:
+   - Add DashboardNav component for sub-navigation
+   - Update Header component to show user name
+   - Remove duplicate header from dashboard
+   - Improve user menu UI and interactions
+   - Update PROJECT_JOURNAL with latest changes
+   
+   Files Changed:
+   - src/components/Header.vue
+   - src/components/DashboardNav.vue (new)
+   - src/views/AppDashboard.vue
+   - PROJECT_JOURNAL.md
+   ```
+
+   Key Implementation Details:
+   - Created dedicated DashboardNav component for better separation of concerns
+   - Updated Header to properly display logged-in user's name from localStorage
+   - Added rotating dropdown arrow and improved user menu styling
+   - Implemented proper user state management with localStorage
+   - Fixed ESLint errors by removing unused imports and variables
+   - Added comprehensive documentation in PROJECT_JOURNAL.md
+
+---
+*Last Updated: December 9, 2024, 17:06 IST*
+
+### 8. Authentication Implementation (2024-12-09 16:23:38 IST)
+
+#### 1. Dependencies Installation
+```bash
+npm install vue-router@4 vee-validate@4 yup
+```
+- Added Vue Router for navigation
+- VeeValidate for form handling
+- Yup for schema validation
+
+#### 2. Router Setup (`src/router/index.js`)
+- Created router configuration with routes:
+  - `/` → AppHome
+  - `/login` → AppLogin
+  - `/register` → AppRegister
+- Implemented history mode for clean URLs
+- Added route names for programmatic navigation
+
+#### 3. Authentication Views Development
+
+##### a. Login Component (`src/views/Login.vue`) - 16:25:45 IST
+1. **Features**
+   - Email and password form
+   - Remember me checkbox
+   - Forgot password link
+   - Form validation with Yup
+   - Loading states
+   - Error handling
+   - Responsive design
+
+2. **Validation Rules**
+   ```javascript
+   const schema = yup.object({
+     email: yup.string().required('Email is required').email('Must be a valid email'),
+     password: yup.string().required('Password is required').min(6, 'Password must be at least 6 characters')
+   })
+   ```
+
+3. **Design Elements**
+   - Dark theme with gradient background
+   - Orange accent colors
+   - Animated loading states
+   - Input focus states with ring effect
+   - Error message display
+
+##### b. Register Component (`src/views/Register.vue`) - 16:26:57 IST
+1. **Features**
+   - Full name, email, password fields
+   - Password confirmation
+   - Terms acceptance checkbox
+   - Strong password requirements
+   - Real-time validation
+
+2. **Enhanced Validation**
+   ```javascript
+   const schema = yup.object({
+     name: yup.string().required('Full name is required').min(2, 'Name must be at least 2 characters'),
+     email: yup.string().required('Email is required').email('Must be a valid email'),
+     password: yup.string()
+       .required('Password is required')
+       .min(8, 'Password must be at least 8 characters')
+       .matches(/[0-9]/, 'Password must contain at least one number')
+       .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
+       .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
+   })
+   ```
+
+3. **UX Improvements**
+   - Password strength indicators
+   - Clear error messages
+   - Terms and conditions links
+   - Smooth transitions
+
+##### c. Home Component (`src/views/Home.vue`)
+- Welcome message
+- Call-to-action buttons
+- Consistent branding
+- Responsive layout
+
+#### 4. Component Naming Convention Issues (16:27:45 IST)
+1. **Initial Problem**
+   - ESLint errors for single-word component names
+   - Affected Login and Register components
+   - Vue/multi-word-component-names rule violation
+
+2. **Solution Steps**
+   - Renamed components to follow Vue conventions:
+     - `Login` → `AppLogin`
+     - `Register` → `AppRegister`
+   - Updated router configuration
+   - Maintained consistent naming pattern
+
+#### 5. Styling Challenges (16:29:00 IST)
+1. **PostCSS Integration**
+   - Initially used `lang="postcss"` in style blocks
+   - Encountered syntax highlighting warnings
+   - Attempted CSS language block
+
+2. **Final Solution**
+   - Removed style blocks completely
+   - Moved all styles to Tailwind utility classes
+   - Maintained consistent design
+   - Better maintainability
+
+### Updated Project Structure
+```
+nvcc-app/
+├── src/
+│   ├── assets/
+│   │   ├── tailwind.css
+│   │   └── images/
+│   ├── components/
+│   │   ├── AppHeader.vue
+│   │   └── AppFooter.vue
+│   ├── views/
+│   │   ├── AppHome.vue
+│   │   ├── AppLogin.vue
+│   │   └── AppRegister.vue
+│   ├── router/
+│   │   └── index.js
+│   ├── App.vue
+│   └── main.js
+├── public/
+├── tailwind.config.js
+├── postcss.config.js
+└── package.json
+```
+
+### Git Commit History
+
+#### December 9, 2024
+
+1. **Initial Repository Setup** (16:21:29 IST)
+   ```
+   commit: 05ce1eaa0a9bedf8006a92b3c1bb01ea8bf23125
+   Author: DEV-KALIA <armanmishra1115@gmail.com>
+   Message: init
+   ```
+   - Initial repository setup
+   - Basic project structure
+
+2. **Vue.js and TailwindCSS Setup** (16:22:31 IST)
+   ```
+   commit: aa3dcc46c36c121860f467170a3de26090580a61
+   Message: Initial commit: Vue.js app with TailwindCSS and header component
+   ```
+   - Created Vue.js project structure
+   - Integrated TailwindCSS
+   - Added header component
+
+3. **Project Documentation** (16:24:47 IST)
+   ```
+   commit: 35d0af5b259ec4773e6496230a4ca1c14c0bf9e9
+   Message: Add PROJECT_JOURNAL.md with comprehensive project documentation
+   ```
+   - Added detailed project documentation
+   - Included setup instructions
+   - Documented component structure
+
+4. **Footer Component** (16:26:51 IST)
+   ```
+   commit: 3f61644769b7245c80f7c5eff5cb1d202dca640d
+   Message: Add footer component with dark theme and matching design
+   ```
+   - Created footer component
+   - Implemented dark theme
+   - Added newsletter section
+   - Included social media links
+
+5. **Footer Refinement** (16:32:05 IST)
+   ```
+   commit: 7293772140d59a333618846c4fa22c21f058283b
+   Message: refactor: Remove 'Get the App' section from footer and update PROJECT_JOURNAL
+   ```
+   - Removed 'Get the App' section
+   - Updated documentation
+   - Streamlined footer design
+
+6. **Basic Dashboard Implementation** (Latest)
+   ```
+   commit: Current changes pending commit
+   Message: implimentad basic user dashboard
+   ```
+   - Added dashboard layout
+   - Implemented stats cards
+   - Created recent activity feed
+
+### Commit Guidelines
+- Use semantic commit messages (feat:, fix:, docs:, style:, refactor:, etc.)
+- Include detailed descriptions in commit body when necessary
+- Reference issue numbers if applicable
+- Keep commits focused and atomic
+
+### Branch Strategy
+- Main branch: Production-ready code
+- Development branch: Integration and testing
+- Feature branches: New features and improvements
+
+### Recent Git Commits
+1. "feat: Add authentication views and router setup"
+   - Added Login and Register components
+   - Implemented Vue Router
+   - Fixed component naming
+   - Updated styles to use Tailwind utilities
+
+### Next Steps
+1. Implement actual authentication logic
+2. Add form submission handling
+3. Create protected routes
+4. Add user state management
+5. Implement password reset functionality
+6. Add email verification
+
+### Git Commits (2024-12-09 16:56:06 IST)
+
+1. **Navigation and User Display Update**
+   ```
+   commit: [Hash to be added]
+   Message: "refactor: Update navigation structure and user display"
+   
+   Changes:
+   - Add DashboardNav component for sub-navigation
+   - Update Header component to show user name
+   - Remove duplicate header from dashboard
+   - Improve user menu UI and interactions
+   - Update PROJECT_JOURNAL with latest changes
+   
+   Files Changed:
+   - src/components/Header.vue
+   - src/components/DashboardNav.vue (new)
+   - src/views/AppDashboard.vue
+   - PROJECT_JOURNAL.md
+   ```
+
+   Key Implementation Details:
+   - Created dedicated DashboardNav component for better separation of concerns
+   - Updated Header to properly display logged-in user's name from localStorage
+   - Added rotating dropdown arrow and improved user menu styling
+   - Implemented proper user state management with localStorage
+   - Fixed ESLint errors by removing unused imports and variables
+   - Added comprehensive documentation in PROJECT_JOURNAL.md
+
+---
+*Last Updated: December 9, 2024, 17:06 IST*
+
+### 11. Router Configuration and Development Server Updates (2024-12-09 21:06:40 IST)
+
+#### New Components Created
+1. **Reports View (`src/views/Reports.vue`)**
+   - Created placeholder for reports dashboard
+   - Basic layout with title and content area
+   - Protected route requiring authentication
+
+2. **Settings View (`src/views/Settings.vue`)**
+   - Created placeholder for settings page
+   - Consistent styling with other views
+   - Protected route requiring authentication
+
+#### Router Updates (`src/router/index.js`)
+1. **New Routes Added**
+   ```javascript
+   {
+     path: '/reports',
+     name: 'Reports',
+     component: Reports,
+     meta: { requiresAuth: true }
+   },
+   {
+     path: '/settings',
+     name: 'Settings',
+     component: Settings,
+     meta: { requiresAuth: true }
+   }
+   ```
+   - Both routes protected with authentication guard
+   - Consistent meta configuration with other routes
+
+#### Development Server Configuration
+1. **Vue Configuration Update (`vue.config.js`)**
+   - Fixed WebSocket connection issues
+   - Updated development server settings:
+     ```javascript
+     devServer: {
+       host: 'localhost',
+       port: 8080,
+       client: {
+         webSocketURL: 'ws://localhost:8080/ws'
+       }
+     }
+     ```
+   - Switched from IP-based to localhost configuration
+   - Explicit port and WebSocket URL settings
+
+#### Git Commits
+```bash
+commit: [2024-12-09]
+Message: "feat: add reports and settings routes, fix dev server config
+
+- Create Reports.vue and Settings.vue components
+- Add routes for /reports and /settings
+- Update vue.config.js for proper WebSocket connection
+- Fix development server configuration"
+```
+
+#### Next Steps
+1. Implement actual reports functionality
+2. Add content and features to settings page
+3. Consider adding breadcrumb navigation
+4. Add loading states for route transitions
+
+#### Development Notes
+- Current Focus: Router configuration and development server updates
+- Pending: Actual reports and settings implementation
+- Future: Enhanced security measures and user experience improvements
+
+### 10. Wallet Dashboard Implementation (2024-12-09 21:00:51 IST)
+
+#### Components Created/Modified
+1. **WalletDashboard Component (`src/views/WalletDashboard.vue`)**
+   - Displays multiple wallet types (USD, Euro, GBP, Crypto)
+   - Shows wallet balances and currencies
+   - Includes "Top Up" functionality
+   - Recent transactions list for each wallet
+
+2. **WalletTopUpModal Component (`src/components/WalletTopUpModal.vue`)**
+   - Modal for wallet top-up functionality
+   - Amount input with currency symbol
+   - Payment method selection (Credit Card, Bank Transfer, Crypto)
+   - Responsive design with TailwindCSS
+
+3. **Router Update (`src/router/index.js`)**
+   - Replaced AppDashboard with new WalletDashboard component
+   - Updated route configuration for better navigation
+
+#### Design Features
+1. **Wallet Cards**
+   - Distinct styling for different wallet types
+   - Currency symbols and balance display
+   - Interactive "Top Up" buttons
+   - Hover effects and transitions
+
+2. **Recent Transactions**
+   - Chronological list of transactions
+   - Transaction type indicators
+   - Amount and date display
+   - Scrollable transaction history
+
+3. **Top-Up Modal**
+   - Clean and intuitive interface
+   - Dynamic currency symbol based on wallet type
+   - Form validation for amount input
+   - Multiple payment method options
+
+#### Technical Updates
+1. **Dependencies**
+   - Updated Heroicons to v2 syntax (@heroicons/vue/24/outline)
+   - Fixed component registration and usage
+
+2. **Git Commits**
+   ```
+   commit: [2024-12-09]
+   Message: "feat: Implement wallet dashboard with top-up functionality"
+   - Added WalletDashboard.vue
+   - Created WalletTopUpModal.vue
+   - Updated router configuration
+   - Fixed Heroicons imports
+   ```
+
+#### Next Steps
+1. Implement actual wallet operations backend integration
+2. Add transaction history pagination
+3. Enhance error handling in top-up process
+4. Add wallet-specific transaction filters
+
+### Updated Project Structure
+```
+nvcc-app/
+├── src/
+│   ├── views/
+│   │   ├── WalletDashboard.vue
+│   │   └── ...
+│   ├── components/
+│   │   ├── WalletTopUpModal.vue
+│   │   └── ...
+│   └── router/
+│       └── index.js
+```
+
+### Git Commit History
+
+#### December 9, 2024
+
+1. **Initial Repository Setup** (16:21:29 IST)
+   ```
+   commit: 05ce1eaa0a9bedf8006a92b3c1bb01ea8bf23125
+   Author: DEV-KALIA <armanmishra1115@gmail.com>
+   Message: init
+   ```
+   - Initial repository setup
+   - Basic project structure
+
+2. **Vue.js and TailwindCSS Setup** (16:22:31 IST)
+   ```
+   commit: aa3dcc46c36c121860f467170a3de26090580a61
+   Message: Initial commit: Vue.js app with TailwindCSS and header component
+   ```
+   - Created Vue.js project structure
+   - Integrated TailwindCSS
+   - Added header component
+
+3. **Project Documentation** (16:24:47 IST)
+   ```
+   commit: 35d0af5b259ec4773e6496230a4ca1c14c0bf9e9
+   Message: Add PROJECT_JOURNAL.md with comprehensive project documentation
+   ```
+   - Added detailed project documentation
+   - Included setup instructions
+   - Documented component structure
+
+4. **Footer Component** (16:26:51 IST)
+   ```
+   commit: 3f61644769b7245c80f7c5eff5cb1d202dca640d
+   Message: Add footer component with dark theme and matching design
+   ```
+   - Created footer component
+   - Implemented dark theme
+   - Added newsletter section
+   - Included social media links
+
+5. **Footer Refinement** (16:32:05 IST)
+   ```
+   commit: 7293772140d59a333618846c4fa22c21f058283b
+   Message: refactor: Remove 'Get the App' section from footer and update PROJECT_JOURNAL
+   ```
+   - Removed 'Get the App' section
+   - Updated documentation
+   - Streamlined footer design
+
+6. **Basic Dashboard Implementation** (Latest)
+   ```
+   commit: Current changes pending commit
+   Message: implimentad basic user dashboard
+   ```
+   - Added dashboard layout
+   - Implemented stats cards
+   - Created recent activity feed
+
+### Commit Guidelines
+- Use semantic commit messages (feat:, fix:, docs:, style:, refactor:, etc.)
+- Include detailed descriptions in commit body when necessary
+- Reference issue numbers if applicable
+- Keep commits focused and atomic
+
+### Branch Strategy
+- Main branch: Production-ready code
+- Development branch: Integration and testing
+- Feature branches: New features and improvements
+
+### Recent Git Commits
+1. "feat: Add authentication views and router setup"
+   - Added Login and Register components
+   - Implemented Vue Router
+   - Fixed component naming
+   - Updated styles to use Tailwind utilities
+
+### Next Steps
+1. Implement actual authentication logic
+2. Add form submission handling
+3. Create protected routes
+4. Add user state management
+5. Implement password reset functionality
+6. Add email verification
+
+### Git Commits (2024-12-09 16:56:06 IST)
+
+1. **Navigation and User Display Update**
+   ```
+   commit: [Hash to be added]
+   Message: "refactor: Update navigation structure and user display"
+   
+   Changes:
+   - Add DashboardNav component for sub-navigation
+   - Update Header component to show user name
+   - Remove duplicate header from dashboard
+   - Improve user menu UI and interactions
+   - Update PROJECT_JOURNAL with latest changes
+   
+   Files Changed:
+   - src/components/Header.vue
+   - src/components/DashboardNav.vue (new)
+   - src/views/AppDashboard.vue
+   - PROJECT_JOURNAL.md
+   ```
+
+   Key Implementation Details:
+   - Created dedicated DashboardNav component for better separation of concerns
+   - Updated Header to properly display logged-in user's name from localStorage
+   - Added rotating dropdown arrow and improved user menu styling
+   - Implemented proper user state management with localStorage
+   - Fixed ESLint errors by removing unused imports and variables
+   - Added comprehensive documentation in PROJECT_JOURNAL.md
+
+---
+*Last Updated: December 9, 2024, 17:06 IST*
+
+### 8. Authentication Implementation (2024-12-09 16:23:38 IST)
+
+#### 1. Dependencies Installation
+```bash
+npm install vue-router@4 vee-validate@4 yup
+```
+- Added Vue Router for navigation
+- VeeValidate for form handling
+- Yup for schema validation
+
+#### 2. Router Setup (`src/router/index.js`)
+- Created router configuration with routes:
+  - `/` → AppHome
+  - `/login` → AppLogin
+  - `/register` → AppRegister
+- Implemented history mode for clean URLs
+- Added route names for programmatic navigation
+
+#### 3. Authentication Views Development
+
+##### a. Login Component (`src/views/Login.vue`) - 16:25:45 IST
+1. **Features**
+   - Email and password form
+   - Remember me checkbox
+   - Forgot password link
+   - Form validation with Yup
+   - Loading states
+   - Error handling
+   - Responsive design
+
+2. **Validation Rules**
+   ```javascript
+   const schema = yup.object({
+     email: yup.string().required('Email is required').email('Must be a valid email'),
+     password: yup.string().required('Password is required').min(6, 'Password must be at least 6 characters')
+   })
+   ```
+
+3. **Design Elements**
+   - Dark theme with gradient background
+   - Orange accent colors
+   - Animated loading states
+   - Input focus states with ring effect
+   - Error message display
+
+##### b. Register Component (`src/views/Register.vue`) - 16:26:57 IST
+1. **Features**
+   - Full name, email, password fields
+   - Password confirmation
+   - Terms acceptance checkbox
+   - Strong password requirements
+   - Real-time validation
+
+2. **Enhanced Validation**
+   ```javascript
+   const schema = yup.object({
+     name: yup.string().required('Full name is required').min(2, 'Name must be at least 2 characters'),
+     email: yup.string().required('Email is required').email('Must be a valid email'),
+     password: yup.string()
+       .required('Password is required')
+       .min(8, 'Password must be at least 8 characters')
+       .matches(/[0-9]/, 'Password must contain at least one number')
+       .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
+       .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
+   })
+   ```
+
+3. **UX Improvements**
+   - Password strength indicators
+   - Clear error messages
+   - Terms and conditions links
+   - Smooth transitions
+
+##### c. Home Component (`src/views/Home.vue`)
+- Welcome message
+- Call-to-action buttons
+- Consistent branding
+- Responsive layout
+
+#### 4. Component Naming Convention Issues (16:27:45 IST)
+1. **Initial Problem**
+   - ESLint errors for single-word component names
+   - Affected Login and Register components
+   - Vue/multi-word-component-names rule violation
+
+2. **Solution Steps**
+   - Renamed components to follow Vue conventions:
+     - `Login` → `AppLogin`
+     - `Register` → `AppRegister`
+   - Updated router configuration
+   - Maintained consistent naming pattern
+
+#### 5. Styling Challenges (16:29:00 IST)
+1. **PostCSS Integration**
+   - Initially used `lang="postcss"` in style blocks
+   - Encountered syntax highlighting warnings
+   - Attempted CSS language block
+
+2. **Final Solution**
+   - Removed style blocks completely
+   - Moved all styles to Tailwind utility classes
+   - Maintained consistent design
+   - Better maintainability
+
+### Updated Project Structure
+```
+nvcc-app/
+├── src/
+│   ├── assets/
+│   │   ├── tailwind.css
+│   │   └── images/
+│   ├── components/
+│   │   ├── AppHeader.vue
+│   │   └── AppFooter.vue
+│   ├── views/
+│   │   ├── AppHome.vue
+│   │   ├── AppLogin.vue
+│   │   └── AppRegister.vue
+│   ├── router/
+│   │   └── index.js
+│   ├── App.vue
+│   └── main.js
+├── public/
+├── tailwind.config.js
+├── postcss.config.js
+└── package.json
+```
+
+### Git Commit History
+
+#### December 9, 2024
+
+1. **Initial Repository Setup** (16:21:29 IST)
+   ```
+   commit: 05ce1eaa0a9bedf8006a92b3c1bb01ea8bf23125
+   Author: DEV-KALIA <armanmishra1115@gmail.com>
+   Message: init
+   ```
+   - Initial repository setup
+   - Basic project structure
+
+2. **Vue.js and TailwindCSS Setup** (16:22:31 IST)
+   ```
+   commit: aa3dcc46c36c121860f467170a3de26090580a61
+   Message: Initial commit: Vue.js app with TailwindCSS and header component
+   ```
+   - Created Vue.js project structure
+   - Integrated TailwindCSS
+   - Added header component
+
+3. **Project Documentation** (16:24:47 IST)
+   ```
+   commit: 35d0af5b259ec4773e6496230a4ca1c14c0bf9e9
+   Message: Add PROJECT_JOURNAL.md with comprehensive project documentation
+   ```
+   - Added detailed project documentation
+   - Included setup instructions
+   - Documented component structure
+
+4. **Footer Component** (16:26:51 IST)
+   ```
+   commit: 3f61644769b7245c80f7c5eff5cb1d202dca640d
+   Message: Add footer component with dark theme and matching design
+   ```
+   - Created footer component
+   - Implemented dark theme
+   - Added newsletter section
+   - Included social media links
+
+5. **Footer Refinement** (16:32:05 IST)
+   ```
+   commit: 7293772140d59a333618846c4fa22c21f058283b
+   Message: refactor: Remove 'Get the App' section from footer and update PROJECT_JOURNAL
+   ```
+   - Removed 'Get the App' section
+   - Updated documentation
+   - Streamlined footer design
+
+6. **Basic Dashboard Implementation** (Latest)
+   ```
+   commit: Current changes pending commit
+   Message: implimentad basic user dashboard
+   ```
+   - Added dashboard layout
+   - Implemented stats cards
+   - Created recent activity feed
+
+### Commit Guidelines
+- Use semantic commit messages (feat:, fix:, docs:, style:, refactor:, etc.)
+- Include detailed descriptions in commit body when necessary
+- Reference issue numbers if applicable
+- Keep commits focused and atomic
+
+### Branch Strategy
+- Main branch: Production-ready code
+- Development branch: Integration and testing
+- Feature branches: New features and improvements
+
+### Recent Git Commits
+1. "feat: Add authentication views and router setup"
+   - Added Login and Register components
+   - Implemented Vue Router
+   - Fixed component naming
+   - Updated styles to use Tailwind utilities
+
+### Next Steps
+1. Implement actual authentication logic
+2. Add form submission handling
+3. Create protected routes
+4. Add user state management
+5. Implement password reset functionality
+6. Add email verification
+
+### Git Commits (2024-12-09 16:56:06 IST)
+
+1. **Navigation and User Display Update**
+   ```
+   commit: [Hash to be added]
+   Message: "refactor: Update navigation structure and user display"
+   
+   Changes:
+   - Add DashboardNav component for sub-navigation
+   - Update Header component to show user name
+   - Remove duplicate header from dashboard
+   - Improve user menu UI and interactions
+   - Update PROJECT_JOURNAL with latest changes
+   
+   Files Changed:
+   - src/components/Header.vue
+   - src/components/DashboardNav.vue (new)
+   - src/views/AppDashboard.vue
+   - PROJECT_JOURNAL.md
+   ```
+
+   Key Implementation Details:
+   - Created dedicated DashboardNav component for better separation of concerns
+   - Updated Header to properly display logged-in user's name from localStorage
+   - Added rotating dropdown arrow and improved user menu styling
+   - Implemented proper user state management with localStorage
+   - Fixed ESLint errors by removing unused imports and variables
+   - Added comprehensive documentation in PROJECT_JOURNAL.md
+
+---
+*Last Updated: December 9, 2024, 17:06 IST*
+
 ### 9. Navigation Structure Optimization (2024-12-09 23:30 IST)
 
 #### 1. Account Settings Integration
@@ -5190,4 +5149,1595 @@ npm install vue-router@4 vee-validate@4 yup
      email: yup.string().required('Email is required').email('Must be a valid email'),
      password: yup.string().required('Password is required').min(6, 'Password must be at least 6 characters')
    })
+   ```
+
+3. **Design Elements**
+   - Dark theme with gradient background
+   - Orange accent colors
+   - Animated loading states
+   - Input focus states with ring effect
+   - Error message display
+
+##### b. Register Component (`src/views/Register.vue`) - 16:26:57 IST
+1. **Features**
+   - Full name, email, password fields
+   - Password confirmation
+   - Terms acceptance checkbox
+   - Strong password requirements
+   - Real-time validation
+
+2. **Enhanced Validation**
+   ```javascript
+   const schema = yup.object({
+     name: yup.string().required('Full name is required').min(2, 'Name must be at least 2 characters'),
+     email: yup.string().required('Email is required').email('Must be a valid email'),
+     password: yup.string()
+       .required('Password is required')
+       .min(8, 'Password must be at least 8 characters')
+       .matches(/[0-9]/, 'Password must contain at least one number')
+       .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
+       .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
+   })
+   ```
+
+3. **UX Improvements**
+   - Password strength indicators
+   - Clear error messages
+   - Terms and conditions links
+   - Smooth transitions
+
+##### c. Home Component (`src/views/Home.vue`)
+- Welcome message
+- Call-to-action buttons
+- Consistent branding
+- Responsive layout
+
+#### 4. Component Naming Convention Issues (16:27:45 IST)
+1. **Initial Problem**
+   - ESLint errors for single-word component names
+   - Affected Login and Register components
+   - Vue/multi-word-component-names rule violation
+
+2. **Solution Steps**
+   - Renamed components to follow Vue conventions:
+     - `Login` → `AppLogin`
+     - `Register` → `AppRegister`
+   - Updated router configuration
+   - Maintained consistent naming pattern
+
+#### 5. Styling Challenges (16:29:00 IST)
+1. **PostCSS Integration**
+   - Initially used `lang="postcss"` in style blocks
+   - Encountered syntax highlighting warnings
+   - Attempted CSS language block
+
+2. **Final Solution**
+   - Removed style blocks completely
+   - Moved all styles to Tailwind utility classes
+   - Maintained consistent design
+   - Better maintainability
+
+### Updated Project Structure
+```
+nvcc-app/
+├── src/
+│   ├── assets/
+│   │   ├── tailwind.css
+│   │   └── images/
+│   ├── components/
+│   │   ├── AppHeader.vue
+│   │   └── AppFooter.vue
+│   ├── views/
+│   │   ├── AppHome.vue
+│   │   ├── AppLogin.vue
+│   │   └── AppRegister.vue
+│   ├── router/
+│   │   └── index.js
+│   ├── App.vue
+│   └── main.js
+├── public/
+├── tailwind.config.js
+├── postcss.config.js
+└── package.json
+```
+
+### Git Commit History
+
+#### December 9, 2024
+
+1. **Initial Repository Setup** (16:21:29 IST)
+   ```
+   commit: 05ce1eaa0a9bedf8006a92b3c1bb01ea8bf23125
+   Author: DEV-KALIA <armanmishra1115@gmail.com>
+   Message: init
+   ```
+   - Initial repository setup
+   - Basic project structure
+
+2. **Vue.js and TailwindCSS Setup** (16:22:31 IST)
+   ```
+   commit: aa3dcc46c36c121860f467170a3de26090580a61
+   Message: Initial commit: Vue.js app with TailwindCSS and header component
+   ```
+   - Created Vue.js project structure
+   - Integrated TailwindCSS
+   - Added header component
+
+3. **Project Documentation** (16:24:47 IST)
+   ```
+   commit: 35d0af5b259ec4773e6496230a4ca1c14c0bf9e9
+   Message: Add PROJECT_JOURNAL.md with comprehensive project documentation
+   ```
+   - Added detailed project documentation
+   - Included setup instructions
+   - Documented component structure
+
+4. **Footer Component** (16:26:51 IST)
+   ```
+   commit: 3f61644769b7245c80f7c5eff5cb1d202dca640d
+   Message: Add footer component with dark theme and matching design
+   ```
+   - Created footer component
+   - Implemented dark theme
+   - Added newsletter section
+   - Included social media links
+
+5. **Footer Refinement** (16:32:05 IST)
+   ```
+   commit: 7293772140d59a333618846c4fa22c21f058283b
+   Message: refactor: Remove 'Get the App' section from footer and update PROJECT_JOURNAL
+   ```
+   - Removed 'Get the App' section
+   - Updated documentation
+   - Streamlined footer design
+
+6. **Basic Dashboard Implementation** (Latest)
+   ```
+   commit: Current changes pending commit
+   Message: implimentad basic user dashboard
+   ```
+   - Added dashboard layout
+   - Implemented stats cards
+   - Created recent activity feed
+
+### Commit Guidelines
+- Use semantic commit messages (feat:, fix:, docs:, style:, refactor:, etc.)
+- Include detailed descriptions in commit body when necessary
+- Reference issue numbers if applicable
+- Keep commits focused and atomic
+
+### Branch Strategy
+- Main branch: Production-ready code
+- Development branch: Integration and testing
+- Feature branches: New features and improvements
+
+### Recent Git Commits
+1. "feat: Add authentication views and router setup"
+   - Added Login and Register components
+   - Implemented Vue Router
+   - Fixed component naming
+   - Updated styles to use Tailwind utilities
+
+### Next Steps
+1. Implement actual authentication logic
+2. Add form submission handling
+3. Create protected routes
+4. Add user state management
+5. Implement password reset functionality
+6. Add email verification
+
+### Git Commits (2024-12-09 16:56:06 IST)
+
+1. **Navigation and User Display Update**
+   ```
+   commit: [Hash to be added]
+   Message: "refactor: Update navigation structure and user display"
+   
+   Changes:
+   - Add DashboardNav component for sub-navigation
+   - Update Header component to show user name
+   - Remove duplicate header from dashboard
+   - Improve user menu UI and interactions
+   - Update PROJECT_JOURNAL with latest changes
+   
+   Files Changed:
+   - src/components/Header.vue
+   - src/components/DashboardNav.vue (new)
+   - src/views/AppDashboard.vue
+   - PROJECT_JOURNAL.md
+   ```
+
+   Key Implementation Details:
+   - Created dedicated DashboardNav component for better separation of concerns
+   - Updated Header to properly display logged-in user's name from localStorage
+   - Added rotating dropdown arrow and improved user menu styling
+   - Implemented proper user state management with localStorage
+   - Fixed ESLint errors by removing unused imports and variables
+   - Added comprehensive documentation in PROJECT_JOURNAL.md
+
+---
+*Last Updated: December 9, 2024, 17:06 IST*
+
+### 11. Header and Authentication Improvements (2024-12-10 10:30:05 IST)
+
+#### Components Modified
+1. **Header Component (`src/components/Header.vue`)**
+   - Enhanced user menu dropdown functionality
+   - Added smooth transitions and animations
+   - Improved accessibility with ARIA attributes
+   - Fixed click-outside behavior
+   - Added proper hover states and visual feedback
+   - Better state management for logout process
+
+2. **Login Component (`src/views/Login.vue`)**
+   - Improved login state management
+   - Enhanced integration with Header component
+   - Better error handling and user feedback
+
+#### Git Commits
+```
+commit: 04c97a9
+Date: 2024-12-10 10:28:04 IST
+Message: fix: Improve Header dropdown functionality and interactions
+Changes:
+- Enhanced user menu dropdown with proper hover states
+- Added smooth transitions and animations
+- Improved accessibility with proper ARIA attributes
+- Fixed click-outside behavior
+- Better state management for logout
+```
+
+#### Technical Improvements
+1. **User Menu Enhancements**
+   - Implemented proper button structure for better accessibility
+   - Added focus ring styles for keyboard navigation
+   - Enhanced hover states with group utilities
+   - Added rotation animation for dropdown arrow
+   - Improved click-outside directive handling
+
+2. **State Management**
+   - Better handling of authentication state
+   - Proper cleanup of user data on logout
+   - Improved storage event handling for cross-tab synchronization
+
+3. **Design Updates**
+   - Added smooth transitions for dropdown menu
+   - Enhanced visual feedback on interactions
+   - Improved mobile responsiveness
+
+#### Next Steps
+1. Implement remaining user profile features
+2. Add more user settings options
+3. Enhance mobile navigation experience
+4. Add unit tests for authentication flow
+
+### 11. Router Configuration and Development Server Updates (2024-12-09 21:06:40 IST)
+
+#### New Components Created
+1. **Reports View (`src/views/Reports.vue`)**
+   - Created placeholder for reports dashboard
+   - Basic layout with title and content area
+   - Protected route requiring authentication
+
+2. **Settings View (`src/views/Settings.vue`)**
+   - Created placeholder for settings page
+   - Consistent styling with other views
+   - Protected route requiring authentication
+
+#### Router Updates (`src/router/index.js`)
+1. **New Routes Added**
+   ```javascript
+   {
+     path: '/reports',
+     name: 'Reports',
+     component: Reports,
+     meta: { requiresAuth: true }
+   },
+   {
+     path: '/settings',
+     name: 'Settings',
+     component: Settings,
+     meta: { requiresAuth: true }
+   }
+   ```
+   - Both routes protected with authentication guard
+   - Consistent meta configuration with other routes
+
+#### Development Server Configuration
+1. **Vue Configuration Update (`vue.config.js`)**
+   - Fixed WebSocket connection issues
+   - Updated development server settings:
+     ```javascript
+     devServer: {
+       host: 'localhost',
+       port: 8080,
+       client: {
+         webSocketURL: 'ws://localhost:8080/ws'
+       }
+     }
+     ```
+   - Switched from IP-based to localhost configuration
+   - Explicit port and WebSocket URL settings
+
+#### Git Commits
+```bash
+commit: [2024-12-09]
+Message: "feat: add reports and settings routes, fix dev server config
+
+- Create Reports.vue and Settings.vue components
+- Add routes for /reports and /settings
+- Update vue.config.js for proper WebSocket connection
+- Fix development server configuration"
+```
+
+#### Next Steps
+1. Implement actual reports functionality
+2. Add content and features to settings page
+3. Consider adding breadcrumb navigation
+4. Add loading states for route transitions
+
+#### Development Notes
+- Current Focus: Router configuration and development server updates
+- Pending: Actual reports and settings implementation
+- Future: Enhanced security measures and user experience improvements
+
+### 10. Wallet Dashboard Implementation (2024-12-09 21:00:51 IST)
+
+#### Components Created/Modified
+1. **WalletDashboard Component (`src/views/WalletDashboard.vue`)**
+   - Displays multiple wallet types (USD, Euro, GBP, Crypto)
+   - Shows wallet balances and currencies
+   - Includes "Top Up" functionality
+   - Recent transactions list for each wallet
+
+2. **WalletTopUpModal Component (`src/components/WalletTopUpModal.vue`)**
+   - Modal for wallet top-up functionality
+   - Amount input with currency symbol
+   - Payment method selection (Credit Card, Bank Transfer, Crypto)
+   - Responsive design with TailwindCSS
+
+3. **Router Update (`src/router/index.js`)**
+   - Replaced AppDashboard with new WalletDashboard component
+   - Updated route configuration for better navigation
+
+#### Design Features
+1. **Wallet Cards**
+   - Distinct styling for different wallet types
+   - Currency symbols and balance display
+   - Interactive "Top Up" buttons
+   - Hover effects and transitions
+
+2. **Recent Transactions**
+   - Chronological list of transactions
+   - Transaction type indicators
+   - Amount and date display
+   - Scrollable transaction history
+
+3. **Top-Up Modal**
+   - Clean and intuitive interface
+   - Dynamic currency symbol based on wallet type
+   - Form validation for amount input
+   - Multiple payment method options
+
+#### Technical Updates
+1. **Dependencies**
+   - Updated Heroicons to v2 syntax (@heroicons/vue/24/outline)
+   - Fixed component registration and usage
+
+2. **Git Commits**
+   ```
+   commit: [2024-12-09]
+   Message: "feat: Implement wallet dashboard with top-up functionality"
+   - Added WalletDashboard.vue
+   - Created WalletTopUpModal.vue
+   - Updated router configuration
+   - Fixed Heroicons imports
+   ```
+
+#### Next Steps
+1. Implement actual wallet operations backend integration
+2. Add transaction history pagination
+3. Enhance error handling in top-up process
+4. Add wallet-specific transaction filters
+
+### Updated Project Structure
+```
+nvcc-app/
+├── src/
+│   ├── views/
+│   │   ├── WalletDashboard.vue
+│   │   └── ...
+│   ├── components/
+│   │   ├── WalletTopUpModal.vue
+│   │   └── ...
+│   └── router/
+│       └── index.js
+```
+
+### Git Commit History
+
+#### December 9, 2024
+
+1. **Initial Repository Setup** (16:21:29 IST)
+   ```
+   commit: 05ce1eaa0a9bedf8006a92b3c1bb01ea8bf23125
+   Author: DEV-KALIA <armanmishra1115@gmail.com>
+   Message: init
+   ```
+   - Initial repository setup
+   - Basic project structure
+
+2. **Vue.js and TailwindCSS Setup** (16:22:31 IST)
+   ```
+   commit: aa3dcc46c36c121860f467170a3de26090580a61
+   Message: Initial commit: Vue.js app with TailwindCSS and header component
+   ```
+   - Created Vue.js project structure
+   - Integrated TailwindCSS
+   - Added header component
+
+3. **Project Documentation** (16:24:47 IST)
+   ```
+   commit: 35d0af5b259ec4773e6496230a4ca1c14c0bf9e9
+   Message: Add PROJECT_JOURNAL.md with comprehensive project documentation
+   ```
+   - Added detailed project documentation
+   - Included setup instructions
+   - Documented component structure
+
+4. **Footer Component** (16:26:51 IST)
+   ```
+   commit: 3f61644769b7245c80f7c5eff5cb1d202dca640d
+   Message: Add footer component with dark theme and matching design
+   ```
+   - Created footer component
+   - Implemented dark theme
+   - Added newsletter section
+   - Included social media links
+
+5. **Footer Refinement** (16:32:05 IST)
+   ```
+   commit: 7293772140d59a333618846c4fa22c21f058283b
+   Message: refactor: Remove 'Get the App' section from footer and update PROJECT_JOURNAL
+   ```
+   - Removed 'Get the App' section
+   - Updated documentation
+   - Streamlined footer design
+
+6. **Basic Dashboard Implementation** (Latest)
+   ```
+   commit: Current changes pending commit
+   Message: implimentad basic user dashboard
+   ```
+   - Added dashboard layout
+   - Implemented stats cards
+   - Created recent activity feed
+
+### Commit Guidelines
+- Use semantic commit messages (feat:, fix:, docs:, style:, refactor:, etc.)
+- Include detailed descriptions in commit body when necessary
+- Reference issue numbers if applicable
+- Keep commits focused and atomic
+
+### Branch Strategy
+- Main branch: Production-ready code
+- Development branch: Integration and testing
+- Feature branches: New features and improvements
+
+### Recent Git Commits
+1. "feat: Add authentication views and router setup"
+   - Added Login and Register components
+   - Implemented Vue Router
+   - Fixed component naming
+   - Updated styles to use Tailwind utilities
+
+### Next Steps
+1. Implement actual authentication logic
+2. Add form submission handling
+3. Create protected routes
+4. Add user state management
+5. Implement password reset functionality
+6. Add email verification
+
+### Git Commits (2024-12-09 16:56:06 IST)
+
+1. **Navigation and User Display Update**
+   ```
+   commit: [Hash to be added]
+   Message: "refactor: Update navigation structure and user display"
+   
+   Changes:
+   - Add DashboardNav component for sub-navigation
+   - Update Header component to show user name
+   - Remove duplicate header from dashboard
+   - Improve user menu UI and interactions
+   - Update PROJECT_JOURNAL with latest changes
+   
+   Files Changed:
+   - src/components/Header.vue
+   - src/components/DashboardNav.vue (new)
+   - src/views/AppDashboard.vue
+   - PROJECT_JOURNAL.md
+   ```
+
+   Key Implementation Details:
+   - Created dedicated DashboardNav component for better separation of concerns
+   - Updated Header to properly display logged-in user's name from localStorage
+   - Added rotating dropdown arrow and improved user menu styling
+   - Implemented proper user state management with localStorage
+   - Fixed ESLint errors by removing unused imports and variables
+   - Added comprehensive documentation in PROJECT_JOURNAL.md
+
+---
+*Last Updated: December 9, 2024, 17:06 IST*
+
+### 8. Authentication Implementation (2024-12-09 16:23:38 IST)
+
+#### 1. Dependencies Installation
+```bash
+npm install vue-router@4 vee-validate@4 yup
+```
+- Added Vue Router for navigation
+- VeeValidate for form handling
+- Yup for schema validation
+
+#### 2. Router Setup (`src/router/index.js`)
+- Created router configuration with routes:
+  - `/` → AppHome
+  - `/login` → AppLogin
+  - `/register` → AppRegister
+- Implemented history mode for clean URLs
+- Added route names for programmatic navigation
+
+#### 3. Authentication Views Development
+
+##### a. Login Component (`src/views/Login.vue`) - 16:25:45 IST
+1. **Features**
+   - Email and password form
+   - Remember me checkbox
+   - Forgot password link
+   - Form validation with Yup
+   - Loading states
+   - Error handling
+   - Responsive design
+
+2. **Validation Rules**
+   ```javascript
+   const schema = yup.object({
+     email: yup.string().required('Email is required').email('Must be a valid email'),
+     password: yup.string().required('Password is required').min(6, 'Password must be at least 6 characters')
+   })
+   ```
+
+3. **Design Elements**
+   - Dark theme with gradient background
+   - Orange accent colors
+   - Animated loading states
+   - Input focus states with ring effect
+   - Error message display
+
+##### b. Register Component (`src/views/Register.vue`) - 16:26:57 IST
+1. **Features**
+   - Full name, email, password fields
+   - Password confirmation
+   - Terms acceptance checkbox
+   - Strong password requirements
+   - Real-time validation
+
+2. **Enhanced Validation**
+   ```javascript
+   const schema = yup.object({
+     name: yup.string().required('Full name is required').min(2, 'Name must be at least 2 characters'),
+     email: yup.string().required('Email is required').email('Must be a valid email'),
+     password: yup.string()
+       .required('Password is required')
+       .min(8, 'Password must be at least 8 characters')
+       .matches(/[0-9]/, 'Password must contain at least one number')
+       .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
+       .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
+   })
+   ```
+
+3. **UX Improvements**
+   - Password strength indicators
+   - Clear error messages
+   - Terms and conditions links
+   - Smooth transitions
+
+##### c. Home Component (`src/views/Home.vue`)
+- Welcome message
+- Call-to-action buttons
+- Consistent branding
+- Responsive layout
+
+#### 4. Component Naming Convention Issues (16:27:45 IST)
+1. **Initial Problem**
+   - ESLint errors for single-word component names
+   - Affected Login and Register components
+   - Vue/multi-word-component-names rule violation
+
+2. **Solution Steps**
+   - Renamed components to follow Vue conventions:
+     - `Login` → `AppLogin`
+     - `Register` → `AppRegister`
+   - Updated router configuration
+   - Maintained consistent naming pattern
+
+#### 5. Styling Challenges (16:29:00 IST)
+1. **PostCSS Integration**
+   - Initially used `lang="postcss"` in style blocks
+   - Encountered syntax highlighting warnings
+   - Attempted CSS language block
+
+2. **Final Solution**
+   - Removed style blocks completely
+   - Moved all styles to Tailwind utility classes
+   - Maintained consistent design
+   - Better maintainability
+
+### Updated Project Structure
+```
+nvcc-app/
+├── src/
+│   ├── assets/
+│   │   ├── tailwind.css
+│   │   └── images/
+│   ├── components/
+│   │   ├── AppHeader.vue
+│   │   └── AppFooter.vue
+│   ├── views/
+│   │   ├── AppHome.vue
+│   │   ├── AppLogin.vue
+│   │   └── AppRegister.vue
+│   ├── router/
+│   │   └── index.js
+│   ├── App.vue
+│   └── main.js
+├── public/
+├── tailwind.config.js
+├── postcss.config.js
+└── package.json
+```
+
+### Git Commit History
+
+#### December 9, 2024
+
+1. **Initial Repository Setup** (16:21:29 IST)
+   ```
+   commit: 05ce1eaa0a9bedf8006a92b3c1bb01ea8bf23125
+   Author: DEV-KALIA <armanmishra1115@gmail.com>
+   Message: init
+   ```
+   - Initial repository setup
+   - Basic project structure
+
+2. **Vue.js and TailwindCSS Setup** (16:22:31 IST)
+   ```
+   commit: aa3dcc46c36c121860f467170a3de26090580a61
+   Message: Initial commit: Vue.js app with TailwindCSS and header component
+   ```
+   - Created Vue.js project structure
+   - Integrated TailwindCSS
+   - Added header component
+
+3. **Project Documentation** (16:24:47 IST)
+   ```
+   commit: 35d0af5b259ec4773e6496230a4ca1c14c0bf9e9
+   Message: Add PROJECT_JOURNAL.md with comprehensive project documentation
+   ```
+   - Added detailed project documentation
+   - Included setup instructions
+   - Documented component structure
+
+4. **Footer Component** (16:26:51 IST)
+   ```
+   commit: 3f61644769b7245c80f7c5eff5cb1d202dca640d
+   Message: Add footer component with dark theme and matching design
+   ```
+   - Created footer component
+   - Implemented dark theme
+   - Added newsletter section
+   - Included social media links
+
+5. **Footer Refinement** (16:32:05 IST)
+   ```
+   commit: 7293772140d59a333618846c4fa22c21f058283b
+   Message: refactor: Remove 'Get the App' section from footer and update PROJECT_JOURNAL
+   ```
+   - Removed 'Get the App' section
+   - Updated documentation
+   - Streamlined footer design
+
+6. **Basic Dashboard Implementation** (Latest)
+   ```
+   commit: Current changes pending commit
+   Message: implimentad basic user dashboard
+   ```
+   - Added dashboard layout
+   - Implemented stats cards
+   - Created recent activity feed
+
+### Commit Guidelines
+- Use semantic commit messages (feat:, fix:, docs:, style:, refactor:, etc.)
+- Include detailed descriptions in commit body when necessary
+- Reference issue numbers if applicable
+- Keep commits focused and atomic
+
+### Branch Strategy
+- Main branch: Production-ready code
+- Development branch: Integration and testing
+- Feature branches: New features and improvements
+
+### Recent Git Commits
+1. "feat: Add authentication views and router setup"
+   - Added Login and Register components
+   - Implemented Vue Router
+   - Fixed component naming
+   - Updated styles to use Tailwind utilities
+
+### Next Steps
+1. Implement actual authentication logic
+2. Add form submission handling
+3. Create protected routes
+4. Add user state management
+5. Implement password reset functionality
+6. Add email verification
+
+### Git Commits (2024-12-09 16:56:06 IST)
+
+1. **Navigation and User Display Update**
+   ```
+   commit: [Hash to be added]
+   Message: "refactor: Update navigation structure and user display"
+   
+   Changes:
+   - Add DashboardNav component for sub-navigation
+   - Update Header component to show user name
+   - Remove duplicate header from dashboard
+   - Improve user menu UI and interactions
+   - Update PROJECT_JOURNAL with latest changes
+   
+   Files Changed:
+   - src/components/Header.vue
+   - src/components/DashboardNav.vue (new)
+   - src/views/AppDashboard.vue
+   - PROJECT_JOURNAL.md
+   ```
+
+   Key Implementation Details:
+   - Created dedicated DashboardNav component for better separation of concerns
+   - Updated Header to properly display logged-in user's name from localStorage
+   - Added rotating dropdown arrow and improved user menu styling
+   - Implemented proper user state management with localStorage
+   - Fixed ESLint errors by removing unused imports and variables
+   - Added comprehensive documentation in PROJECT_JOURNAL.md
+
+---
+*Last Updated: December 9, 2024, 17:06 IST*
+
+### 9. Navigation Structure Optimization (2024-12-09 23:30 IST)
+
+#### 1. Account Settings Integration
+- **UserAccounts View Enhancement**
+  - Integrated full account settings functionality into UserAccounts view
+  - Added profile information management (username, email, first/last name)
+  - Implemented password change capability with validation
+  - Maintained consistent styling with AccountSettings component
+  - Added loading states and form validation
+  - Integrated with localStorage for data persistence
+
+#### 2. Recent Git Commits
+```
+commit: 7511810
+Message: feat: integrate account settings into UserAccounts view
+- Added account settings form to UserAccounts.vue
+- Implemented profile information management
+- Added password change functionality
+- Maintained consistent styling with AccountSettings
+```
+
+### Next Steps
+1. Enhance form validation with more detailed feedback
+2. Add API integration for user data management
+3. Implement proper error handling and success notifications
+4. Add loading states for asynchronous operations
+5. Consider adding additional security features for password changes
+
+### 11. Router Configuration and Development Server Updates (2024-12-09 21:06:40 IST)
+
+#### New Components Created
+1. **Reports View (`src/views/Reports.vue`)**
+   - Created placeholder for reports dashboard
+   - Basic layout with title and content area
+   - Protected route requiring authentication
+
+2. **Settings View (`src/views/Settings.vue`)**
+   - Created placeholder for settings page
+   - Consistent styling with other views
+   - Protected route requiring authentication
+
+#### Router Updates (`src/router/index.js`)
+1. **New Routes Added**
+   ```javascript
+   {
+     path: '/reports',
+     name: 'Reports',
+     component: Reports,
+     meta: { requiresAuth: true }
+   },
+   {
+     path: '/settings',
+     name: 'Settings',
+     component: Settings,
+     meta: { requiresAuth: true }
+   }
+   ```
+   - Both routes protected with authentication guard
+   - Consistent meta configuration with other routes
+
+#### Development Server Configuration
+1. **Vue Configuration Update (`vue.config.js`)**
+   - Fixed WebSocket connection issues
+   - Updated development server settings:
+     ```javascript
+     devServer: {
+       host: 'localhost',
+       port: 8080,
+       client: {
+         webSocketURL: 'ws://localhost:8080/ws'
+       }
+     }
+     ```
+   - Switched from IP-based to localhost configuration
+   - Explicit port and WebSocket URL settings
+
+#### Git Commits
+```bash
+commit: [2024-12-09]
+Message: "feat: add reports and settings routes, fix dev server config
+
+- Create Reports.vue and Settings.vue components
+- Add routes for /reports and /settings
+- Update vue.config.js for proper WebSocket connection
+- Fix development server configuration"
+```
+
+#### Next Steps
+1. Implement actual reports functionality
+2. Add content and features to settings page
+3. Consider adding breadcrumb navigation
+4. Add loading states for route transitions
+
+#### Development Notes
+- Current Focus: Router configuration and development server updates
+- Pending: Actual reports and settings implementation
+- Future: Enhanced security measures and user experience improvements
+
+### 10. Wallet Dashboard Implementation (2024-12-09 21:00:51 IST)
+
+#### Components Created/Modified
+1. **WalletDashboard Component (`src/views/WalletDashboard.vue`)**
+   - Displays multiple wallet types (USD, Euro, GBP, Crypto)
+   - Shows wallet balances and currencies
+   - Includes "Top Up" functionality
+   - Recent transactions list for each wallet
+
+2. **WalletTopUpModal Component (`src/components/WalletTopUpModal.vue`)**
+   - Modal for wallet top-up functionality
+   - Amount input with currency symbol
+   - Payment method selection (Credit Card, Bank Transfer, Crypto)
+   - Responsive design with TailwindCSS
+
+3. **Router Update (`src/router/index.js`)**
+   - Replaced AppDashboard with new WalletDashboard component
+   - Updated route configuration for better navigation
+
+#### Design Features
+1. **Wallet Cards**
+   - Distinct styling for different wallet types
+   - Currency symbols and balance display
+   - Interactive "Top Up" buttons
+   - Hover effects and transitions
+
+2. **Recent Transactions**
+   - Chronological list of transactions
+   - Transaction type indicators
+   - Amount and date display
+   - Scrollable transaction history
+
+3. **Top-Up Modal**
+   - Clean and intuitive interface
+   - Dynamic currency symbol based on wallet type
+   - Form validation for amount input
+   - Multiple payment method options
+
+#### Technical Updates
+1. **Dependencies**
+   - Updated Heroicons to v2 syntax (@heroicons/vue/24/outline)
+   - Fixed component registration and usage
+
+2. **Git Commits**
+   ```
+   commit: [2024-12-09]
+   Message: "feat: Implement wallet dashboard with top-up functionality"
+   - Added WalletDashboard.vue
+   - Created WalletTopUpModal.vue
+   - Updated router configuration
+   - Fixed Heroicons imports
+   ```
+
+#### Next Steps
+1. Implement actual wallet operations backend integration
+2. Add transaction history pagination
+3. Enhance error handling in top-up process
+4. Add wallet-specific transaction filters
+
+### Updated Project Structure
+```
+nvcc-app/
+├── src/
+│   ├── views/
+│   │   ├── WalletDashboard.vue
+│   │   └── ...
+│   ├── components/
+│   │   ├── WalletTopUpModal.vue
+│   │   └── ...
+│   └── router/
+│       └── index.js
+```
+
+### Git Commit History
+
+#### December 9, 2024
+
+1. **Initial Repository Setup** (16:21:29 IST)
+   ```
+   commit: 05ce1eaa0a9bedf8006a92b3c1bb01ea8bf23125
+   Author: DEV-KALIA <armanmishra1115@gmail.com>
+   Message: init
+   ```
+   - Initial repository setup
+   - Basic project structure
+
+2. **Vue.js and TailwindCSS Setup** (16:22:31 IST)
+   ```
+   commit: aa3dcc46c36c121860f467170a3de26090580a61
+   Message: Initial commit: Vue.js app with TailwindCSS and header component
+   ```
+   - Created Vue.js project structure
+   - Integrated TailwindCSS
+   - Added header component
+
+3. **Project Documentation** (16:24:47 IST)
+   ```
+   commit: 35d0af5b259ec4773e6496230a4ca1c14c0bf9e9
+   Message: Add PROJECT_JOURNAL.md with comprehensive project documentation
+   ```
+   - Added detailed project documentation
+   - Included setup instructions
+   - Documented component structure
+
+4. **Footer Component** (16:26:51 IST)
+   ```
+   commit: 3f61644769b7245c80f7c5eff5cb1d202dca640d
+   Message: Add footer component with dark theme and matching design
+   ```
+   - Created footer component
+   - Implemented dark theme
+   - Added newsletter section
+   - Included social media links
+
+5. **Footer Refinement** (16:32:05 IST)
+   ```
+   commit: 7293772140d59a333618846c4fa22c21f058283b
+   Message: refactor: Remove 'Get the App' section from footer and update PROJECT_JOURNAL
+   ```
+   - Removed 'Get the App' section
+   - Updated documentation
+   - Streamlined footer design
+
+6. **Basic Dashboard Implementation** (Latest)
+   ```
+   commit: Current changes pending commit
+   Message: implimentad basic user dashboard
+   ```
+   - Added dashboard layout
+   - Implemented stats cards
+   - Created recent activity feed
+
+### Commit Guidelines
+- Use semantic commit messages (feat:, fix:, docs:, style:, refactor:, etc.)
+- Include detailed descriptions in commit body when necessary
+- Reference issue numbers if applicable
+- Keep commits focused and atomic
+
+### Branch Strategy
+- Main branch: Production-ready code
+- Development branch: Integration and testing
+- Feature branches: New features and improvements
+
+### Recent Git Commits
+1. "feat: Add authentication views and router setup"
+   - Added Login and Register components
+   - Implemented Vue Router
+   - Fixed component naming
+   - Updated styles to use Tailwind utilities
+
+### Next Steps
+1. Implement actual authentication logic
+2. Add form submission handling
+3. Create protected routes
+4. Add user state management
+5. Implement password reset functionality
+6. Add email verification
+
+### Git Commits (2024-12-09 16:56:06 IST)
+
+1. **Navigation and User Display Update**
+   ```
+   commit: [Hash to be added]
+   Message: "refactor: Update navigation structure and user display"
+   
+   Changes:
+   - Add DashboardNav component for sub-navigation
+   - Update Header component to show user name
+   - Remove duplicate header from dashboard
+   - Improve user menu UI and interactions
+   - Update PROJECT_JOURNAL with latest changes
+   
+   Files Changed:
+   - src/components/Header.vue
+   - src/components/DashboardNav.vue (new)
+   - src/views/AppDashboard.vue
+   - PROJECT_JOURNAL.md
+   ```
+
+   Key Implementation Details:
+   - Created dedicated DashboardNav component for better separation of concerns
+   - Updated Header to properly display logged-in user's name from localStorage
+   - Added rotating dropdown arrow and improved user menu styling
+   - Implemented proper user state management with localStorage
+   - Fixed ESLint errors by removing unused imports and variables
+   - Added comprehensive documentation in PROJECT_JOURNAL.md
+
+---
+*Last Updated: December 9, 2024, 17:06 IST*
+
+### 8. Authentication Implementation (2024-12-09 16:23:38 IST)
+
+#### 1. Dependencies Installation
+```bash
+npm install vue-router@4 vee-validate@4 yup
+```
+- Added Vue Router for navigation
+- VeeValidate for form handling
+- Yup for schema validation
+
+#### 2. Router Setup (`src/router/index.js`)
+- Created router configuration with routes:
+  - `/` → AppHome
+  - `/login` → AppLogin
+  - `/register` → AppRegister
+- Implemented history mode for clean URLs
+- Added route names for programmatic navigation
+
+#### 3. Authentication Views Development
+
+##### a. Login Component (`src/views/Login.vue`) - 16:25:45 IST
+1. **Features**
+   - Email and password form
+   - Remember me checkbox
+   - Forgot password link
+   - Form validation with Yup
+   - Loading states
+   - Error handling
+   - Responsive design
+
+2. **Validation Rules**
+   ```javascript
+   const schema = yup.object({
+     email: yup.string().required('Email is required').email('Must be a valid email'),
+     password: yup.string().required('Password is required').min(6, 'Password must be at least 6 characters')
+   })
+   ```
+
+3. **Design Elements**
+   - Dark theme with gradient background
+   - Orange accent colors
+   - Animated loading states
+   - Input focus states with ring effect
+   - Error message display
+
+##### b. Register Component (`src/views/Register.vue`) - 16:26:57 IST
+1. **Features**
+   - Full name, email, password fields
+   - Password confirmation
+   - Terms acceptance checkbox
+   - Strong password requirements
+   - Real-time validation
+
+2. **Enhanced Validation**
+   ```javascript
+   const schema = yup.object({
+     name: yup.string().required('Full name is required').min(2, 'Name must be at least 2 characters'),
+     email: yup.string().required('Email is required').email('Must be a valid email'),
+     password: yup.string()
+       .required('Password is required')
+       .min(8, 'Password must be at least 8 characters')
+       .matches(/[0-9]/, 'Password must contain at least one number')
+       .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
+       .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
+   })
+   ```
+
+3. **UX Improvements**
+   - Password strength indicators
+   - Clear error messages
+   - Terms and conditions links
+   - Smooth transitions
+
+##### c. Home Component (`src/views/Home.vue`)
+- Welcome message
+- Call-to-action buttons
+- Consistent branding
+- Responsive layout
+
+#### 4. Component Naming Convention Issues (16:27:45 IST)
+1. **Initial Problem**
+   - ESLint errors for single-word component names
+   - Affected Login and Register components
+   - Vue/multi-word-component-names rule violation
+
+2. **Solution Steps**
+   - Renamed components to follow Vue conventions:
+     - `Login` → `AppLogin`
+     - `Register` → `AppRegister`
+   - Updated router configuration
+   - Maintained consistent naming pattern
+
+#### 5. Styling Challenges (16:29:00 IST)
+1. **PostCSS Integration**
+   - Initially used `lang="postcss"` in style blocks
+   - Encountered syntax highlighting warnings
+   - Attempted CSS language block
+
+2. **Final Solution**
+   - Removed style blocks completely
+   - Moved all styles to Tailwind utility classes
+   - Maintained consistent design
+   - Better maintainability
+
+### Updated Project Structure
+```
+nvcc-app/
+├── src/
+│   ├── assets/
+│   │   ├── tailwind.css
+│   │   └── images/
+│   ├── components/
+│   │   ├── AppHeader.vue
+│   │   └── AppFooter.vue
+│   ├── views/
+│   │   ├── AppHome.vue
+│   │   ├── AppLogin.vue
+│   │   └── AppRegister.vue
+│   ├── router/
+│   │   └── index.js
+│   ├── App.vue
+│   └── main.js
+├── public/
+├── tailwind.config.js
+├── postcss.config.js
+└── package.json
+```
+
+### Git Commit History
+
+#### December 9, 2024
+
+1. **Initial Repository Setup** (16:21:29 IST)
+   ```
+   commit: 05ce1eaa0a9bedf8006a92b3c1bb01ea8bf23125
+   Author: DEV-KALIA <armanmishra1115@gmail.com>
+   Message: init
+   ```
+   - Initial repository setup
+   - Basic project structure
+
+2. **Vue.js and TailwindCSS Setup** (16:22:31 IST)
+   ```
+   commit: aa3dcc46c36c121860f467170a3de26090580a61
+   Message: Initial commit: Vue.js app with TailwindCSS and header component
+   ```
+   - Created Vue.js project structure
+   - Integrated TailwindCSS
+   - Added header component
+
+3. **Project Documentation** (16:24:47 IST)
+   ```
+   commit: 35d0af5b259ec4773e6496230a4ca1c14c0bf9e9
+   Message: Add PROJECT_JOURNAL.md with comprehensive project documentation
+   ```
+   - Added detailed project documentation
+   - Included setup instructions
+   - Documented component structure
+
+4. **Footer Component** (16:26:51 IST)
+   ```
+   commit: 3f61644769b7245c80f7c5eff5cb1d202dca640d
+   Message: Add footer component with dark theme and matching design
+   ```
+   - Created footer component
+   - Implemented dark theme
+   - Added newsletter section
+   - Included social media links
+
+5. **Footer Refinement** (16:32:05 IST)
+   ```
+   commit: 7293772140d59a333618846c4fa22c21f058283b
+   Message: refactor: Remove 'Get the App' section from footer and update PROJECT_JOURNAL
+   ```
+   - Removed 'Get the App' section
+   - Updated documentation
+   - Streamlined footer design
+
+6. **Basic Dashboard Implementation** (Latest)
+   ```
+   commit: Current changes pending commit
+   Message: implimentad basic user dashboard
+   ```
+   - Added dashboard layout
+   - Implemented stats cards
+   - Created recent activity feed
+
+### Commit Guidelines
+- Use semantic commit messages (feat:, fix:, docs:, style:, refactor:, etc.)
+- Include detailed descriptions in commit body when necessary
+- Reference issue numbers if applicable
+- Keep commits focused and atomic
+
+### Branch Strategy
+- Main branch: Production-ready code
+- Development branch: Integration and testing
+- Feature branches: New features and improvements
+
+### Recent Git Commits
+1. "feat: Add authentication views and router setup"
+   - Added Login and Register components
+   - Implemented Vue Router
+   - Fixed component naming
+   - Updated styles to use Tailwind utilities
+
+### Next Steps
+1. Implement actual authentication logic
+2. Add form submission handling
+3. Create protected routes
+4. Add user state management
+5. Implement password reset functionality
+6. Add email verification
+
+### Git Commits (2024-12-09 16:56:06 IST)
+
+1. **Navigation and User Display Update**
+   ```
+   commit: [Hash to be added]
+   Message: "refactor: Update navigation structure and user display"
+   
+   Changes:
+   - Add DashboardNav component for sub-navigation
+   - Update Header component to show user name
+   - Remove duplicate header from dashboard
+   - Improve user menu UI and interactions
+   - Update PROJECT_JOURNAL with latest changes
+   
+   Files Changed:
+   - src/components/Header.vue
+   - src/components/DashboardNav.vue (new)
+   - src/views/AppDashboard.vue
+   - PROJECT_JOURNAL.md
+   ```
+
+   Key Implementation Details:
+   - Created dedicated DashboardNav component for better separation of concerns
+   - Updated Header to properly display logged-in user's name from localStorage
+   - Added rotating dropdown arrow and improved user menu styling
+   - Implemented proper user state management with localStorage
+   - Fixed ESLint errors by removing unused imports and variables
+   - Added comprehensive documentation in PROJECT_JOURNAL.md
+
+---
+*Last Updated: December 9, 2024, 17:06 IST*
+
+### 11. Router Configuration and Development Server Updates (2024-12-09 21:06:40 IST)
+
+#### New Components Created
+1. **Reports View (`src/views/Reports.vue`)**
+   - Created placeholder for reports dashboard
+   - Basic layout with title and content area
+   - Protected route requiring authentication
+
+2. **Settings View (`src/views/Settings.vue`)**
+   - Created placeholder for settings page
+   - Consistent styling with other views
+   - Protected route requiring authentication
+
+#### Router Updates (`src/router/index.js`)
+1. **New Routes Added**
+   ```javascript
+   {
+     path: '/reports',
+     name: 'Reports',
+     component: Reports,
+     meta: { requiresAuth: true }
+   },
+   {
+     path: '/settings',
+     name: 'Settings',
+     component: Settings,
+     meta: { requiresAuth: true }
+   }
+   ```
+   - Both routes protected with authentication guard
+   - Consistent meta configuration with other routes
+
+#### Development Server Configuration
+1. **Vue Configuration Update (`vue.config.js`)**
+   - Fixed WebSocket connection issues
+   - Updated development server settings:
+     ```javascript
+     devServer: {
+       host: 'localhost',
+       port: 8080,
+       client: {
+         webSocketURL: 'ws://localhost:8080/ws'
+       }
+     }
+     ```
+   - Switched from IP-based to localhost configuration
+   - Explicit port and WebSocket URL settings
+
+#### Git Commits
+```bash
+commit: [2024-12-09]
+Message: "feat: add reports and settings routes, fix dev server config
+
+- Create Reports.vue and Settings.vue components
+- Add routes for /reports and /settings
+- Update vue.config.js for proper WebSocket connection
+- Fix development server configuration"
+```
+
+#### Next Steps
+1. Implement actual reports functionality
+2. Add content and features to settings page
+3. Consider adding breadcrumb navigation
+4. Add loading states for route transitions
+
+#### Development Notes
+- Current Focus: Router configuration and development server updates
+- Pending: Actual reports and settings implementation
+- Future: Enhanced security measures and user experience improvements
+
+### 10. Wallet Dashboard Implementation (2024-12-09 21:00:51 IST)
+
+#### Components Created/Modified
+1. **WalletDashboard Component (`src/views/WalletDashboard.vue`)**
+   - Displays multiple wallet types (USD, Euro, GBP, Crypto)
+   - Shows wallet balances and currencies
+   - Includes "Top Up" functionality
+   - Recent transactions list for each wallet
+
+2. **WalletTopUpModal Component (`src/components/WalletTopUpModal.vue`)**
+   - Modal for wallet top-up functionality
+   - Amount input with currency symbol
+   - Payment method selection (Credit Card, Bank Transfer, Crypto)
+   - Responsive design with TailwindCSS
+
+3. **Router Update (`src/router/index.js`)**
+   - Replaced AppDashboard with new WalletDashboard component
+   - Updated route configuration for better navigation
+
+#### Design Features
+1. **Wallet Cards**
+   - Distinct styling for different wallet types
+   - Currency symbols and balance display
+   - Interactive "Top Up" buttons
+   - Hover effects and transitions
+
+2. **Recent Transactions**
+   - Chronological list of transactions
+   - Transaction type indicators
+   - Amount and date display
+   - Scrollable transaction history
+
+3. **Top-Up Modal**
+   - Clean and intuitive interface
+   - Dynamic currency symbol based on wallet type
+   - Form validation for amount input
+   - Multiple payment method options
+
+#### Technical Updates
+1. **Dependencies**
+   - Updated Heroicons to v2 syntax (@heroicons/vue/24/outline)
+   - Fixed component registration and usage
+
+2. **Git Commits**
+   ```
+   commit: [2024-12-09]
+   Message: "feat: Implement wallet dashboard with top-up functionality"
+   - Added WalletDashboard.vue
+   - Created WalletTopUpModal.vue
+   - Updated router configuration
+   - Fixed Heroicons imports
+   ```
+
+#### Next Steps
+1. Implement actual wallet operations backend integration
+2. Add transaction history pagination
+3. Enhance error handling in top-up process
+4. Add wallet-specific transaction filters
+
+### Updated Project Structure
+```
+nvcc-app/
+├── src/
+│   ├── views/
+│   │   ├── WalletDashboard.vue
+│   │   └── ...
+│   ├── components/
+│   │   ├── WalletTopUpModal.vue
+│   │   └── ...
+│   └── router/
+│       └── index.js
+```
+
+### Git Commit History
+
+#### December 9, 2024
+
+1. **Initial Repository Setup** (16:21:29 IST)
+   ```
+   commit: 05ce1eaa0a9bedf8006a92b3c1bb01ea8bf23125
+   Author: DEV-KALIA <armanmishra1115@gmail.com>
+   Message: init
+   ```
+   - Initial repository setup
+   - Basic project structure
+
+2. **Vue.js and TailwindCSS Setup** (16:22:31 IST)
+   ```
+   commit: aa3dcc46c36c121860f467170a3de26090580a61
+   Message: Initial commit: Vue.js app with TailwindCSS and header component
+   ```
+   - Created Vue.js project structure
+   - Integrated TailwindCSS
+   - Added header component
+
+3. **Project Documentation** (16:24:47 IST)
+   ```
+   commit: 35d0af5b259ec4773e6496230a4ca1c14c0bf9e9
+   Message: Add PROJECT_JOURNAL.md with comprehensive project documentation
+   ```
+   - Added detailed project documentation
+   - Included setup instructions
+   - Documented component structure
+
+4. **Footer Component** (16:26:51 IST)
+   ```
+   commit: 3f61644769b7245c80f7c5eff5cb1d202dca640d
+   Message: Add footer component with dark theme and matching design
+   ```
+   - Created footer component
+   - Implemented dark theme
+   - Added newsletter section
+   - Included social media links
+
+5. **Footer Refinement** (16:32:05 IST)
+   ```
+   commit: 7293772140d59a333618846c4fa22c21f058283b
+   Message: refactor: Remove 'Get the App' section from footer and update PROJECT_JOURNAL
+   ```
+   - Removed 'Get the App' section
+   - Updated documentation
+   - Streamlined footer design
+
+6. **Basic Dashboard Implementation** (Latest)
+   ```
+   commit: Current changes pending commit
+   Message: implimentad basic user dashboard
+   ```
+   - Added dashboard layout
+   - Implemented stats cards
+   - Created recent activity feed
+
+### Commit Guidelines
+- Use semantic commit messages (feat:, fix:, docs:, style:, refactor:, etc.)
+- Include detailed descriptions in commit body when necessary
+- Reference issue numbers if applicable
+- Keep commits focused and atomic
+
+### Branch Strategy
+- Main branch: Production-ready code
+- Development branch: Integration and testing
+- Feature branches: New features and improvements
+
+### Recent Git Commits
+1. "feat: Add authentication views and router setup"
+   - Added Login and Register components
+   - Implemented Vue Router
+   - Fixed component naming
+   - Updated styles to use Tailwind utilities
+
+### Next Steps
+1. Implement actual authentication logic
+2. Add form submission handling
+3. Create protected routes
+4. Add user state management
+5. Implement password reset functionality
+6. Add email verification
+
+### Git Commits (2024-12-09 16:56:06 IST)
+
+1. **Navigation and User Display Update**
+   ```
+   commit: [Hash to be added]
+   Message: "refactor: Update navigation structure and user display"
+   
+   Changes:
+   - Add DashboardNav component for sub-navigation
+   - Update Header component to show user name
+   - Remove duplicate header from dashboard
+   - Improve user menu UI and interactions
+   - Update PROJECT_JOURNAL with latest changes
+   
+   Files Changed:
+   - src/components/Header.vue
+   - src/components/DashboardNav.vue (new)
+   - src/views/AppDashboard.vue
+   - PROJECT_JOURNAL.md
+   ```
+
+   Key Implementation Details:
+   - Created dedicated DashboardNav component for better separation of concerns
+   - Updated Header to properly display logged-in user's name from localStorage
+   - Added rotating dropdown arrow and improved user menu styling
+   - Implemented proper user state management with localStorage
+   - Fixed ESLint errors by removing unused imports and variables
+   - Added comprehensive documentation in PROJECT_JOURNAL.md
+
+---
+*Last Updated: December 9, 2024, 17:06 IST*
+
+### 8. Authentication Implementation (2024-12-09 16:23:38 IST)
+
+#### 1. Dependencies Installation
+```bash
+npm install vue-router@4 vee-validate@4 yup
+```
+- Added Vue Router for navigation
+- VeeValidate for form handling
+- Yup for schema validation
+
+#### 2. Router Setup (`src/router/index.js`)
+- Created router configuration with routes:
+  - `/` → AppHome
+  - `/login` → AppLogin
+  - `/register` → AppRegister
+- Implemented history mode for clean URLs
+- Added route names for programmatic navigation
+
+#### 3. Authentication Views Development
+
+##### a. Login Component (`src/views/Login.vue`) - 16:25:45 IST
+1. **Features**
+   - Email and password form
+   - Remember me checkbox
+   - Forgot password link
+   - Form validation with Yup
+   - Loading states
+   - Error handling
+   - Responsive design
+
+2. **Validation Rules**
    
