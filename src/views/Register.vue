@@ -16,30 +16,28 @@
         <p class="mt-2 text-center text-sm text-gray-400">
           Or
           <router-link to="/login" class="font-medium text-orange-500 hover:text-orange-400">
-            sign in to your existing account
+            sign in to your account
           </router-link>
         </p>
       </div>
-      <Form @submit="handleRegister" class="space-y-6" v-slot="{ errors }">
+      <Form :validation-schema="schema" @submit="handleRegister" class="space-y-6" v-slot="{ errors }">
         <div class="rounded-md shadow-sm space-y-4">
           <div>
-            <label for="fullName" class="sr-only">Full name</label>
-            <input
-              id="fullName"
-              v-model="fullName"
-              name="fullName"
+            <label for="name" class="sr-only">Name</label>
+            <Field
+              id="name"
+              name="name"
               type="text"
               required
               class="appearance-none relative block w-full px-3 py-2 border border-gray-700 bg-gray-800 placeholder-gray-400 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              placeholder="Full name"
+              placeholder="Name"
             />
-            <span v-if="errors.fullName" class="text-sm text-red-500 mt-1">{{ errors.fullName }}</span>
+            <span v-if="errors.name" class="text-sm text-red-500 mt-1">{{ errors.name }}</span>
           </div>
           <div>
             <label for="email" class="sr-only">Email address</label>
-            <input
+            <Field
               id="email"
-              v-model="email"
               name="email"
               type="email"
               autocomplete="email"
@@ -51,9 +49,8 @@
           </div>
           <div>
             <label for="password" class="sr-only">Password</label>
-            <input
+            <Field
               id="password"
-              v-model="password"
               name="password"
               type="password"
               required
@@ -63,102 +60,74 @@
             <span v-if="errors.password" class="text-sm text-red-500 mt-1">{{ errors.password }}</span>
           </div>
           <div>
-            <label for="confirmPassword" class="sr-only">Confirm password</label>
-            <input
+            <label for="confirmPassword" class="sr-only">Confirm Password</label>
+            <Field
               id="confirmPassword"
-              v-model="confirmPassword"
               name="confirmPassword"
               type="password"
               required
               class="appearance-none relative block w-full px-3 py-2 border border-gray-700 bg-gray-800 placeholder-gray-400 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              placeholder="Confirm password"
+              placeholder="Confirm Password"
             />
             <span v-if="errors.confirmPassword" class="text-sm text-red-500 mt-1">{{ errors.confirmPassword }}</span>
           </div>
         </div>
 
-        <div class="flex items-center">
-          <input
-            id="terms"
-            name="terms"
-            type="checkbox"
-            v-model="acceptTerms"
-            required
-            class="h-4 w-4 text-orange-500 focus:ring-orange-500 border-gray-700 rounded bg-gray-800"
-          />
-          <label for="terms" class="ml-2 block text-sm text-gray-400">
-            I agree to the
-            <a href="#" class="text-orange-500 hover:text-orange-400">Terms of Service</a>
-            and
-            <a href="#" class="text-orange-500 hover:text-orange-400">Privacy Policy</a>
-          </label>
-        </div>
-
         <div>
           <button
             type="submit"
-            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+            :disabled="loading"
+            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
           >
-            Create account
+            <span v-if="loading">Registering...</span>
+            <span v-else>Create Account</span>
           </button>
+        </div>
+
+        <div v-if="error" class="text-red-500 text-sm text-center">
+          {{ error }}
         </div>
       </Form>
     </div>
   </div>
 </template>
 
-<script>
-import { Form } from 'vee-validate'
-import * as yup from 'yup'
+<script setup>
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { Form, Field } from 'vee-validate'
+import * as yup from 'yup'
+import { authService } from '@/services/authService'
 
-export default {
-  name: 'AppRegister',
-  components: {
-    Form
-  },
-  setup() {
-    const router = useRouter()
+const router = useRouter()
+const loading = ref(false)
+const error = ref(null)
 
-    const schema = yup.object({
-      fullName: yup.string().required().min(2),
-      email: yup.string().required().email(),
-      password: yup.string().required().min(6),
-      confirmPassword: yup.string().required().oneOf([yup.ref('password')], 'Passwords must match')
+const schema = yup.object({
+  name: yup.string().required('Name is required'),
+  email: yup.string().required('Email is required').email('Must be a valid email'),
+  password: yup.string().required('Password is required').min(6, 'Password must be at least 6 characters'),
+  confirmPassword: yup.string()
+    .required('Please confirm your password')
+    .oneOf([yup.ref('password')], 'Passwords must match')
+})
+
+const handleRegister = async (formValues) => {
+  try {
+    loading.value = true
+    error.value = null
+    
+    await authService.register({
+      name: formValues.name,
+      email: formValues.email,
+      password: formValues.password
     })
-
-    const handleRegister = async (values) => {
-      try {
-        // This should be replaced with actual API call
-        console.log('Register values:', values)
-        
-        // Split full name into first and last name
-        const [firstName, ...lastNameParts] = values.fullName.split(' ')
-        const lastName = lastNameParts.join(' ')
-        
-        // Store user data
-        const userData = {
-          email: values.email,
-          username: values.email.split('@')[0],
-          firstName: firstName,
-          lastName: lastName || '',
-        }
-        
-        localStorage.setItem('userData', JSON.stringify(userData))
-        localStorage.setItem('userEmail', values.email)
-        localStorage.setItem('userName', userData.username)
-        localStorage.setItem('isAuthenticated', 'true')
-        
-        router.push('/dashboard')
-      } catch (error) {
-        console.error('Registration error:', error)
-      }
-    }
-
-    return {
-      schema,
-      handleRegister
-    }
+    
+    router.push('/dashboard')
+  } catch (err) {
+    error.value = err.message
+  } finally {
+    loading.value = false
   }
 }
 </script>

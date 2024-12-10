@@ -113,70 +113,48 @@
   <div class="h-16"></div>
 </template>
 
-<script>
-import { ref } from 'vue'
+<script setup>
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { authService } from '@/services/authService'
+import { eventBus } from '@/utils/eventBus'
+import { clickOutside } from '@/directives/clickOutside'
 
-export default {
-  name: 'AppHeader',
-  setup() {
-    const router = useRouter()
-    const isUserMenuOpen = ref(false)
-    const isAuthenticated = ref(localStorage.getItem('isAuthenticated') === 'true')
-    const userName = ref(localStorage.getItem('userName') || 'John Doe')
+const router = useRouter()
+const isUserMenuOpen = ref(false)
+const isAuthenticated = ref(localStorage.getItem('isAuthenticated') === 'true')
+const userName = ref(localStorage.getItem('userName') || 'John Doe')
 
-    // Watch for authentication changes
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'isAuthenticated') {
-        isAuthenticated.value = e.newValue === 'true'
-      }
-    })
-
-    const logout = () => {
-      localStorage.removeItem('isAuthenticated')
-      localStorage.removeItem('userName')
-      isAuthenticated.value = false
-      isUserMenuOpen.value = false
-      router.push('/login')
-    }
-
-    const toggleUserMenu = () => {
-      isUserMenuOpen.value = !isUserMenuOpen.value
-    }
-
-    const closeUserMenu = () => {
-      isUserMenuOpen.value = false
-    }
-
-    return {
-      isUserMenuOpen,
-      isAuthenticated,
-      userName,
-      logout,
-      toggleUserMenu,
-      closeUserMenu
-    }
-  },
-  directives: {
-    'click-outside': {
-      mounted(el, binding) {
-        el.clickOutsideEvent = (event) => {
-          const button = document.getElementById('user-menu-button')
-          if (button && (button === event.target || button.contains(event.target))) {
-            return
-          }
-          if (!(el === event.target || el.contains(event.target))) {
-            binding.value()
-          }
-        }
-        document.addEventListener('click', el.clickOutsideEvent)
-      },
-      unmounted(el) {
-        document.removeEventListener('click', el.clickOutsideEvent)
-      }
-    }
-  }
+// Listen for auth changes
+const handleAuthChange = (data) => {
+  isAuthenticated.value = data.isAuthenticated
+  userName.value = data.isAuthenticated ? data.userName : 'John Doe'
 }
+
+onMounted(() => {
+  eventBus.on('auth-change', handleAuthChange)
+})
+
+onUnmounted(() => {
+  eventBus.off('auth-change', handleAuthChange)
+})
+
+const logout = () => {
+  authService.logout()
+  isUserMenuOpen.value = false
+  router.push('/login')
+}
+
+const toggleUserMenu = () => {
+  isUserMenuOpen.value = !isUserMenuOpen.value
+}
+
+const closeUserMenu = () => {
+  isUserMenuOpen.value = false
+}
+
+// Register click-outside directive
+const vClickOutside = clickOutside
 </script>
 
 <style scoped>

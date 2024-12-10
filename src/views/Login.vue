@@ -88,6 +88,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { Form, Field } from 'vee-validate'
 import * as yup from 'yup'
+import { authService } from '@/services/authService'
 
 const router = useRouter()
 const loading = ref(false)
@@ -103,26 +104,14 @@ const handleLogin = async (formValues) => {
     loading.value = true
     error.value = null
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    // Store user data
-    const userData = {
+    await authService.login({
       email: formValues.email,
-      username: formValues.email.split('@')[0]
-    }
-    localStorage.setItem('userName', userData.username)
-    localStorage.setItem('isAuthenticated', 'true')
-    
-    // Dispatch a storage event for other components
-    window.dispatchEvent(new StorageEvent('storage', {
-      key: 'isAuthenticated',
-      newValue: 'true'
-    }))
+      password: formValues.password
+    })
     
     router.push('/dashboard')
   } catch (err) {
-    error.value = err.message || 'Failed to login'
+    error.value = err.message
   } finally {
     loading.value = false
   }
