@@ -1,13 +1,13 @@
 <template>
   <div class="min-h-screen flex flex-col">
-    <AppHeader />
+    <AppHeader v-if="!isAdminRoute" />
     <main class="flex-grow flex">
       <AppSidebar v-if="showSidebar" class="w-64 flex-shrink-0" />
       <div class="flex-grow">
         <router-view></router-view>
       </div>
     </main>
-    <AppFooter />
+    <AppFooter v-if="!isAdminRoute" />
   </div>
 </template>
 
@@ -30,9 +30,14 @@ export default {
     const showSidebar = computed(() => {
       return route.meta.requiresAuth === true
     })
+    
+    const isAdminRoute = computed(() => {
+      return route.path.startsWith('/admin')
+    })
 
     return {
-      showSidebar
+      showSidebar,
+      isAdminRoute
     }
   }
 }
