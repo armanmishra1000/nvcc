@@ -37,6 +37,16 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  status: {
+    type: String,
+    enum: ['active', 'inactive', 'suspended'],
+    default: 'active'
+  },
+  subscriptionPlan: {
+    type: String,
+    enum: ['Free', 'Basic', 'Premium'],
+    default: 'Free'
+  },
   updateHistory: [updateHistorySchema],
   createdAt: {
     type: Date,
