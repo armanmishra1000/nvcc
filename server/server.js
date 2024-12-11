@@ -49,35 +49,69 @@ const wss = new WebSocket.Server({
   path: '/ws'
 });
 
+// Store active connections
+const clients = new Set();
+
+// Handle WebSocket connections
 wss.on('connection', (ws) => {
   console.log('New WebSocket connection');
+  clients.add(ws);
 
+  // Handle client messages
   ws.on('message', (message) => {
     try {
       const data = JSON.parse(message);
+      
+      // Handle ping messages
+      if (data.type === 'ping') {
+        ws.send(JSON.stringify({ type: 'pong' }));
+        return;
+      }
+
+      // Handle other message types here
       console.log('Received:', data);
       
-      // Handle different message types
-      switch (data.type) {
-        case 'userUpdate':
-          // Broadcast user updates to all connected clients
-          wss.clients.forEach(client => {
-            if (client !== ws && client.readyState === WebSocket.OPEN) {
-              client.send(JSON.stringify(data));
-            }
-          });
-          break;
-        // Add more message type handlers here
-      }
     } catch (error) {
-      console.error('WebSocket message handling error:', error);
+      console.error('Error processing message:', error);
     }
   });
 
+  // Handle client disconnection
   ws.on('close', () => {
     console.log('Client disconnected');
+    clients.delete(ws);
   });
 
-  // Send initial connection success message
-  ws.send(JSON.stringify({ type: 'connected', message: 'WebSocket connection established' }));
+  // Handle errors
+  ws.on('error', (error) => {
+    console.error('WebSocket error:', error);
+    clients.delete(ws);
+  });
+
+  // Send welcome message
+  ws.send(JSON.stringify({ 
+    type: 'connected',
+    message: 'Successfully connected to NVCC WebSocket server'
+  }));
 });
+
+// Broadcast to all connected clients
+wss.broadcast = (data) => {
+  clients.forEach(client => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(data));
+    }
+  });
+};
+
+// Heartbeat check
+setInterval(() => {
+  clients.forEach(ws => {
+    if (!ws.isAlive) {
+      clients.delete(ws);
+      return ws.terminate();
+    }
+    ws.isAlive = false;
+    ws.ping();
+  });
+}, 30000);

@@ -4,6 +4,7 @@ class WebSocketService {
     this.reconnectAttempts = 0;
     this.maxReconnectAttempts = 5;
     this.listeners = new Map();
+    this.heartbeatInterval = null;
   }
 
   connect() {
@@ -11,12 +12,14 @@ class WebSocketService {
       return;
     }
 
-    const wsUrl = `ws://localhost:5002/ws`;
+    const wsUrl = process.env.VUE_APP_WS_URL || `ws://localhost:5002/ws`;
     this.ws = new WebSocket(wsUrl);
 
     this.ws.onopen = () => {
       console.log('WebSocket connected');
       this.reconnectAttempts = 0;
+      // Send a ping to keep the connection alive
+      this.startHeartbeat();
     };
 
     this.ws.onmessage = (event) => {
@@ -32,6 +35,7 @@ class WebSocketService {
 
     this.ws.onclose = () => {
       console.log('WebSocket disconnected');
+      this.stopHeartbeat();
       if (this.reconnectAttempts < this.maxReconnectAttempts) {
         setTimeout(() => {
           this.reconnectAttempts++;
@@ -68,7 +72,23 @@ class WebSocketService {
     }
   }
 
+  startHeartbeat() {
+    this.heartbeatInterval = setInterval(() => {
+      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+        this.send('ping', {});
+      }
+    }, 30000); // Send ping every 30 seconds
+  }
+
+  stopHeartbeat() {
+    if (this.heartbeatInterval) {
+      clearInterval(this.heartbeatInterval);
+      this.heartbeatInterval = null;
+    }
+  }
+
   disconnect() {
+    this.stopHeartbeat();
     if (this.ws) {
       this.ws.close();
       this.ws = null;

@@ -1,82 +1,58 @@
-import axios from 'axios';
+import axios from './axiosConfig';
 
 const API_URL = process.env.VUE_APP_API_BASE_URL || 'http://localhost:5002';
 
 export const userService = {
-  async getAllUsers() {
+  async getUserProfile() {
     try {
-      console.log('Making request to:', `${API_URL}/api/users`);
-      console.log('Token:', localStorage.getItem('token'));
-      
-      const response = await axios.get(`${API_URL}/api/users`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      
-      console.log('Response received:', response);
-      return response;  // Return the full response object
+      const response = await axios.get(`${API_URL}/api/users/profile`);
+      return response.data;
     } catch (error) {
-      console.error('Error in getAllUsers:', error.response || error);
-      throw error.response?.data?.message || error.message || 'Failed to fetch users';
+      throw error.response?.data?.message || error.message || 'Failed to fetch user profile';
     }
   },
 
-  async updateUser(userId, userData) {
+  async updateUserProfile(profileData) {
     try {
-      console.log('Updating user:', userId, userData);
-      const response = await axios.put(`${API_URL}/api/users/${userId}`, userData, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      console.log('Update response:', response);
+      const response = await axios.put(`${API_URL}/api/users/profile`, profileData);
       return response.data;
     } catch (error) {
-      console.error('Error in updateUser:', error.response || error);
-      throw error.response?.data?.message || error.message || 'Failed to update user';
+      throw error.response?.data?.message || error.message || 'Failed to update profile';
+    }
+  },
+
+  async getAllUsers() {
+    try {
+      const response = await axios.get(`${API_URL}/api/users`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data?.message || error.message || 'Failed to fetch users';
     }
   },
 
   async updateUserStatus(userId, status) {
     try {
-      console.log('Making request to:', `${API_URL}/api/users/${userId}/status`);
-      console.log('Token:', localStorage.getItem('token'));
-      console.log('Status:', status);
-      
-      const response = await axios.patch(
-        `${API_URL}/api/users/${userId}/status`,
-        { status },
-        {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        }
-      );
-      
-      console.log('Response received:', response);
+      const response = await axios.patch(`${API_URL}/api/users/${userId}/status`, { status });
       return response.data;
     } catch (error) {
-      console.error('Error in updateUserStatus:', error.response || error);
       throw error.response?.data?.message || error.message || 'Failed to update user status';
     }
   },
 
   async deleteUser(userId) {
     try {
-      console.log('Making request to:', `${API_URL}/api/users/${userId}`);
-      console.log('Token:', localStorage.getItem('token'));
-      
-      await axios.delete(`${API_URL}/api/users/${userId}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      
-      console.log('User deleted successfully');
+      await axios.delete(`${API_URL}/api/users/${userId}`);
     } catch (error) {
-      console.error('Error in deleteUser:', error.response || error);
       throw error.response?.data?.message || error.message || 'Failed to delete user';
+    }
+  },
+
+  async updateUser(userId, userData) {
+    try {
+      const response = await axios.put(`${API_URL}/api/users/${userId}`, userData);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data?.message || error.message || 'Failed to update user';
     }
   }
 };
