@@ -7,210 +7,218 @@
           <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-orange-400">NVCC Plans</span>
         </h1>
         <p class="mt-4 text-xl text-gray-600 max-w-2xl mx-auto">
-          Choose the perfect plan for your business needs
+          Choose between a single card or subscription plans
         </p>
       </div>
 
-      <!-- Plans Grid -->
-      <div class="grid lg:grid-cols-3 gap-8 lg:gap-12 mt-8">
-        <!-- Basic Plan -->
-        <div class="relative bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-300 hover:scale-105 group">
-          <div class="p-8">
-            <div class="flex items-center justify-between">
-              <h2 class="text-2xl font-bold text-gray-900">Basic Plan</h2>
-              <span class="inline-flex px-4 py-1 rounded-full text-sm font-semibold bg-orange-100 text-orange-600">
-                Starter
-              </span>
+      <!-- Plan Type Selector -->
+      <div class="flex justify-center mb-12">
+        <div class="inline-flex rounded-lg border border-gray-200 p-1 bg-white">
+          <button 
+            @click="selectedPlanType = 'single'"
+            :class="[
+              selectedPlanType === 'single' 
+                ? 'bg-orange-500 text-white' 
+                : 'text-gray-500 hover:text-gray-700',
+              'px-6 py-2 rounded-md text-sm font-medium transition-all duration-200'
+            ]"
+          >
+            Single Card
+          </button>
+          <button 
+            @click="selectedPlanType = 'subscription'"
+            :class="[
+              selectedPlanType === 'subscription' 
+                ? 'bg-orange-500 text-white' 
+                : 'text-gray-500 hover:text-gray-700',
+              'px-6 py-2 rounded-md text-sm font-medium transition-all duration-200'
+            ]"
+          >
+            Subscription Plans
+          </button>
+        </div>
+      </div>
+
+      <!-- Single Card Section -->
+      <div v-if="selectedPlanType === 'single'" class="space-y-8">
+        <!-- Duration Selection -->
+        <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-8">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">Select Card Duration</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div 
+              v-for="duration in durations" 
+              :key="duration.period"
+              @click="selectedDuration = duration"
+              :class="[
+                'cursor-pointer p-4 rounded-xl border-2 transition-all duration-200',
+                selectedDuration === duration 
+                  ? 'border-orange-500 bg-orange-50' 
+                  : 'border-gray-200 hover:border-orange-200'
+              ]"
+            >
+              <div class="text-lg font-semibold text-gray-900">{{ duration.period }}</div>
+              <div class="text-2xl font-bold text-orange-600">€{{ duration.price }}</div>
+              <div class="text-sm text-gray-500">{{ duration.description }}</div>
             </div>
-            <div class="mt-6">
-              <div class="flex items-baseline">
-                <span class="text-5xl font-extrabold text-gray-900">$9.99</span>
-                <span class="ml-2 text-gray-500">/month</span>
-              </div>
-              <p class="mt-2 text-gray-500">Perfect for small teams getting started</p>
-            </div>
-            <div class="mt-8">
-              <ul class="space-y-4">
-                <li class="flex items-center">
-                  <div class="flex-shrink-0 w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center">
-                    <svg class="w-4 h-4 text-orange-500" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
-                  </div>
-                  <span class="ml-3 text-gray-600">Basic NVCC Features</span>
-                </li>
-                <li class="flex items-center">
-                  <div class="flex-shrink-0 w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center">
-                    <svg class="w-4 h-4 text-orange-500" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
-                  </div>
-                  <span class="ml-3 text-gray-600">5 Team Members</span>
-                </li>
-                <li class="flex items-center">
-                  <div class="flex-shrink-0 w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center">
-                    <svg class="w-4 h-4 text-orange-500" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
-                  </div>
-                  <span class="ml-3 text-gray-600">Basic Support</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="px-8 pb-8">
-            <button class="w-full py-4 px-8 text-lg font-semibold text-white bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 transform hover:-translate-y-1">
-              Get Started
-            </button>
           </div>
         </div>
 
-        <!-- Pro Plan -->
-        <div class="relative bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 hover:scale-105 group border-2 border-orange-500 lg:scale-110 z-10">
-          <div class="absolute top-0 left-0 right-0 w-full h-1 bg-gradient-to-r from-orange-500 to-orange-600"></div>
-          <div class="absolute -top-4 inset-x-0">
-            <div class="mx-auto w-32 bg-white text-center py-1 rounded-b-lg shadow-lg border-2 border-orange-500">
-              <span class="text-sm font-bold text-orange-600">MOST POPULAR</span>
-            </div>
-          </div>
-          <div class="p-8">
-            <div class="flex items-center justify-between">
-              <h2 class="text-2xl font-bold text-gray-900">Pro Plan</h2>
-              <span class="inline-flex px-4 py-1 rounded-full text-sm font-semibold bg-orange-100 text-orange-600">
-                Professional
-              </span>
-            </div>
-            <div class="mt-6">
-              <div class="flex items-baseline">
-                <span class="text-5xl font-extrabold text-gray-900">$24.99</span>
-                <span class="ml-2 text-gray-500">/month</span>
+        <!-- Balance Selection -->
+        <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-8">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">Select Card Balance</h2>
+          <div class="space-y-6">
+            <!-- Balance Input -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Desired card balance</label>
+              <div class="relative rounded-md shadow-sm">
+                <input
+                  type="number"
+                  v-model="desiredBalance"
+                  class="block w-full pr-16 sm:text-sm border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
+                  placeholder="Enter amount"
+                  min="10"
+                  step="0.01"
+                />
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                  <span class="text-gray-500 sm:text-sm">USD</span>
+                </div>
               </div>
-              <p class="mt-2 text-gray-500">Best for growing businesses</p>
             </div>
-            <div class="mt-8">
-              <ul class="space-y-4">
-                <li class="flex items-center">
-                  <div class="flex-shrink-0 w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center">
-                    <svg class="w-4 h-4 text-orange-500" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
-                  </div>
-                  <span class="ml-3 text-gray-600">All Basic Features</span>
-                </li>
-                <li class="flex items-center">
-                  <div class="flex-shrink-0 w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center">
-                    <svg class="w-4 h-4 text-orange-500" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
-                  </div>
-                  <span class="ml-3 text-gray-600">15 Team Members</span>
-                </li>
-                <li class="flex items-center">
-                  <div class="flex-shrink-0 w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center">
-                    <svg class="w-4 h-4 text-orange-500" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
-                  </div>
-                  <span class="ml-3 text-gray-600">Priority Support</span>
-                </li>
-                <li class="flex items-center">
-                  <div class="flex-shrink-0 w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center">
-                    <svg class="w-4 h-4 text-orange-500" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
-                  </div>
-                  <span class="ml-3 text-gray-600">Advanced Analytics</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="px-8 pb-8">
-            <button class="w-full py-4 px-8 text-lg font-semibold text-white bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 transform hover:-translate-y-1">
-              Get Pro Access
-            </button>
-          </div>
-        </div>
 
-        <!-- Enterprise Plan -->
-        <div class="relative bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-300 hover:scale-105 group">
-          <div class="p-8">
-            <div class="flex items-center justify-between">
-              <h2 class="text-2xl font-bold text-gray-900">Enterprise</h2>
-              <span class="inline-flex px-4 py-1 rounded-full text-sm font-semibold bg-orange-100 text-orange-600">
-                Custom
-              </span>
+            <!-- Quick Select Buttons -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <button
+                v-for="amount in quickAmounts"
+                :key="amount"
+                @click="desiredBalance = amount"
+                class="px-4 py-2 bg-gray-100 rounded-lg text-gray-700 hover:bg-gray-200 transition-all duration-200"
+              >
+                {{ amount }}$
+              </button>
             </div>
-            <div class="mt-6">
-              <div class="flex items-baseline">
-                <span class="text-5xl font-extrabold text-gray-900">$49.99</span>
-                <span class="ml-2 text-gray-500">/month</span>
+
+            <!-- 3D Secure Toggle -->
+            <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
+              <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 flex items-center justify-center bg-orange-100 rounded-full">
+                  <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="font-medium">3D-Secure</div>
+                  <div class="text-sm text-gray-500">Receive confirmation codes in your Profile or Telegram</div>
+                </div>
               </div>
-              <p class="mt-2 text-gray-500">For large-scale enterprises</p>
-            </div>
-            <div class="mt-8">
-              <ul class="space-y-4">
-                <li class="flex items-center">
-                  <div class="flex-shrink-0 w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center">
-                    <svg class="w-4 h-4 text-orange-500" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
-                  </div>
-                  <span class="ml-3 text-gray-600">All Pro Features</span>
-                </li>
-                <li class="flex items-center">
-                  <div class="flex-shrink-0 w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center">
-                    <svg class="w-4 h-4 text-orange-500" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
-                  </div>
-                  <span class="ml-3 text-gray-600">Unlimited Team Members</span>
-                </li>
-                <li class="flex items-center">
-                  <div class="flex-shrink-0 w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center">
-                    <svg class="w-4 h-4 text-orange-500" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
-                  </div>
-                  <span class="ml-3 text-gray-600">24/7 Dedicated Support</span>
-                </li>
-                <li class="flex items-center">
-                  <div class="flex-shrink-0 w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center">
-                    <svg class="w-4 h-4 text-orange-500" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
-                  </div>
-                  <span class="ml-3 text-gray-600">Custom Integration</span>
-                </li>
-              </ul>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" v-model="secure3d" class="sr-only peer">
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
+              </label>
             </div>
           </div>
-          <div class="px-8 pb-8">
-            <button class="w-full py-4 px-8 text-lg font-semibold text-white bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 transform hover:-translate-y-1">
-              Contact Sales
-            </button>
+
+          <!-- Summary and Total -->
+          <div class="mt-8 space-y-4 border-t pt-6">
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-600">Card duration</span>
+              <span class="font-medium">{{ selectedDuration?.period || 'Not selected' }}</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-600">Card balance</span>
+              <span class="font-medium">${{ desiredBalance }}</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-600">Top-up fee (8%)</span>
+              <span class="font-medium">${{ topUpFee }}</span>
+            </div>
+            <div class="flex justify-between text-lg font-bold">
+              <span>Total</span>
+              <span class="text-orange-600">${{ total }}</span>
+            </div>
+          </div>
+
+          <!-- Get Card Button -->
+          <button 
+            @click="getCard"
+            class="mt-6 w-full py-4 px-8 text-lg font-semibold text-white bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 transform hover:-translate-y-1"
+            :disabled="!isValidOrder"
+          >
+            Get Your Card Now
+          </button>
+        </div>
+      </div>
+
+      <!-- Subscription Plans Section -->
+      <div v-else class="grid lg:grid-cols-3 gap-8 lg:gap-12 mt-8">
+        <!-- Coming Soon Message -->
+        <div class="lg:col-span-3 text-center">
+          <div class="bg-orange-50 rounded-2xl p-8 max-w-2xl mx-auto">
+            <svg class="w-16 h-16 text-orange-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Subscription Plans Coming Soon!</h2>
+            <p class="text-gray-600">We're working on exciting subscription plans with amazing benefits. Stay tuned!</p>
           </div>
         </div>
       </div>
 
-      <!-- FAQ Section -->
-      <div class="mt-20 text-center">
-        <h2 class="text-3xl font-bold text-gray-900">Frequently Asked Questions</h2>
-        <p class="mt-4 text-lg text-gray-600">
-          Have questions? We're here to help.
-        </p>
-        <div class="mt-8 inline-flex items-center text-orange-600 hover:text-orange-700 font-semibold cursor-pointer">
-          Contact our support team
-          <svg class="w-5 h-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-          </svg>
-        </div>
-      </div>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'NvccPlans'
+  name: 'NvccPlans',
+  data() {
+    return {
+      selectedPlanType: 'single',
+      selectedDuration: null,
+      desiredBalance: 50,
+      secure3d: true,
+      durations: [
+        {
+          period: '1 Month',
+          price: '1.99',
+          description: 'Perfect for short-term needs'
+        },
+        {
+          period: '3 Months',
+          price: '3.99',
+          description: 'Most popular choice'
+        },
+        {
+          period: '1 Year',
+          price: '10.99',
+          description: 'Best value for money'
+        }
+      ],
+      quickAmounts: [50, 100, 250, 500]
+    }
+  },
+  computed: {
+    topUpFee() {
+      return this.desiredBalance ? (this.desiredBalance * 0.08).toFixed(2) : 0
+    },
+    total() {
+      const balance = parseFloat(this.desiredBalance) || 0
+      const fee = parseFloat(this.topUpFee)
+      const durationPrice = this.selectedDuration ? parseFloat(this.selectedDuration.price) : 0
+      return (balance + fee + durationPrice).toFixed(2)
+    },
+    isValidOrder() {
+      return this.selectedDuration && this.desiredBalance >= 10
+    }
+  },
+  methods: {
+    getCard() {
+      // Implement card purchase logic here
+      console.log('Getting card with:', {
+        duration: this.selectedDuration,
+        balance: this.desiredBalance,
+        secure3d: this.secure3d,
+        total: this.total
+      })
+    }
+  }
 }
 </script>
