@@ -209,7 +209,136 @@
             </button>
           </div>
         </div>
-
+        <!-- Nvcc Pro Plan -->
+        <div class="relative flex flex-col bg-white rounded-2xl shadow-xl overflow-hidden transform hover:scale-105 transition-all duration-300">
+          <!-- Popular Badge -->
+          <div class="absolute top-0 right-0 bg-gradient-to-r from-orange-600 to-orange-400 text-white px-4 py-1 rounded-bl-lg font-medium text-sm">
+            Most Popular
+          </div>
+          
+          <!-- Plan Header -->
+          <div class="p-8 bg-gradient-to-b from-orange-50 to-white">
+            <h3 class="text-2xl font-bold text-gray-900">Nvcc Pro</h3>
+            <div class="mt-4 flex items-baseline">
+              <div class="relative">
+                <span class="absolute -top-3 left-0 w-full h-px bg-gray-400 transform rotate-12"></span>
+                <span class="text-xl text-gray-400">€80</span>
+              </div>
+              <span class="ml-2 text-4xl font-bold text-orange-600">€49.99</span>
+              <span class="ml-2 text-gray-500">/month</span>
+            </div>
+          </div>
+        
+          <!-- Plan Features -->
+          <div class="flex-1 p-8 space-y-6">
+            <!-- Main Feature -->
+            <div class="flex items-center">
+              <div class="flex-shrink-0 w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+              </div>
+              <div class="ml-4">
+                <h4 class="text-lg font-semibold text-gray-900">40 Cards</h4>
+                <p class="text-gray-500">Per month</p>
+              </div>
+            </div>
+        
+            <!-- Other Features -->
+            <ul class="space-y-4">
+              <li class="flex items-center">
+                <svg class="h-5 w-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span class="ml-3 text-gray-700">5% Deposit Fees</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="h-5 w-5 text-orange-500 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span class="ml-3 text-gray-700">1% Cashback unlimited<br><span class="text-sm text-gray-500">(on purchases over $100)</span></span>
+              </li>
+            </ul>
+          </div>
+        
+          <!-- CTA Button -->
+          <div class="p-8 bg-gray-50">
+            <button 
+              @click="selectPlan('pro')"
+              class="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-lg text-lg font-medium text-white bg-gradient-to-r from-orange-600 to-orange-400 hover:from-orange-500 hover:to-orange-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transform hover:-translate-y-1 transition-all duration-200"
+            >
+              Get Started Now
+              <svg class="ml-2 -mr-1 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <!-- Nvcc Pro Plan -->
+        <div class="relative flex flex-col bg-white rounded-2xl shadow-xl overflow-hidden transform hover:scale-105 transition-all duration-300">
+          <!-- Popular Badge -->
+          <div class="absolute top-0 right-0 bg-gradient-to-r from-orange-600 to-orange-400 text-white px-4 py-1 rounded-bl-lg font-medium text-sm">
+            Most Popular
+          </div>
+          
+          <!-- Plan Header -->
+          <div class="p-8 bg-gradient-to-b from-orange-50 to-white">
+            <h3 class="text-2xl font-bold text-gray-900">Nvcc Pro</h3>
+            <div class="mt-4 flex items-baseline">
+              <div class="relative">
+                <span class="absolute -top-3 left-0 w-full h-px bg-gray-400 transform rotate-12"></span>
+                <span class="text-xl text-gray-400">€200</span>
+              </div>
+              <span class="ml-2 text-4xl font-bold text-orange-600">€99.99</span>
+              <span class="ml-2 text-gray-500">/month</span>
+            </div>
+          </div>
+        
+          <!-- Plan Features -->
+          <div class="flex-1 p-8 space-y-6">
+            <!-- Main Feature -->
+            <div class="flex items-center">
+              <div class="flex-shrink-0 w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+              </div>
+              <div class="ml-4">
+                <h4 class="text-lg font-semibold text-gray-900">100 Cards</h4>
+                <p class="text-gray-500">Per month</p>
+              </div>
+            </div>
+        
+            <!-- Other Features -->
+            <ul class="space-y-4">
+              <li class="flex items-center">
+                <svg class="h-5 w-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span class="ml-3 text-gray-700">4% Deposit Fees</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="h-5 w-5 text-orange-500 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span class="ml-3 text-gray-700">2% Cashback unlimited<br><span class="text-sm text-gray-500">(on purchases over $100)</span></span>
+              </li>
+            </ul>
+          </div>
+        
+          <!-- CTA Button -->
+          <div class="p-8 bg-gray-50">
+            <button 
+              @click="selectPlan('pro')"
+              class="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-lg text-lg font-medium text-white bg-gradient-to-r from-orange-600 to-orange-400 hover:from-orange-500 hover:to-orange-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transform hover:-translate-y-1 transition-all duration-200"
+            >
+              Get Started Now
+              <svg class="ml-2 -mr-1 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </button>
+          </div>
+        </div>
         <!-- Placeholder for future plans -->
         <div class="lg:col-span-2 flex items-center justify-center p-12 bg-gray-50 rounded-2xl">
           <div class="text-center">
