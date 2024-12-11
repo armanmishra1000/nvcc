@@ -45,8 +45,7 @@ import {
   CreditCardIcon,
   BanknotesIcon,
   LockClosedIcon,
-  UsersIcon,
-  PlusCircleIcon
+  UsersIcon
 } from '@heroicons/vue/24/outline'
 
 export default {
@@ -57,15 +56,13 @@ export default {
     CreditCardIcon,
     BanknotesIcon,
     LockClosedIcon,
-    UsersIcon,
-    PlusCircleIcon
+    UsersIcon
   },
   setup() {
     const navigation = [
       { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
       { name: 'My accounts', href: '/accounts', icon: UserIcon },
       { name: 'My cards', href: '/cards', icon: CreditCardIcon },
-      { name: 'Get Card', href: '/get-card', icon: PlusCircleIcon },
       { name: 'Payments', href: '/payments', icon: BanknotesIcon },
       { name: 'NVCC Plans', href: '/plans', icon: LockClosedIcon, badge: 'HOT' },
       { name: 'For friends', href: '/friends', icon: UsersIcon },
