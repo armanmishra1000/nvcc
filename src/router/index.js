@@ -134,36 +134,46 @@ const router = createRouter({
   routes
 })
 
+// Navigation guards
 router.beforeEach((to, from, next) => {
-  // Check for requiresAdmin meta field
+  const isUserAuthenticated = isAuthenticated()
+  const isUserAdmin = isAdmin()
+
+  // Routes that require admin access
   if (to.matched.some(record => record.meta.requiresAdmin)) {
-    if (!isAdmin()) {
+    if (!isUserAuthenticated || !isUserAdmin) {
       next('/admin/login')
     } else {
       next()
     }
+    return
   }
-  // Check for requiresAuth meta field
-  else if (to.matched.some(record => record.meta.requiresAuth)) {
-    if (!isAuthenticated()) {
+
+  // Routes that require authentication
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (!isUserAuthenticated) {
       next('/login')
     } else {
       next()
     }
+    return
   }
-  // Check for requiresGuest meta field
-  else if (to.matched.some(record => record.meta.requiresGuest)) {
-    if (to.path === '/admin/login' && isAdmin()) {
-      next('/admin')
-    } else if (isAuthenticated()) {
-      next('/')
+
+  // Routes that require guest access (login, register)
+  if (to.matched.some(record => record.meta.requiresGuest)) {
+    if (isUserAuthenticated) {
+      if (isUserAdmin) {
+        next('/admin')
+      } else {
+        next('/dashboard')
+      }
     } else {
       next()
     }
+    return
   }
-  else {
-    next()
-  }
+
+  next()
 })
 
 export default router

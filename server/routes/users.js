@@ -57,65 +57,78 @@ router.put('/profile', auth, async (req, res) => {
   }
 });
 
-// Get all users (admin only)
-router.get('/', auth, async (req, res) => {
+// Admin Routes
+// Middleware to check if user is admin
+const isAdmin = async (req, res, next) => {
   try {
-    console.log('GET /api/users request received');
+    const user = await User.findById(req.user.userId);
+    if (!user || !user.isAdmin) {
+      return res.status(403).json({ message: 'Access denied. Admin privileges required.' });
+    }
+    next();
+  } catch (error) {
+    res.status(500).json({ message: 'Error checking admin status' });
+  }
+};
+
+// Get all users (admin only)
+router.get('/', [auth, isAdmin], async (req, res) => {
+  try {
+    console.log('GET /api/users - Fetching all users');
     console.log('User from token:', req.user);
     
-    // Check if user is admin
-    if (!req.user.isAdmin) {
-      console.log('Access denied: User is not admin');
-      return res.status(403).json({ message: 'Access denied. Admin only.' });
-    }
-
-    const users = await User.find().select('-password');
-    console.log('Users found:', users.length);
+    const users = await User.find().select('-password -updateHistory');
+    console.log('Found users:', users.length);
+    
     res.json(users);
   } catch (error) {
-    console.error('Server error in GET /api/users:', error);
-    res.status(500).json({ message: 'Server error', error: error.message });
+    console.error('Error fetching users:', error);
+    res.status(500).json({ message: 'Error fetching users', error: error.message });
   }
 });
 
 // Update user (admin only)
-router.put('/:userId', auth, async (req, res) => {
+router.put('/:id', [auth, isAdmin], async (req, res) => {
   try {
-    console.log('PUT /api/users/:userId request received');
-    console.log('User from token:', req.user);
-    console.log('Update data:', req.body);
-    
-    // Check if user is admin
-    if (!req.user.isAdmin) {
-      console.log('Access denied: User is not admin');
-      return res.status(403).json({ message: 'Access denied. Admin only.' });
-    }
-
     const { name, email, status, subscriptionPlan } = req.body;
-    const user = await User.findById(req.params.userId);
+    const user = await User.findById(req.params.id);
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Update user fields
-    if (name) user.name = name;
-    if (email) user.email = email;
-    if (status) user.status = status;
-    if (subscriptionPlan) user.subscriptionPlan = subscriptionPlan;
+    // Track changes
+    const changes = {};
+    if (name && name !== user.name) {
+      changes.name = { from: user.name, to: name };
+      user.name = name;
+    }
+    if (email && email !== user.email) {
+      changes.email = { from: user.email, to: email };
+      user.email = email;
+    }
+    if (status && status !== user.status) {
+      changes.status = { from: user.status, to: status };
+      user.status = status;
+    }
+    if (subscriptionPlan && subscriptionPlan !== user.subscriptionPlan) {
+      changes.subscriptionPlan = { from: user.subscriptionPlan, to: subscriptionPlan };
+      user.subscriptionPlan = subscriptionPlan;
+    }
 
-    // Save update history
-    user.updateHistory.push({
-      timestamp: new Date(),
-      changes: req.body
-    });
+    // Only add to update history if there were changes
+    if (Object.keys(changes).length > 0) {
+      user.updateHistory.push({
+        timestamp: new Date(),
+        changes
+      });
+    }
 
     await user.save();
-    console.log('User updated successfully');
-    res.json({ message: 'User updated successfully', user });
+    res.json(user);
   } catch (error) {
     console.error('Error updating user:', error);
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: 'Error updating user', error: error.message });
   }
 });
 

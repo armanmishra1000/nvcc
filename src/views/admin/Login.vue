@@ -94,6 +94,7 @@
 <script>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
 
 export default {
   name: 'AdminLogin',
@@ -110,15 +111,23 @@ export default {
       error.value = ''
 
       try {
-        // Simulated admin login check
-        if (email.value === 'admin@nvcc.com' && password.value === 'admin123') {
+        const baseURL = process.env.VUE_APP_API_URL || 'http://localhost:5002'
+        const response = await axios.post(`${baseURL}/api/auth/admin/login`, {
+          email: email.value,
+          password: password.value
+        })
+
+        if (response.data.token) {
+          localStorage.setItem('token', response.data.token)
           localStorage.setItem('isAdmin', 'true')
+          localStorage.setItem('isAuthenticated', 'true')
           router.push('/admin')
         } else {
-          error.value = 'Invalid email or password'
+          error.value = 'Invalid credentials'
         }
       } catch (err) {
-        error.value = 'An error occurred during login'
+        console.error('Login error:', err)
+        error.value = err.response?.data?.message || 'An error occurred during login'
       } finally {
         isLoading.value = false
       }

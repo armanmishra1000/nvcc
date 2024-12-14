@@ -136,17 +136,9 @@
 <script>
 import { ref, onMounted } from 'vue'
 import AdminLayout from '@/layouts/AdminLayout.vue'
-import { userService } from '@/services/userService'
-import {
-  UsersIcon,
-  CreditCardIcon,
-  CurrencyDollarIcon,
-  ClipboardDocumentListIcon,
-  ArrowUpIcon,
-  UserPlusIcon,
-  CreditCardIcon as CreditCardIconSolid,
-  BanknotesIcon
-} from '@heroicons/vue/24/outline'
+import { UsersIcon, CreditCardIcon, CurrencyDollarIcon, ClipboardDocumentListIcon, ArrowUpIcon } from '@heroicons/vue/24/outline'
+import { UserPlusIcon, CreditCardIcon as CreditCardIconSolid, BanknotesIcon } from '@heroicons/vue/24/solid'
+import axios from 'axios'
 
 export default {
   name: 'AdminDashboard',
@@ -194,12 +186,27 @@ export default {
 
     const fetchDashboardData = async () => {
       try {
-        const response = await userService.getAllUsers()
-        totalUsers.value = response.data.length
-        // Calculate growth (this is a placeholder - you might want to implement actual growth calculation)
-        userGrowth.value = ((totalUsers.value - (totalUsers.value * 0.9)) / (totalUsers.value * 0.9) * 100).toFixed(1)
+        const baseURL = process.env.VUE_APP_API_URL || 'http://localhost:5002'
+        const token = localStorage.getItem('token')
+        const response = await axios.get(`${baseURL}/api/users`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+        
+        if (response.data && Array.isArray(response.data)) {
+          totalUsers.value = response.data.length
+          // Calculate growth (this is a placeholder - you might want to implement actual growth calculation)
+          userGrowth.value = 5.2 // Placeholder growth rate
+        } else {
+          console.warn('Unexpected response format:', response.data)
+          totalUsers.value = 0
+          userGrowth.value = 0
+        }
       } catch (error) {
         console.error('Error fetching dashboard data:', error)
+        totalUsers.value = 0
+        userGrowth.value = 0
       }
     }
 

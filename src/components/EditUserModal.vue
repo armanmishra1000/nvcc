@@ -64,7 +64,13 @@ export default {
     },
     user: {
       type: Object,
-      required: true
+      required: false,
+      default: () => ({
+        name: '',
+        email: '',
+        status: 'active',
+        subscriptionPlan: 'Free'
+      })
     }
   },
   emits: ['close', 'save'],

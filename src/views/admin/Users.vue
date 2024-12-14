@@ -172,17 +172,17 @@
 <script>
 import { ref, computed, onMounted } from 'vue'
 import AdminLayout from '@/layouts/AdminLayout.vue'
-import { userService } from '@/services/userService'
 import EditUserModal from '@/components/EditUserModal.vue'
+import axios from 'axios'
 
 export default {
-  name: 'Users',
+  name: 'AdminUsers',
   components: {
     AdminLayout,
     EditUserModal
   },
   setup() {
-    const users = ref([])  // Initialize as empty array
+    const users = ref([])
     const searchQuery = ref('')
     const selectedStatus = ref('')
     const selectedPlan = ref('')
@@ -197,16 +197,22 @@ export default {
     const fetchUsers = async () => {
       try {
         loading.value = true
-        console.log('Fetching users...');
-        const response = await userService.getAllUsers()
-        console.log('Response data:', JSON.stringify(response.data, null, 2));
+        console.log('Fetching users...')
         
-        // Set users directly from response.data since it's already an array
+        const baseURL = process.env.VUE_APP_API_URL || 'http://localhost:5002'
+        const token = localStorage.getItem('token')
+        
+        const response = await axios.get(`${baseURL}/api/users`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+        
+        console.log('Response data:', response.data)
         users.value = Array.isArray(response.data) ? response.data : []
-        console.log('Users set:', users.value);
-        console.log('Users length:', users.value.length);
+        console.log('Users set:', users.value)
+        console.log('Users length:', users.value.length)
 
-        // Update pagination data based on actual users length
         totalItems.value = users.value.length
         totalPages.value = Math.ceil(users.value.length / itemsPerPage)
       } catch (error) {
@@ -218,9 +224,8 @@ export default {
     }
 
     const filteredUsers = computed(() => {
-      console.log('Computing filtered users:', users.value);
       if (!Array.isArray(users.value)) {
-        console.log('Users is not an array');
+        console.log('Users is not an array')
         return []
       }
       
@@ -250,20 +255,22 @@ export default {
     }
 
     const editUser = (user) => {
-      console.log('Edit user:', user)
-      selectedUser.value = user
+      selectedUser.value = { ...user }
       showEditModal.value = true
-    }
-
-    const closeEditModal = () => {
-      showEditModal.value = false
-      selectedUser.value = null
     }
 
     const saveUser = async (userData) => {
       try {
         loading.value = true
-        await userService.updateUser(selectedUser.value._id, userData)
+        const baseURL = process.env.VUE_APP_API_URL || 'http://localhost:5002'
+        const token = localStorage.getItem('token')
+        
+        await axios.put(`${baseURL}/api/users/${selectedUser.value._id}`, userData, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+        
         await fetchUsers() // Refresh the users list
         showEditModal.value = false
         selectedUser.value = null
@@ -274,18 +281,14 @@ export default {
       }
     }
 
-    const deleteUser = async (user) => {
-      if (confirm(`Are you sure you want to delete ${user.name}?`)) {
-        try {
-          await userService.deleteUser(user._id)
-          users.value = users.value.filter(u => u._id !== user._id)
-        } catch (error) {
-          console.error('Failed to delete user:', error)
-        }
-      }
+    const closeEditModal = () => {
+      showEditModal.value = false
+      selectedUser.value = null
     }
 
-    onMounted(fetchUsers)
+    onMounted(() => {
+      fetchUsers()
+    })
 
     return {
       users,
@@ -293,19 +296,19 @@ export default {
       selectedStatus,
       selectedPlan,
       currentPage,
+      loading,
+      totalItems,
+      totalPages,
       filteredUsers,
       totalUsers,
-      totalPages,
       startIndex,
       endIndex,
-      formatDate,
-      editUser,
-      deleteUser,
-      loading,
       showEditModal,
       selectedUser,
-      closeEditModal,
-      saveUser
+      formatDate,
+      editUser,
+      saveUser,
+      closeEditModal
     }
   }
 }
