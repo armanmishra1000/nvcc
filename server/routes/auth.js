@@ -2,11 +2,27 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const mongoose = require('mongoose'); // Add mongoose to the requires
 
 // Register route
 router.post('/register', async (req, res) => {
   try {
     const { email, password, name } = req.body;
+
+    // Check MongoDB connection first
+    if (mongoose.connection.readyState !== 1) {
+      console.error('MongoDB connection state:', {
+        state: mongoose.connection.readyState,
+        host: mongoose.connection.host,
+        name: mongoose.connection.name
+      });
+      
+      return res.status(503).json({ 
+        message: 'Database connection not available',
+        details: 'The server is temporarily unable to handle the request due to database connection issues.',
+        connectionState: mongoose.connection.readyState
+      });
+    }
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -40,7 +56,17 @@ router.post('/register', async (req, res) => {
       }
     });
   } catch (error) {
-    res.status(500).json({ message: 'Error creating user', error: error.message });
+    console.error('Registration error:', {
+      message: error.message,
+      stack: error.stack,
+      mongoState: mongoose.connection.readyState
+    });
+    
+    res.status(500).json({ 
+      message: 'Error creating user', 
+      details: error.message,
+      connectionState: mongoose.connection.readyState
+    });
   }
 });
 

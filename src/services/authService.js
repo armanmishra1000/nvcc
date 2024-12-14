@@ -32,18 +32,30 @@ export const authService = {
       const data = response.data;
       
       // Store token and basic auth state
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('isAuthenticated', 'true');
-      
-      // Emit auth change event
-      eventBus.emit('auth-change', {
-        isAuthenticated: true,
-        user: data.user
-      });
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('isAuthenticated', 'true');
+        
+        // Emit auth change event
+        eventBus.emit('auth-change', {
+          isAuthenticated: true,
+          user: data.user
+        });
+      }
       
       return data;
     } catch (error) {
-      throw error.response?.data?.message || error.message || 'Registration failed';
+      console.error('Registration error:', error);
+      const errorMessage = error.response?.data?.message || 
+                         error.response?.data?.details ||
+                         error.message || 
+                         'Registration failed';
+      
+      // Clear any partial auth state
+      localStorage.removeItem('token');
+      localStorage.removeItem('isAuthenticated');
+      
+      throw new Error(errorMessage);
     }
   },
 
