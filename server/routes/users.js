@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
 const User = require('../models/User');
 
 // Get user profile
 router.get('/profile', auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId).select('-password');
+    const user = await User.findById(req.user._id).select('-password');
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -20,7 +21,7 @@ router.get('/profile', auth, async (req, res) => {
 router.put('/profile', auth, async (req, res) => {
   try {
     const { username, firstName, lastName } = req.body;
-    const user = await User.findById(req.user.userId);
+    const user = await User.findById(req.user._id);
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -50,10 +51,9 @@ router.put('/profile', auth, async (req, res) => {
     }
 
     await user.save();
-    res.json({ message: 'Profile updated successfully', user });
+    res.json(user);
   } catch (error) {
-    console.error('Profile update error:', error);
-    res.status(500).json({ message: 'Error updating profile', error: error.message });
+    res.status(500).json({ message: 'Error updating user profile', error: error.message });
   }
 });
 
@@ -61,7 +61,7 @@ router.put('/profile', auth, async (req, res) => {
 // Middleware to check if user is admin
 const isAdmin = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user.userId);
+    const user = await User.findById(req.user._id);
     if (!user || !user.isAdmin) {
       return res.status(403).json({ message: 'Access denied. Admin privileges required.' });
     }
@@ -72,11 +72,9 @@ const isAdmin = async (req, res, next) => {
 };
 
 // Get all users (admin only)
-router.get('/', [auth, isAdmin], async (req, res) => {
+router.get('/', [auth, admin], async (req, res) => {
   try {
     console.log('GET /api/users - Fetching all users');
-    console.log('User from token:', req.user);
-    
     const users = await User.find().select('-password -updateHistory');
     console.log('Found users:', users.length);
     
@@ -88,7 +86,7 @@ router.get('/', [auth, isAdmin], async (req, res) => {
 });
 
 // Update user (admin only)
-router.put('/:id', [auth, isAdmin], async (req, res) => {
+router.put('/:id', [auth, admin], async (req, res) => {
   try {
     const { name, email, status, subscriptionPlan } = req.body;
     const user = await User.findById(req.params.id);
@@ -133,13 +131,8 @@ router.put('/:id', [auth, isAdmin], async (req, res) => {
 });
 
 // Update user status (admin only)
-router.patch('/:userId/status', auth, async (req, res) => {
+router.patch('/:userId/status', [auth, admin], async (req, res) => {
   try {
-    // Check if user is admin
-    if (!req.user.isAdmin) {
-      return res.status(403).json({ message: 'Access denied. Admin only.' });
-    }
-
     const { status } = req.body;
     const user = await User.findByIdAndUpdate(
       req.params.userId,
@@ -158,13 +151,8 @@ router.patch('/:userId/status', auth, async (req, res) => {
 });
 
 // Delete user (admin only)
-router.delete('/:userId', auth, async (req, res) => {
+router.delete('/:userId', [auth, admin], async (req, res) => {
   try {
-    // Check if user is admin
-    if (!req.user.isAdmin) {
-      return res.status(403).json({ message: 'Access denied. Admin only.' });
-    }
-
     const user = await User.findByIdAndDelete(req.params.userId);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });

@@ -199,7 +199,7 @@
           <!-- CTA Button -->
           <div class="p-8 bg-gray-50">
             <button 
-              @click="selectPlan('plus')"
+              @click="initiateSubscription('plus')"
               class="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-lg text-lg font-medium text-white bg-gradient-to-r from-orange-600 to-orange-400 hover:from-orange-500 hover:to-orange-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transform hover:-translate-y-1 transition-all duration-200"
             >
               Get Started Now
@@ -264,7 +264,7 @@
           <!-- CTA Button -->
           <div class="p-8 bg-gray-50">
             <button 
-              @click="selectPlan('pro')"
+              @click="initiateSubscription('pro')"
               class="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-lg text-lg font-medium text-white bg-gradient-to-r from-orange-600 to-orange-400 hover:from-orange-500 hover:to-orange-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transform hover:-translate-y-1 transition-all duration-200"
             >
               Get Started Now
@@ -329,7 +329,7 @@
           <!-- CTA Button -->
           <div class="p-8 bg-gray-50">
             <button 
-              @click="selectPlan('pro')"
+              @click="initiateSubscription('pro')"
               class="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-lg text-lg font-medium text-white bg-gradient-to-r from-orange-600 to-orange-400 hover:from-orange-500 hover:to-orange-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transform hover:-translate-y-1 transition-all duration-200"
             >
               Get Started Now
@@ -348,66 +348,193 @@
         </div>
       </div>
 
+      <!-- Payment Method Modal -->
+      <div v-if="showPaymentModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+          <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+          <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+          <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+            <div>
+              <div class="mt-3 text-center sm:mt-5">
+                <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                  Select Payment Method
+                </h3>
+                <div class="mt-4">
+                  <div class="grid grid-cols-2 gap-4">
+                    <button
+                      v-for="method in paymentMethods"
+                      :key="method.id"
+                      @click="selectPaymentMethod(method)"
+                      :class="[
+                        'p-4 border-2 rounded-lg flex flex-col items-center justify-center transition-all duration-200',
+                        selectedPaymentMethod === method
+                          ? 'border-orange-500 bg-orange-50'
+                          : 'border-gray-200 hover:border-orange-200'
+                      ]"
+                    >
+                      <span v-html="method.icon" class="w-12 h-12 mb-2 text-gray-600"></span>
+                      <span class="text-sm font-medium text-gray-900">{{ method.name }}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+              <button
+                type="button"
+                @click="submitSubscriptionRequest"
+                :disabled="!selectedPaymentMethod"
+                :class="[
+                  'w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white sm:col-start-2 sm:text-sm',
+                  selectedPaymentMethod
+                    ? 'bg-orange-600 hover:bg-orange-700'
+                    : 'bg-gray-300 cursor-not-allowed'
+                ]"
+              >
+                Confirm Payment
+              </button>
+              <button
+                type="button"
+                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:col-start-1 sm:text-sm"
+                @click="showPaymentModal = false"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Success Modal -->
+      <div v-if="showSuccessModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+          <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+          <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+          <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+            <div>
+              <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                <svg class="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div class="mt-3 text-center sm:mt-5">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                  Subscription Request Received
+                </h3>
+                <div class="mt-2">
+                  <p class="text-sm text-gray-500">
+                    Thank you for your subscription request. We will review your request and activate your plan shortly.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="mt-5 sm:mt-6">
+              <button
+                type="button"
+                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-orange-600 text-base font-medium text-white hover:bg-orange-700 sm:text-sm"
+                @click="closeSuccessModal"
+              >
+                Got it, thanks!
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'NvccPlans',
   data() {
     return {
-      selectedPlanType: 'single',
+      selectedPlanType: 'subscription',
       selectedDuration: null,
       desiredBalance: null,
       secure3d: true,
-      durations: [
-        {
-          period: '1 Month',
-          price: 4.99,
-          description: 'Perfect for one-time use'
+      showPaymentModal: false,
+      showSuccessModal: false,
+      selectedPaymentMethod: null,
+      selectedPlan: null,
+      paymentMethods: [
+        { 
+          id: 'btc', 
+          name: 'Bitcoin',
+          icon: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3l-2 0v26l2 0zM10 6l12 0c2.2 0 4 1.8 4 4l0 12c0 2.2-1.8 4-4 4l-12 0c-2.2 0-4-1.8-4-4l0-12c0-2.2 1.8-4 4-4z"/></svg>`
         },
-        {
-          period: '3 Months',
-          price: 12.99,
-          description: 'Most popular choice'
+        { 
+          id: 'usdt', 
+          name: 'USDT',
+          icon: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3C8.8 3 3 8.8 3 16s5.8 13 13 13 13-5.8 13-13S23.2 3 16 3zm0 20c-3.9 0-7-3.1-7-7s3.1-7 7-7 7 3.1 7 7-3.1 7-7 7z"/></svg>`
         },
-        {
-          period: '6 Months',
-          price: 19.99,
-          description: 'Best value for money'
+        { 
+          id: 'ltc', 
+          name: 'LTC',
+          icon: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3C8.8 3 3 8.8 3 16s5.8 13 13 13 13-5.8 13-13S23.2 3 16 3zm2 19h-4v-2h4v2zm-4-4v-8h4v8h-4z"/></svg>`
+        },
+        { 
+          id: 'eth', 
+          name: 'ETH',
+          icon: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3l-9 12 9 5 9-5-9-12zM7 16l9 5 9-5-9 13-9-13z"/></svg>`
         }
       ],
-      quickAmounts: [50, 100, 200, 500]
-    }
-  },
-  computed: {
-    topUpFee() {
-      return this.desiredBalance >= 200 ? 4.5 : 6
-    },
-    total() {
-      if (!this.desiredBalance) return 0
-      const fee = (this.desiredBalance * this.topUpFee / 100)
-      return (Number(this.desiredBalance) + fee).toFixed(2)
-    },
-    isValidOrder() {
-      return this.selectedDuration && this.desiredBalance >= 10
+      durations: [
+        { period: '1 Month', price: 29.99, description: 'Perfect for short-term use' },
+        { period: '6 Months', price: 149.99, description: 'Most popular choice' },
+        { period: '12 Months', price: 279.99, description: 'Best value for money' }
+      ],
+      quickAmounts: [100, 250, 500, 1000]
     }
   },
   methods: {
-    getCard() {
-      // Handle card purchase
-      console.log('Purchasing card with:', {
-        duration: this.selectedDuration,
-        balance: this.desiredBalance,
-        secure3d: this.secure3d,
-        total: this.total
-      })
-    },
     selectPlan(planType) {
-      // Handle plan selection
-      console.log('Selected plan:', planType);
-      // TODO: Implement plan purchase logic
+      this.selectedPlanType = planType
+      this.selectedPlan = null
+    },
+    initiateSubscription(plan) {
+      this.selectedPlan = plan === 'plus' ? 'Nvcc Plus' : 'Nvcc Pro';
+      this.showPaymentModal = true;
+    },
+    selectPaymentMethod(method) {
+      this.selectedPaymentMethod = method
+    },
+    async submitSubscriptionRequest() {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          this.$router.push('/login');
+          return;
+        }
+
+        const response = await axios.post('/subscription-requests', {
+          plan: this.selectedPlan,
+          paymentMethod: this.selectedPaymentMethod.id
+        }, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          baseURL: '/api'
+        });
+        
+        if (response.data) {
+          this.showPaymentModal = false;
+          this.showSuccessModal = true;
+        }
+      } catch (error) {
+        console.error('Error submitting subscription request:', error);
+        alert('Failed to submit subscription request. Please try again later.');
+      }
+    },
+    closeSuccessModal() {
+      this.showSuccessModal = false
+      this.selectedPaymentMethod = null
+      this.selectedPlan = null
+      // Optionally redirect to dashboard or another page
+      this.$router.push('/dashboard')
     }
   }
 }

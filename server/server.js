@@ -55,9 +55,9 @@ const authRoutes = require('./routes/auth');
 const usersRoutes = require('./routes/users');
 const subscriptionRequestsRoutes = require('./routes/subscription-requests');
 
-app.use('/api', authRoutes);
-app.use('/api', usersRoutes);
-app.use('/api', subscriptionRequestsRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/users', usersRoutes);
+app.use('/api/subscription-requests', subscriptionRequestsRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

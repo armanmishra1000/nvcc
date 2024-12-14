@@ -93,7 +93,7 @@
 
 <script>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import axios from '@/services/axiosConfig'
 import AdminLayout from '@/layouts/AdminLayout.vue'
 
 export default {

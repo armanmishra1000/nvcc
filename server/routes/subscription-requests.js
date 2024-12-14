@@ -34,7 +34,7 @@ const subscriptionRequestSchema = new mongoose.Schema({
 const SubscriptionRequest = mongoose.model('SubscriptionRequest', subscriptionRequestSchema);
 
 // Get all subscription requests (admin only)
-router.get('/admin/subscription-requests', [auth, admin], async (req, res) => {
+router.get('/', [auth, admin], async (req, res) => {
   try {
     const requests = await SubscriptionRequest.find()
       .populate('user', 'name email')
@@ -46,7 +46,7 @@ router.get('/admin/subscription-requests', [auth, admin], async (req, res) => {
 });
 
 // Create new subscription request (user)
-router.post('/subscription-requests', auth, async (req, res) => {
+router.post('/', auth, async (req, res) => {
   try {
     const { plan, paymentMethod } = req.body;
     const request = new SubscriptionRequest({
@@ -62,7 +62,7 @@ router.post('/subscription-requests', auth, async (req, res) => {
 });
 
 // Approve subscription request (admin only)
-router.post('/admin/subscription-requests/:id/approve', [auth, admin], async (req, res) => {
+router.post('/:id/approve', [auth, admin], async (req, res) => {
   try {
     const request = await SubscriptionRequest.findById(req.params.id);
     if (!request) {
@@ -82,7 +82,7 @@ router.post('/admin/subscription-requests/:id/approve', [auth, admin], async (re
 });
 
 // Reject subscription request (admin only)
-router.post('/admin/subscription-requests/:id/reject', [auth, admin], async (req, res) => {
+router.post('/:id/reject', [auth, admin], async (req, res) => {
   try {
     const request = await SubscriptionRequest.findById(req.params.id);
     if (!request) {
