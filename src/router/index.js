@@ -12,6 +12,7 @@ import Payments from '@/views/Payments.vue'
 import NvccPlans from '@/views/NvccPlans.vue'
 import AdminLogin from '@/views/admin/Login.vue'
 import AdminDashboard from '@/views/admin/Dashboard.vue'
+import SubscriptionRequests from '@/views/admin/SubscriptionRequests.vue'
 
 // Simulated auth guard
 const isAuthenticated = () => {
@@ -125,6 +126,12 @@ const routes = [
     path: '/admin/wallets',
     name: 'AdminWallets',
     component: () => import('@/views/admin/Wallets.vue'),
+    meta: { requiresAdmin: true }
+  },
+  {
+    path: '/admin/subscription-requests',
+    name: 'AdminSubscriptionRequests',
+    component: SubscriptionRequests,
     meta: { requiresAdmin: true }
   }
 ]

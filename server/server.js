@@ -51,8 +51,13 @@ mongoose.connect(MONGODB_URI, mongooseOptions)
   });
 
 // Routes
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/users', require('./routes/users'));
+const authRoutes = require('./routes/auth');
+const usersRoutes = require('./routes/users');
+const subscriptionRequestsRoutes = require('./routes/subscription-requests');
+
+app.use('/api', authRoutes);
+app.use('/api', usersRoutes);
+app.use('/api', subscriptionRequestsRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

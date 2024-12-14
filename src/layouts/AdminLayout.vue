@@ -97,23 +97,57 @@ import {
   HomeIcon,
   UsersIcon,
   CreditCardIcon,
-  CurrencyDollarIcon,
-  ClipboardDocumentListIcon
+  ClipboardListIcon,
+  CashIcon,
+  InboxStackIcon
 } from '@heroicons/vue/24/outline'
 
 export default {
   name: 'AdminLayout',
+  components: {
+    HomeIcon,
+    UsersIcon,
+    CreditCardIcon,
+    ClipboardListIcon,
+    CashIcon,
+    InboxStackIcon
+  },
   setup() {
     const router = useRouter()
     const route = useRoute()
     const isUserMenuOpen = ref(false)
 
     const navigation = [
-      { name: 'Dashboard', href: '/admin', icon: HomeIcon },
-      { name: 'Users', href: '/admin/users', icon: UsersIcon },
-      { name: 'Subscriptions', href: '/admin/subscriptions', icon: ClipboardDocumentListIcon },
-      { name: 'Cards', href: '/admin/cards', icon: CreditCardIcon },
-      { name: 'Wallets', href: '/admin/wallets', icon: CurrencyDollarIcon },
+      {
+        name: 'Dashboard',
+        href: '/admin',
+        icon: HomeIcon
+      },
+      {
+        name: 'Users',
+        href: '/admin/users',
+        icon: UsersIcon
+      },
+      {
+        name: 'Subscription Requests',
+        href: '/admin/subscription-requests',
+        icon: InboxStackIcon
+      },
+      {
+        name: 'Subscriptions',
+        href: '/admin/subscriptions',
+        icon: CreditCardIcon
+      },
+      {
+        name: 'Cards',
+        href: '/admin/cards',
+        icon: CreditCardIcon
+      },
+      {
+        name: 'Wallets',
+        href: '/admin/wallets',
+        icon: CashIcon
+      }
     ]
 
     const currentPageTitle = computed(() => {
