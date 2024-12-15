@@ -1,113 +1,79 @@
 <template>
-  <admin-layout>
-    <div class="bg-white shadow rounded-lg">
-      <div class="px-4 py-5 border-b border-gray-200 sm:px-6 flex justify-between items-center">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">Subscription Management</h3>
-        <button class="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
-          Add Plan
-        </button>
+  <AdminLayout>
+    <div class="p-6">
+      <h1 class="text-2xl font-semibold mb-6">Subscription Management</h1>
+
+      <!-- Loading State -->
+      <div v-if="loading" class="flex justify-center items-center h-64">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
       </div>
 
-      <!-- Plans Table -->
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Plan Name</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Active Users</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Features</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="plan in plans" :key="plan.id">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">{{ plan.name }}</div>
-                <div class="text-sm text-gray-500">{{ plan.description }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">${{ plan.price }}/month</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ plan.activeUsers }}</div>
-                <div class="text-xs text-gray-500">Active subscribers</div>
-              </td>
-              <td class="px-6 py-4">
-                <ul class="text-sm text-gray-500">
-                  <li v-for="(feature, index) in plan.features" :key="index">
-                    • {{ feature }}
-                  </li>
-                </ul>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span :class="[
-                  'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                  plan.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                ]">
-                  {{ plan.status }}
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <button class="text-orange-600 hover:text-orange-900 mr-3">Edit</button>
-                <button class="text-red-600 hover:text-red-900">Delete</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Recent Subscriptions -->
-      <div class="px-4 py-5 sm:px-6">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">Recent Subscriptions</h3>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Plan</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="subscription in recentSubscriptions" :key="subscription.id">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
-                  <div class="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center">
-                    <span class="text-orange-600 font-medium">{{ subscription.user.name.charAt(0) }}</span>
+      <!-- Subscription List -->
+      <div v-else class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Plan</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cards Remaining</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Reset</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr v-for="sub in subscriptions" :key="sub.userId" class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div>
+                      <div class="text-sm font-medium text-gray-900">{{ sub.userName }}</div>
+                      <div class="text-sm text-gray-500">{{ sub.userEmail }}</div>
+                    </div>
                   </div>
-                  <div class="ml-4">
-                    <div class="text-sm font-medium text-gray-900">{{ subscription.user.name }}</div>
-                    <div class="text-sm text-gray-500">{{ subscription.user.email }}</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ subscription.plan }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ subscription.startDate }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ subscription.endDate }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span :class="[
-                  'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                  subscription.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                ]">
-                  {{ subscription.status }}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                    :class="{
+                      'bg-green-100 text-green-800': sub.plan === 'Nvcc Pro',
+                      'bg-blue-100 text-blue-800': sub.plan === 'Nvcc Plus'
+                    }">
+                    {{ sub.plan }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {{ formatDate(sub.startDate) }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {{ sub.cardsRemaining }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {{ formatDate(sub.lastResetDate) }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <button @click="cancelSubscription(sub.userId)"
+                    class="text-red-600 hover:text-red-900 mr-4">Cancel</button>
+                  <button @click="resetCards(sub.userId)"
+                    class="text-indigo-600 hover:text-indigo-900">Reset Cards</button>
+                </td>
+              </tr>
+              <tr v-if="subscriptions.length === 0">
+                <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                  No active subscriptions found
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-  </admin-layout>
+  </AdminLayout>
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import AdminLayout from '@/layouts/AdminLayout.vue'
+import axios from '@/services/axiosConfig'
 
 export default {
   name: 'AdminSubscriptions',
@@ -115,89 +81,77 @@ export default {
     AdminLayout
   },
   setup() {
-    const plans = ref([
-      {
-        id: 1,
-        name: 'Basic Plan',
-        description: 'For individual users',
-        price: 9.99,
-        activeUsers: 245,
-        features: [
-          'Up to 5 cards',
-          'Basic wallet features',
-          'Email support'
-        ],
-        status: 'active'
-      },
-      {
-        id: 2,
-        name: 'Premium Plan',
-        description: 'For power users',
-        price: 19.99,
-        activeUsers: 583,
-        features: [
-          'Unlimited cards',
-          'Advanced wallet features',
-          'Priority support',
-          'Custom branding'
-        ],
-        status: 'active'
-      },
-      {
-        id: 3,
-        name: 'Enterprise Plan',
-        description: 'For large organizations',
-        price: 49.99,
-        activeUsers: 127,
-        features: [
-          'Unlimited everything',
-          'Dedicated support',
-          'API access',
-          'Custom integration'
-        ],
-        status: 'active'
-      }
-    ])
+    const subscriptions = ref([])
+    const loading = ref(false)
 
-    const recentSubscriptions = ref([
-      {
-        id: 1,
-        user: {
-          name: 'John Doe',
-          email: 'john@example.com'
-        },
-        plan: 'Premium Plan',
-        startDate: 'Jan 1, 2024',
-        endDate: 'Dec 31, 2024',
-        status: 'active'
-      },
-      {
-        id: 2,
-        user: {
-          name: 'Jane Smith',
-          email: 'jane@example.com'
-        },
-        plan: 'Basic Plan',
-        startDate: 'Jan 5, 2024',
-        endDate: 'Jan 4, 2025',
-        status: 'active'
-      },
-      {
-        id: 3,
-        user: {
-          name: 'Bob Johnson',
-          email: 'bob@example.com'
-        },
-        plan: 'Enterprise Plan',
-        startDate: 'Jan 10, 2024',
-        endDate: 'Jan 9, 2025',
-        status: 'active'
+    const fetchSubscriptions = async () => {
+      try {
+        loading.value = true
+        const response = await axios.get('/api/users')
+        const users = response.data
+
+        // Filter and map users with active subscriptions
+        subscriptions.value = users
+          .filter(user => user.subscription?.plan)
+          .map(user => ({
+            userId: user._id,
+            userName: user.name,
+            userEmail: user.email,
+            plan: user.subscription.plan,
+            startDate: user.subscription.startDate,
+            cardsRemaining: user.subscription.cardsRemaining,
+            lastResetDate: user.subscription.lastResetDate
+          }))
+      } catch (error) {
+        console.error('Error fetching subscriptions:', error)
+      } finally {
+        loading.value = false
       }
-    ])
+    }
+
+    const formatDate = (dateString) => {
+      if (!dateString) return 'N/A'
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      })
+    }
+
+    const cancelSubscription = async (userId) => {
+      try {
+        if (!confirm('Are you sure you want to cancel this subscription?')) return
+        
+        await axios.post(`/api/subscription-requests/${userId}/cancel`)
+        await fetchSubscriptions() // Refresh the list
+      } catch (error) {
+        console.error('Error cancelling subscription:', error)
+        alert('Failed to cancel subscription')
+      }
+    }
+
+    const resetCards = async (userId) => {
+      try {
+        if (!confirm('Are you sure you want to reset the card count for this user?')) return
+        
+        await axios.post('/api/users/reset-card-count', { userId })
+        await fetchSubscriptions() // Refresh the list
+      } catch (error) {
+        console.error('Error resetting cards:', error)
+        alert('Failed to reset cards')
+      }
+    }
+
+    onMounted(() => {
+      fetchSubscriptions()
+    })
 
     return {
-      plans,
-      recentSubscriptions
+      subscriptions,
+      loading,
+      formatDate,
+      cancelSubscription,
+      resetCards
     }
   }
 }
