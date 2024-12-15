@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
+const SubscriptionRequest = require('../models/SubscriptionRequest');
 
 // Log all requests to this router
 router.use((req, res, next) => {
@@ -42,13 +43,11 @@ const subscriptionRequestSchema = new mongoose.Schema({
   }
 });
 
-const SubscriptionRequest = mongoose.model('SubscriptionRequest', subscriptionRequestSchema);
-
 // Get all subscription requests (admin only)
 router.get('/', [auth, admin], async (req, res) => {
   try {
     const requests = await SubscriptionRequest.find()
-      .populate('user', 'name email')
+      .populate('user')
       .sort({ requestDate: -1 });
     res.json(requests);
   } catch (error) {
@@ -60,17 +59,70 @@ router.get('/', [auth, admin], async (req, res) => {
 // Create new subscription request (user)
 router.post('/', auth, async (req, res) => {
   try {
-    const { plan, paymentMethod } = req.body;
+    console.log('Creating subscription request with data:', {
+      userId: req.user?._id,
+      plan: req.body?.plan,
+      paymentMethod: req.body?.paymentMethod
+    });
+
+    // Validate required fields
+    if (!req.body.plan || !req.body.paymentMethod) {
+      return res.status(400).json({ 
+        message: 'Plan and payment method are required' 
+      });
+    }
+
+    // Check if user already has a pending request
+    const existingRequest = await SubscriptionRequest.findOne({
+      user: req.user._id,
+      status: 'pending'
+    });
+
+    if (existingRequest) {
+      console.log('User already has a pending request:', existingRequest);
+      return res.status(400).json({ 
+        message: 'You already have a pending subscription request' 
+      });
+    }
+
+    // Validate plan type
+    if (!['Nvcc Plus', 'Nvcc Pro'].includes(req.body.plan)) {
+      return res.status(400).json({ 
+        message: 'Invalid plan type. Must be either "Nvcc Plus" or "Nvcc Pro"' 
+      });
+    }
+
     const request = new SubscriptionRequest({
       user: req.user._id,
-      plan,
-      paymentMethod
+      plan: req.body.plan,
+      paymentMethod: req.body.paymentMethod
     });
+
+    console.log('Saving new subscription request:', request);
     await request.save();
+    
+    console.log('Successfully created subscription request:', request);
     res.status(201).json(request);
   } catch (error) {
-    console.error('Error creating subscription request:', error);
-    res.status(500).json({ message: 'Error creating subscription request' });
+    console.error('Detailed error creating subscription request:', {
+      error: error.message,
+      stack: error.stack,
+      user: req.user?._id,
+      body: req.body
+    });
+    
+    // Send appropriate error message
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ 
+        message: 'Invalid request data',
+        details: Object.values(error.errors).map(err => err.message)
+      });
+    }
+    
+    res.status(500).json({ 
+      message: 'Error creating subscription request',
+      details: error.message 
+    });
   }
 });
 
@@ -153,7 +205,6 @@ router.post('/:userId/cancel', [auth, admin], async (req, res) => {
     }
 
     // Find and update the subscription request status
-    const SubscriptionRequest = mongoose.model('SubscriptionRequest');
     const request = await SubscriptionRequest.findOne({ 
       user: user._id,
       status: 'approved'
@@ -233,6 +284,55 @@ router.post('/:requestId/reactivate', [auth, admin], async (req, res) => {
   } catch (error) {
     console.error('Error reactivating subscription:', error);
     res.status(500).json({ message: 'Error reactivating subscription' });
+  }
+});
+
+// Get user's subscription request status
+router.get('/status', auth, async (req, res) => {
+  try {
+    const request = await SubscriptionRequest.findOne({ 
+      user: req.user._id 
+    }).sort({ requestDate: -1 });
+    
+    if (!request) {
+      return res.json({ status: null });
+    }
+
+    res.json({ 
+      status: request.status,
+      plan: request.plan,
+      requestDate: request.requestDate
+    });
+  } catch (error) {
+    console.error('Error fetching subscription status:', error);
+    res.status(500).json({ message: 'Error fetching subscription status' });
+  }
+});
+
+// Get user's subscription status
+router.get('/subscription-status', auth, async (req, res) => {
+  try {
+    const User = mongoose.model('User');
+    const user = await User.findById(req.user._id);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    if (!user.subscription?.plan) {
+      return res.json({ status: 'inactive' });
+    }
+    
+    res.json({ 
+      status: 'active',
+      plan: user.subscription.plan,
+      startDate: user.subscription.startDate,
+      cardsRemaining: user.subscription.cardsRemaining,
+      lastResetDate: user.subscription.lastResetDate
+    });
+  } catch (error) {
+    console.error('Error fetching subscription status:', error);
+    res.status(500).json({ message: 'Error fetching subscription status' });
   }
 });
 

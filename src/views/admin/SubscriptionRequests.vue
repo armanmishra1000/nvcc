@@ -120,7 +120,10 @@ export default {
     const fetchRequests = async () => {
       try {
         const response = await axios.get('/api/subscription-requests')
-        subscriptionRequests.value = response.data
+        // Sort requests by date, most recent first
+        subscriptionRequests.value = response.data.sort((a, b) => 
+          new Date(b.requestDate) - new Date(a.requestDate)
+        );
       } catch (error) {
         console.error('Error fetching subscription requests:', error)
       }
@@ -172,11 +175,15 @@ export default {
     }
 
     const formatDate = (date) => {
-      return new Date(date).toLocaleDateString('en-US', {
+      return new Date(date).toLocaleString('en-US', {
         year: 'numeric',
         month: 'short',
-        day: 'numeric'
-      })
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      });
     }
 
     onMounted(() => {
