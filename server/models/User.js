@@ -6,6 +6,16 @@ const updateHistorySchema = new mongoose.Schema({
   changes: { type: mongoose.Schema.Types.Mixed }
 });
 
+const cardSchema = new mongoose.Schema({
+  id: { type: String, required: true },
+  type: { type: String, required: true },
+  lastFour: { type: String, required: true },
+  cardHolder: { type: String, required: true },
+  expiry: { type: String, required: true },
+  frozen: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now }
+});
+
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -47,6 +57,24 @@ const userSchema = new mongoose.Schema({
     enum: ['Free', 'Basic', 'Premium'],
     default: 'Free'
   },
+  subscription: {
+    plan: {
+      type: String,
+      enum: ['Nvcc Plus', 'Nvcc Pro', null],
+      default: null
+    },
+    startDate: {
+      type: Date
+    },
+    cardsRemaining: {
+      type: Number,
+      default: 0
+    },
+    lastResetDate: {
+      type: Date
+    }
+  },
+  cards: [cardSchema],
   updateHistory: [updateHistorySchema],
   createdAt: {
     type: Date,

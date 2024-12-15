@@ -164,4 +164,147 @@ router.delete('/:userId', [auth, admin], async (req, res) => {
   }
 });
 
+// Get user's subscription
+router.get('/subscription', auth, async (req, res) => {
+  try {
+    console.log('Getting subscription for user:', req.user._id);
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    console.log('Found user subscription:', user.subscription);
+    res.json(user.subscription);
+  } catch (error) {
+    console.error('Error getting subscription:', error);
+    res.status(500).json({ message: 'Error getting subscription' });
+  }
+});
+
+// Get user's cards
+router.get('/cards', auth, async (req, res) => {
+  try {
+    console.log('Getting cards for user:', req.user._id);
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    console.log('Found user cards:', user.cards || []);
+    res.json(user.cards || []);
+  } catch (error) {
+    console.error('Error getting cards:', error);
+    res.status(500).json({ message: 'Error getting cards' });
+  }
+});
+
+// Create new card
+router.post('/cards', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user?.subscription?.plan) {
+      return res.status(403).json({ message: 'No active subscription found' });
+    }
+
+    if (user.subscription.cardsRemaining <= 0) {
+      return res.status(403).json({ message: 'No cards remaining in your plan' });
+    }
+
+    // Create new card
+    const newCard = {
+      id: Date.now().toString(),
+      type: req.body.type || 'Virtual Card',
+      lastFour: Math.floor(1000 + Math.random() * 9000).toString(),
+      cardHolder: req.body.name,
+      expiry: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: '2-digit', year: '2-digit' }),
+      frozen: false,
+      createdAt: new Date()
+    };
+
+    // Add card to user's cards array
+    if (!user.cards) {
+      user.cards = [];
+    }
+    user.cards.push(newCard);
+
+    // Decrease remaining cards count
+    user.subscription.cardsRemaining--;
+    
+    // Save the changes
+    await user.save();
+
+    console.log('Created new card:', newCard);
+    res.status(201).json(newCard);
+  } catch (error) {
+    console.error('Error creating card:', error);
+    res.status(500).json({ message: 'Error creating card' });
+  }
+});
+
+// Terminate card
+router.delete('/cards/:cardId', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const cardIndex = user.cards.findIndex(card => card.id === req.params.cardId);
+    if (cardIndex === -1) {
+      return res.status(404).json({ message: 'Card not found' });
+    }
+
+    // Remove the card
+    user.cards.splice(cardIndex, 1);
+    await user.save();
+
+    console.log(`Card ${req.params.cardId} terminated for user ${user._id}`);
+    res.json({ message: 'Card terminated successfully' });
+  } catch (error) {
+    console.error('Error terminating card:', error);
+    res.status(500).json({ message: 'Error terminating card' });
+  }
+});
+
+// Toggle card freeze status
+router.post('/cards/:cardId/toggle-freeze', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const card = user.cards.find(card => card.id === req.params.cardId);
+    if (!card) {
+      return res.status(404).json({ message: 'Card not found' });
+    }
+
+    // Toggle frozen status
+    card.frozen = !card.frozen;
+    await user.save();
+
+    console.log(`Card ${req.params.cardId} freeze status toggled to ${card.frozen}`);
+    res.json({ frozen: card.frozen });
+  } catch (error) {
+    console.error('Error toggling card freeze status:', error);
+    res.status(500).json({ message: 'Error toggling card freeze status' });
+  }
+});
+
+// Reset monthly card count (This would typically be done by a cron job)
+router.post('/reset-card-count', [auth, admin], async (req, res) => {
+  try {
+    const users = await User.find({ 'subscription.plan': { $ne: null } });
+    
+    for (const user of users) {
+      const cardsPerMonth = user.subscription.plan === 'Nvcc Plus' ? 20 : 50;
+      user.subscription.cardsRemaining = cardsPerMonth;
+      user.subscription.lastResetDate = new Date();
+      await user.save();
+    }
+
+    res.json({ message: 'Card counts reset successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error resetting card counts' });
+  }
+});
+
 module.exports = router;
