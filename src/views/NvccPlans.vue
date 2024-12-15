@@ -339,13 +339,6 @@
             </button>
           </div>
         </div>
-        <!-- Placeholder for future plans -->
-        <div class="lg:col-span-2 flex items-center justify-center p-12 bg-gray-50 rounded-2xl">
-          <div class="text-center">
-            <h3 class="text-xl font-medium text-gray-900">More plans coming soon!</h3>
-            <p class="mt-2 text-gray-500">We're working on additional subscription options to better serve your needs.</p>
-          </div>
-        </div>
       </div>
 
       <!-- Payment Method Modal -->
@@ -431,7 +424,7 @@
             <div class="mt-5 sm:mt-6">
               <button
                 type="button"
-                class="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-orange-600 text-base font-medium text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 sm:text-sm"
+                class="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-orange-600 text-base font-medium text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transform hover:-translate-y-1 transition-all duration-200"
                 @click="closeSuccessModal"
               >
                 Got it, thanks!

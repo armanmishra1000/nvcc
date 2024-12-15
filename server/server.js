@@ -14,6 +14,18 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Routes
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/users', require('./routes/users'));
+app.use('/api/subscription-requests', require('./routes/subscription-requests'));
+app.use('/api', require('./routes/cards'));
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Something went wrong!', error: err.message });
+});
+
 // Connect to MongoDB
 const MONGODB_URI = process.env.MONGODB_URI;
 if (!MONGODB_URI) {
@@ -50,21 +62,6 @@ const startServer = async () => {
   try {
     await mongoose.connect(MONGODB_URI, mongooseOptions);
     console.log('Connected to MongoDB');
-
-    // Routes
-    const authRoutes = require('./routes/auth');
-    const usersRoutes = require('./routes/users');
-    const subscriptionRequestsRoutes = require('./routes/subscription-requests');
-
-    app.use('/api/auth', authRoutes);
-    app.use('/api/users', usersRoutes);
-    app.use('/api/subscription-requests', subscriptionRequestsRoutes);
-
-    // Error handling middleware
-    app.use((err, req, res, next) => {
-      console.error(err.stack);
-      res.status(500).json({ message: 'Something went wrong!' });
-    });
 
     // Start the server
     const PORT = process.env.PORT || 5002;  // Changed to match frontend configuration

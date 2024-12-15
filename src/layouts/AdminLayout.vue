@@ -97,8 +97,8 @@ import {
   HomeIcon,
   UsersIcon,
   CreditCardIcon,
-  ClipboardListIcon,
-  CashIcon,
+  ClipboardDocumentListIcon,
+  CurrencyDollarIcon,
   InboxStackIcon
 } from '@heroicons/vue/24/outline'
 
@@ -108,8 +108,8 @@ export default {
     HomeIcon,
     UsersIcon,
     CreditCardIcon,
-    ClipboardListIcon,
-    CashIcon,
+    ClipboardDocumentListIcon,
+    CurrencyDollarIcon,
     InboxStackIcon
   },
   setup() {
@@ -146,7 +146,7 @@ export default {
       {
         name: 'Wallets',
         href: '/admin/wallets',
-        icon: CashIcon
+        icon: CurrencyDollarIcon
       }
     ]
 
