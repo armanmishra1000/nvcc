@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with default config
 const axiosInstance = axios.create({
-  baseURL: process.env.VUE_APP_API_BASE_URL || 'http://localhost:5003'
+  baseURL: process.env.VUE_APP_API_BASE_URL || 'http://localhost:5002'  // Changed to match the server port
 });
 
 // Add request interceptor
@@ -24,7 +24,7 @@ axiosInstance.interceptors.response.use(
   response => response,
   error => {
     if (error.response?.status === 401) {
-      // Clear token and redirect to login if unauthorized
+      // Handle unauthorized access
       localStorage.removeItem('token');
       window.location.href = '/login';
     }

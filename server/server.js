@@ -67,7 +67,7 @@ const startServer = async () => {
     });
 
     // Start the server
-    const PORT = process.env.PORT || 5003;
+    const PORT = process.env.PORT || 5002;  // Changed to match frontend configuration
     const server = app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });

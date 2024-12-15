@@ -16,6 +16,15 @@ const cardSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
+const subscriptionHistorySchema = new mongoose.Schema({
+  plan: { type: String, required: true },
+  startDate: { type: Date, required: true },
+  endDate: { type: Date, required: true },
+  cancelledBy: { type: String, enum: ['admin', 'user'], required: true },
+  cancelledByUserId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -74,6 +83,7 @@ const userSchema = new mongoose.Schema({
       type: Date
     }
   },
+  subscriptionHistory: [subscriptionHistorySchema],
   cards: [cardSchema],
   updateHistory: [updateHistorySchema],
   createdAt: {
