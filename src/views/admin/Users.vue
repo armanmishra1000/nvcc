@@ -34,8 +34,8 @@
           >
             <option value="">All Plans</option>
             <option value="Free">Free</option>
-            <option value="Basic">Basic</option>
-            <option value="Premium">Premium</option>
+            <option value="Nvcc Plus">Nvcc Plus</option>
+            <option value="Nvcc Pro">Nvcc Pro</option>
           </select>
         </div>
       </div>
@@ -91,7 +91,16 @@
                   {{ user.status || 'N/A' }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user.subscriptionPlan || 'N/A' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span :class="{
+                  'px-2 inline-flex text-xs leading-5 font-semibold rounded-full': true,
+                  'bg-green-100 text-green-800': user.subscription?.plan === 'Nvcc Pro',
+                  'bg-blue-100 text-blue-800': user.subscription?.plan === 'Nvcc Plus',
+                  'bg-gray-100 text-gray-800': !user.subscription?.plan
+                }">
+                  {{ user.subscription?.plan || 'Free' }}
+                </span>
+              </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(user.createdAt) }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                 <button @click="editUser(user)" class="text-orange-600 hover:text-orange-900">Edit</button>
@@ -235,7 +244,8 @@ export default {
             user.name?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
             user.email?.toLowerCase().includes(searchQuery.value.toLowerCase())
           const matchesStatus = !selectedStatus.value || user.status === selectedStatus.value
-          const matchesPlan = !selectedPlan.value || user.subscriptionPlan === selectedPlan.value 
+          const matchesPlan = !selectedPlan.value || 
+            (selectedPlan.value === 'Free' ? !user.subscription?.plan : user.subscription?.plan === selectedPlan.value)
           return matchesSearch && matchesStatus && matchesPlan
         })
         .slice((currentPage.value - 1) * itemsPerPage, currentPage.value * itemsPerPage)
