@@ -58,7 +58,8 @@
                   :class="{
                     'bg-yellow-100 text-yellow-800': request.status === 'pending',
                     'bg-green-100 text-green-800': request.status === 'approved',
-                    'bg-red-100 text-red-800': request.status === 'rejected'
+                    'bg-red-100 text-red-800': request.status === 'rejected',
+                    'bg-gray-100 text-gray-800': request.status === 'cancelled'
                   }">
                   {{ request.status }}
                 </span>
@@ -75,6 +76,18 @@
                   @click="rejectRequest(request._id)"
                   class="text-red-600 hover:text-red-900">
                   Reject
+                </button>
+                <button
+                  v-if="request.status === 'approved'"
+                  @click="cancelSubscription(request.user._id)"
+                  class="text-orange-600 hover:text-orange-900">
+                  Cancel Subscription
+                </button>
+                <button
+                  v-if="request.status === 'cancelled'"
+                  @click="reactivateSubscription(request._id)"
+                  class="text-blue-600 hover:text-blue-900">
+                  Reactivate Subscription
                 </button>
               </td>
             </tr>
@@ -119,6 +132,7 @@ export default {
         await fetchRequests()
       } catch (error) {
         console.error('Error approving request:', error)
+        alert(error.response?.data?.message || 'Error approving request')
       }
     }
 
@@ -128,6 +142,32 @@ export default {
         await fetchRequests()
       } catch (error) {
         console.error('Error rejecting request:', error)
+        alert(error.response?.data?.message || 'Error rejecting request')
+      }
+    }
+
+    const cancelSubscription = async (userId) => {
+      try {
+        const response = await axios.post(`/api/subscription-requests/${userId}/cancel`)
+        console.log('Cancel subscription response:', response.data)
+        // Force an immediate refresh of the data
+        await fetchRequests()
+        // Show success message
+        alert('Subscription cancelled successfully')
+      } catch (error) {
+        console.error('Error cancelling subscription:', error.response?.data || error)
+        alert(error.response?.data?.message || 'Error cancelling subscription')
+      }
+    }
+
+    const reactivateSubscription = async (requestId) => {
+      try {
+        const response = await axios.post(`/api/subscription-requests/${requestId}/reactivate`)
+        console.log('Reactivate subscription response:', response.data)
+        await fetchRequests()
+      } catch (error) {
+        console.error('Error reactivating subscription:', error.response?.data || error)
+        alert(error.response?.data?.message || 'Error reactivating subscription')
       }
     }
 
@@ -147,6 +187,8 @@ export default {
       subscriptionRequests,
       approveRequest,
       rejectRequest,
+      cancelSubscription,
+      reactivateSubscription,
       formatDate
     }
   }

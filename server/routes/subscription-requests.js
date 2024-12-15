@@ -4,6 +4,17 @@ const mongoose = require('mongoose');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 
+// Log all requests to this router
+router.use((req, res, next) => {
+  console.log('Subscription Request Route:', {
+    method: req.method,
+    path: req.path,
+    params: req.params,
+    body: req.body
+  });
+  next();
+});
+
 // Subscription Request Schema
 const subscriptionRequestSchema = new mongoose.Schema({
   user: {
@@ -26,7 +37,7 @@ const subscriptionRequestSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'approved', 'rejected'],
+    enum: ['pending', 'approved', 'rejected', 'cancelled'],
     default: 'pending'
   }
 });
@@ -41,6 +52,7 @@ router.get('/', [auth, admin], async (req, res) => {
       .sort({ requestDate: -1 });
     res.json(requests);
   } catch (error) {
+    console.error('Error fetching subscription requests:', error);
     res.status(500).json({ message: 'Error fetching subscription requests' });
   }
 });
@@ -57,6 +69,7 @@ router.post('/', auth, async (req, res) => {
     await request.save();
     res.status(201).json(request);
   } catch (error) {
+    console.error('Error creating subscription request:', error);
     res.status(500).json({ message: 'Error creating subscription request' });
   }
 });
@@ -70,6 +83,7 @@ router.post('/:id/approve', [auth, admin], async (req, res) => {
       .populate('user');
     
     if (!request) {
+      console.log('Request not found:', req.params.id);
       return res.status(404).json({ message: 'Request not found' });
     }
     
@@ -106,6 +120,7 @@ router.post('/:id/reject', [auth, admin], async (req, res) => {
   try {
     const request = await SubscriptionRequest.findById(req.params.id);
     if (!request) {
+      console.log('Request not found:', req.params.id);
       return res.status(404).json({ message: 'Request not found' });
     }
     
@@ -113,7 +128,111 @@ router.post('/:id/reject', [auth, admin], async (req, res) => {
     await request.save();
     res.json(request);
   } catch (error) {
+    console.error('Error rejecting subscription:', error);
     res.status(500).json({ message: 'Error rejecting subscription request' });
+  }
+});
+
+// Cancel subscription (admin only)
+router.post('/:userId/cancel', [auth, admin], async (req, res) => {
+  try {
+    console.log('Canceling subscription for user:', req.params.userId);
+    
+    // Find the user
+    const User = mongoose.model('User');
+    const user = await User.findById(req.params.userId);
+    
+    if (!user) {
+      console.log('User not found:', req.params.userId);
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    if (!user.subscription?.plan) {
+      console.log('No active subscription for user:', req.params.userId);
+      return res.status(400).json({ message: 'User has no active subscription' });
+    }
+
+    // Find and update the subscription request status
+    const SubscriptionRequest = mongoose.model('SubscriptionRequest');
+    const request = await SubscriptionRequest.findOne({ 
+      user: user._id,
+      status: 'approved'
+    });
+
+    if (request) {
+      request.status = 'cancelled';
+      await request.save();
+    }
+    
+    // Store the cancellation in subscription history
+    if (!user.subscriptionHistory) {
+      user.subscriptionHistory = [];
+    }
+    
+    user.subscriptionHistory.push({
+      plan: user.subscription.plan,
+      startDate: user.subscription.startDate,
+      endDate: new Date(),
+      cancelledBy: 'admin',
+      cancelledByUserId: req.user._id
+    });
+    
+    // Clear the subscription
+    user.subscription = {
+      plan: null,
+      startDate: null,
+      cardsRemaining: 0,
+      lastResetDate: null
+    };
+    
+    // Save the changes
+    await user.save();
+    
+    console.log('Subscription cancelled successfully for user:', req.params.userId);
+    res.json({ message: 'Subscription cancelled successfully' });
+  } catch (error) {
+    console.error('Error cancelling subscription:', error);
+    res.status(500).json({ message: 'Error cancelling subscription' });
+  }
+});
+
+// Reactivate subscription (admin only)
+router.post('/:requestId/reactivate', [auth, admin], async (req, res) => {
+  try {
+    const request = await SubscriptionRequest.findById(req.params.requestId)
+      .populate('user');
+    
+    if (!request) {
+      return res.status(404).json({ message: 'Request not found' });
+    }
+
+    if (request.status !== 'cancelled') {
+      return res.status(400).json({ message: 'Only cancelled subscriptions can be reactivated' });
+    }
+
+    // Update request status
+    request.status = 'approved';
+    await request.save();
+
+    // Update user's subscription
+    const User = mongoose.model('User');
+    const subscriptionData = {
+      plan: request.plan,
+      startDate: new Date(),
+      cardsRemaining: request.plan === 'Nvcc Plus' ? 20 : 50,
+      lastResetDate: new Date()
+    };
+
+    await User.findByIdAndUpdate(
+      request.user._id,
+      { $set: { subscription: subscriptionData } },
+      { new: true }
+    );
+
+    res.json({ message: 'Subscription reactivated successfully' });
+  } catch (error) {
+    console.error('Error reactivating subscription:', error);
+    res.status(500).json({ message: 'Error reactivating subscription' });
   }
 });
 
