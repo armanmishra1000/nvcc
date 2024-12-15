@@ -175,7 +175,7 @@
                   >
                     <option value="">Select a user</option>
                     <option v-for="user in users" :key="user._id" :value="user._id">
-                      {{ user.email }}
+                      {{ user.name }} ({{ user.email }})
                     </option>
                   </select>
                 </div>
@@ -552,7 +552,7 @@ export default {
 
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('/api/admin/users')
+        const response = await axios.get('/api/users')
         users.value = response.data
       } catch (error) {
         console.error('Error fetching users:', error)
