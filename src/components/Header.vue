@@ -155,7 +155,9 @@ const handleAuthChange = async (data) => {
 
 onMounted(() => {
   eventBus.on('auth-change', handleAuthChange);
-  if (isAuthenticated.value) {
+  // Only fetch user data if we have a token
+  const token = localStorage.getItem('token');
+  if (isAuthenticated.value && token) {
     fetchUserData();
   }
 });
