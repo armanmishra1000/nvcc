@@ -445,7 +445,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from '@/services/axiosConfig'
 
 export default {
   name: 'NvccPlans',
@@ -503,21 +503,9 @@ export default {
     },
     async submitSubscriptionRequest() {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          this.$router.push('/login');
-          return;
-        }
-
-        const response = await axios.post('/subscription-requests', {
+        const response = await axios.post('/api/subscription-requests', {
           plan: this.selectedPlan,
           paymentMethod: this.selectedPaymentMethod.id
-        }, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          baseURL: '/api'
         });
         
         if (response.data) {
@@ -526,7 +514,11 @@ export default {
         }
       } catch (error) {
         console.error('Error submitting subscription request:', error);
-        alert('Failed to submit subscription request. Please try again later.');
+        if (error.response?.status === 401) {
+          this.$router.push('/login');
+        } else {
+          alert('Failed to submit subscription request. Please try again later.');
+        }
       }
     },
     closeSuccessModal() {

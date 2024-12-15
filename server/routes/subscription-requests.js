@@ -64,19 +64,39 @@ router.post('/', auth, async (req, res) => {
 // Approve subscription request (admin only)
 router.post('/:id/approve', [auth, admin], async (req, res) => {
   try {
-    const request = await SubscriptionRequest.findById(req.params.id);
+    console.log('Approving subscription request:', req.params.id);
+    
+    const request = await SubscriptionRequest.findById(req.params.id)
+      .populate('user');
+    
     if (!request) {
       return res.status(404).json({ message: 'Request not found' });
     }
     
+    console.log('Found subscription request:', request);
     request.status = 'approved';
     await request.save();
     
-    // Here you would typically update the user's subscription status
-    // and handle any necessary payment processing
+    // Update user's subscription status
+    const User = mongoose.model('User');
+    const subscriptionData = {
+      plan: request.plan,
+      startDate: new Date(),
+      cardsRemaining: request.plan === 'Nvcc Plus' ? 20 : 50,
+      lastResetDate: new Date()
+    };
+    console.log('Updating user subscription with:', subscriptionData);
+    
+    const updatedUser = await User.findByIdAndUpdate(
+      request.user._id,
+      { $set: { subscription: subscriptionData } },
+      { new: true }
+    );
+    console.log('Updated user:', updatedUser);
     
     res.json(request);
   } catch (error) {
+    console.error('Error approving subscription:', error);
     res.status(500).json({ message: 'Error approving subscription request' });
   }
 });
