@@ -236,40 +236,72 @@
             >
               <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                 <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
-                  Create New Card
+                  Request New Card
                 </DialogTitle>
 
-                <div class="mt-2">
-                  <div class="space-y-2">
-                    <div>
-                      <label for="cardHolder" class="block text-sm font-medium text-gray-700">
-                        Cardholder Name
-                      </label>
-                      <input
-                        type="text"
-                        id="cardHolder"
-                        v-model="newCard.cardHolder"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500"
-                      />
+                <div v-if="newCardError" class="mt-2 p-2 bg-red-100 text-red-700 rounded text-sm">
+                  {{ newCardError }}
+                </div>
+
+                <div class="mt-4">
+                  <div v-if="loadingAvailableCards" class="flex justify-center py-4">
+                    <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-orange-500"></div>
+                  </div>
+                  
+                  <div v-else-if="availableCards.length === 0" class="text-center py-4">
+                    <p class="text-gray-500">No cards are available at the moment.</p>
+                    <p class="text-sm text-gray-400 mt-1">Please try again later or contact support.</p>
+                  </div>
+                  
+                  <div v-else class="space-y-4">
+                    <p class="text-sm text-gray-500">Select a card to request:</p>
+                    
+                    <div class="space-y-2">
+                      <div
+                        v-for="card in availableCards"
+                        :key="card._id"
+                        class="border rounded-lg p-4 hover:border-orange-500 cursor-pointer"
+                        :class="{'border-orange-500 bg-orange-50': selectedCard?._id === card._id}"
+                        @click="selectedCard = card"
+                      >
+                        <div class="flex justify-between items-center">
+                          <div>
+                            <p class="font-medium text-gray-900">{{ card.type }} Card</p>
+                            <p class="text-sm text-gray-500">**** **** **** {{ card.number.slice(-4) }}</p>
+                          </div>
+                          <div v-if="selectedCard?._id === card._id" class="text-orange-500">
+                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div class="mt-4 flex justify-end space-x-2">
+                <div class="mt-6 flex justify-end space-x-3">
                   <button
                     type="button"
-                    class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+                    class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
                     @click="closeNewCardModal"
                   >
                     Cancel
                   </button>
                   <button
                     type="button"
-                    :disabled="!newCard.cardHolder || loading"
-                    class="inline-flex justify-center rounded-md border border-transparent bg-orange-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
-                    @click="createCard"
+                    class="inline-flex justify-center rounded-md border border-transparent bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+                    :disabled="!selectedCard || requestingCard"
+                    @click="requestCard"
                   >
-                    Create Card
+                    <span v-if="requestingCard" class="inline-flex items-center">
+                      <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Processing...
+                    </span>
+                    <span v-else>Request Card</span>
                   </button>
                 </div>
               </DialogPanel>
@@ -346,119 +378,60 @@
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import axios from '@/services/axiosConfig'
-import {
-  Dialog,
-  DialogPanel,
-  DialogTitle,
-  TransitionChild,
-  TransitionRoot,
-} from '@headlessui/vue'
-import {
-  PlusIcon,
-  LockClosedIcon,
-  LockOpenIcon,
-} from '@heroicons/vue/24/outline'
+import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
+import { PlusIcon, LockClosedIcon, LockOpenIcon } from '@heroicons/vue/24/outline'
 
-const loading = ref(true)
+const loading = ref(false)
 const error = ref(null)
 const cards = ref([])
+const user = ref(null)
 const subscription = ref(null)
 const hasCheckedPlan = ref(false)
-const pendingSubscription = ref(false)
+const pendingSubscription = ref(null)
+
 const isNewCardModalOpen = ref(false)
 const isTerminateModalOpen = ref(false)
+const cardToTerminate = ref(null)
+const availableCards = ref([])
 const selectedCard = ref(null)
-const newCard = ref({
-  cardHolder: '',
-  type: 'Virtual Card'
-})
+const loadingAvailableCards = ref(false)
+const requestingCard = ref(false)
+const newCardError = ref(null)
 
 // Ensure each card has all required properties
 const processCard = (card) => {
+  if (!card) return card
   return {
-    id: card.id || '',
-    type: card.type || 'Virtual Card',
-    lastFour: card.lastFour || '****',
-    cardHolder: card.cardHolder || 'N/A',
-    expiry: card.expiry || 'N/A',
-    frozen: card.frozen || false,
-    createdAt: card.createdAt || new Date()
-  };
-};
+    ...card,
+    status: card.status || 'active',
+    frozen: card.frozen || false
+  }
+}
 
+// Fetch user data including cards
 const fetchUserData = async () => {
+  loading.value = true
+  error.value = null
   try {
-    loading.value = true;
-    const [userResponse, statusResponse] = await Promise.all([
-      axios.get('/api/users/profile'),
-      axios.get('/api/subscription-requests/status')
-    ]);
+    // Get user data with cards
+    const userResponse = await axios.get('/api/users/me')
+    user.value = userResponse.data
+    cards.value = userResponse.data.cards?.map(processCard) || []
+    
+    // Get subscription status
+    const subscriptionResponse = await axios.get('/api/subscription-requests/subscription-status')
+    subscription.value = subscriptionResponse.data
+    hasCheckedPlan.value = true
 
-    subscription.value = userResponse.data.subscription;
-    pendingSubscription.value = statusResponse.data?.status === 'pending';
-    hasCheckedPlan.value = true;
-
-    if (subscription.value?.plan) {
-      const cardsResponse = await axios.get('/api/users/cards');
-      // Process each card to ensure it has all required properties
-      cards.value = cardsResponse.data.map(processCard);
+    // Only check for pending subscription if no active subscription
+    if (!subscription.value?.status || subscription.value.status === 'inactive') {
+      const pendingResponse = await axios.get('/api/subscription-requests/pending')
+      pendingSubscription.value = pendingResponse.data.length > 0 ? pendingResponse.data[0] : null
+    } else {
+      pendingSubscription.value = null
     }
   } catch (err) {
-    console.error('Error fetching user data:', err);
-    error.value = 'Error loading user data. Please try again.';
-  } finally {
-    loading.value = false;
-  }
-}
-
-const createCard = async () => {
-  if (!newCard.value.cardHolder) return
-
-  try {
-    loading.value = true
-    error.value = null // Clear any previous errors
-    
-    const response = await axios.post('/api/users/cards', {
-      name: newCard.value.cardHolder,
-      type: newCard.value.type
-    })
-    
-    // Add the new card to the list
-    cards.value.push(response.data)
-    
-    // Update subscription count
-    if (subscription.value) {
-      subscription.value.cardsRemaining--
-    }
-    
-    closeNewCardModal()
-  } catch (err) {
-    console.error('Error creating card:', err)
-    error.value = err.response?.data?.message || 'Error creating card'
-  } finally {
-    loading.value = false
-  }
-}
-
-const terminateCard = async () => {
-  if (!selectedCard.value) return
-  
-  try {
-    loading.value = true
-    error.value = null // Clear any previous errors
-    
-    await axios.delete(`/api/users/cards/${selectedCard.value.id}`)
-    
-    // Remove card from list
-    const index = cards.value.findIndex(c => c.id === selectedCard.value.id)
-    if (index !== -1) {
-      cards.value.splice(index, 1)
-    }
-    
-    closeTerminateModal()
-  } catch (err) {
-    console.error('Error terminating card:', err)
-    error.value = err.response?.data?.message || 'Error terminating card'
+    error.value = err.response?.data?.message || 'Failed to load user data'
   } finally {
     loading.value = false
   }
@@ -466,43 +439,75 @@ const terminateCard = async () => {
 
 const toggleFreeze = async (card) => {
   try {
-    loading.value = true
-    error.value = null // Clear any previous errors
-    
-    const response = await axios.post(`/api/users/cards/${card.id}/toggle-freeze`)
-    card.frozen = response.data.frozen // Use server response to update state
+    const response = await axios.put(`/api/cards/${card._id}`, {
+      frozen: !card.frozen
+    })
+    const updatedCard = processCard(response.data)
+    const index = cards.value.findIndex(c => c._id === card._id)
+    if (index !== -1) {
+      cards.value[index] = updatedCard
+    }
   } catch (err) {
-    console.error('Error toggling freeze state:', err)
-    error.value = err.response?.data?.message || 'Error toggling freeze state'
-  } finally {
-    loading.value = false
+    error.value = err.response?.data?.message || 'Failed to update card'
   }
 }
 
-const openNewCardModal = () => {
+const openNewCardModal = async () => {
   if (!subscription.value?.cardsRemaining) {
     error.value = 'No cards remaining in your plan'
     return
   }
   isNewCardModalOpen.value = true
+  selectedCard.value = null
+  await fetchAvailableCards()
 }
 
 const closeNewCardModal = () => {
   isNewCardModalOpen.value = false
-  newCard.value = {
-    cardHolder: '',
-    type: 'Virtual Card'
-  }
 }
 
 const openTerminateModal = (card) => {
-  selectedCard.value = card
+  cardToTerminate.value = card
   isTerminateModalOpen.value = true
 }
 
 const closeTerminateModal = () => {
-  selectedCard.value = null
   isTerminateModalOpen.value = false
+  cardToTerminate.value = null
+}
+
+const fetchAvailableCards = async () => {
+  loadingAvailableCards.value = true
+  newCardError.value = ''
+  try {
+    const response = await axios.get('/api/cards/available')
+    availableCards.value = response.data
+  } catch (error) {
+    newCardError.value = error.response?.data?.message || 'Failed to fetch available cards'
+  } finally {
+    loadingAvailableCards.value = false
+  }
+}
+
+const requestCard = async () => {
+  if (!selectedCard.value) return
+  
+  requestingCard.value = true
+  newCardError.value = ''
+  
+  try {
+    await axios.post(`/api/cards/${selectedCard.value._id}/assign`, {
+      userId: user.value._id
+    })
+    
+    // Refresh user data to show the new card
+    await fetchUserData()
+    closeNewCardModal()
+  } catch (error) {
+    newCardError.value = error.response?.data?.message || 'Failed to request card'
+  } finally {
+    requestingCard.value = false
+  }
 }
 
 onMounted(async () => {

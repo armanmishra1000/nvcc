@@ -18,7 +18,7 @@ app.use(express.json());
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/subscription-requests', require('./routes/subscription-requests'));
-app.use('/api', require('./routes/cards'));
+app.use('/api/cards', require('./routes/cards')); // Fixed the cards route registration
 
 // Error handling middleware
 app.use((err, req, res, next) => {
