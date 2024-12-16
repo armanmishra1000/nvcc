@@ -336,4 +336,38 @@ router.get('/subscription-status', auth, async (req, res) => {
   }
 });
 
+// Get active subscription for current user
+router.get('/active', auth, async (req, res) => {
+  try {
+    const User = mongoose.model('User');
+    const user = await User.findById(req.user._id).populate('subscription');
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Return the active subscription or null if none exists
+    res.json(user.subscription || null);
+  } catch (error) {
+    console.error('Error fetching active subscription:', error);
+    res.status(500).json({ message: 'Error fetching active subscription' });
+  }
+});
+
+// Get pending subscription requests
+router.get('/pending', auth, async (req, res) => {
+  try {
+    const requests = await SubscriptionRequest.find({
+      status: 'pending'
+    })
+    .populate('user', '-password')
+    .sort({ requestDate: -1 });
+    
+    res.json(requests);
+  } catch (error) {
+    console.error('Error fetching pending subscription requests:', error);
+    res.status(500).json({ message: 'Error fetching pending subscription requests' });
+  }
+});
+
 module.exports = router;

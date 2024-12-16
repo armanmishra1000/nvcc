@@ -102,4 +102,14 @@ router.post('/:id/unassign', auth, admin, async (req, res) => {
   }
 })
 
+// Get available unassigned cards
+router.get('/available', auth, async (req, res) => {
+  try {
+    const cards = await Card.find({ owner: null, status: 'active' })
+    res.json(cards)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+})
+
 module.exports = router
