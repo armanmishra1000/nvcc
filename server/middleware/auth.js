@@ -17,7 +17,7 @@ module.exports = async (req, res, next) => {
     console.log('Auth middleware - Decoded token:', decoded);
     
     // Get user from database
-    const user = await User.findById(decoded.id || decoded._id || decoded.userId);
+    const user = await User.findById(decoded.userId);
     console.log('Auth middleware - Found user:', user ? {
       id: user._id,
       email: user.email,
