@@ -167,7 +167,7 @@ export default {
         const userData = response.data
         formData.value = {
           username: userData.name || '',
-          email: userData.email,
+          email: userData.email || '',
           firstName: userData.firstName || '',
           lastName: userData.lastName || '',
           currentPassword: '',
@@ -218,18 +218,15 @@ export default {
         )
 
         // Update local state with new user data
-        const userData = response.data.user
+        const userData = response.data
         formData.value = {
-          username: userData.name,
-          email: userData.email,
+          ...formData.value,
+          username: userData.name || '',
           firstName: userData.firstName || '',
-          lastName: userData.lastName || '',
-          currentPassword: '',
-          newPassword: '',
-          confirmPassword: ''
+          lastName: userData.lastName || ''
         }
 
-        // Notify other users via WebSocket
+        // Emit WebSocket event for profile update
         websocketService.send('profile_update', {
           userId: userData._id,
           username: userData.name
