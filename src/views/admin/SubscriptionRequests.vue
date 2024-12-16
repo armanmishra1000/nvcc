@@ -1,6 +1,18 @@
-<!-- src/views/admin/SubscriptionRequests.vue -->
+<!-- 
+  SubscriptionRequests.vue
+  Admin component for managing user subscription requests.
+  Handles approval, rejection, and cancellation of subscription requests.
+  
+  Key features:
+  - Lists all pending subscription requests
+  - Allows admins to approve/reject requests
+  - Shows user details and plan information
+  - Real-time updates via WebSocket
+  - Automatic status updates
+-->
 <template>
   <admin-layout>
+    <!-- Header Section -->
     <div class="bg-white shadow rounded-lg">
       <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
@@ -11,9 +23,10 @@
         </p>
       </div>
 
-      <!-- Request List -->
+      <!-- Request List Table -->
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
+          <!-- Table Headers -->
           <thead class="bg-gray-50">
             <tr>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
@@ -24,8 +37,10 @@
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
+          <!-- Table Body -->
           <tbody class="bg-white divide-y divide-gray-200">
             <tr v-for="request in subscriptionRequests" :key="request._id">
+              <!-- User Info -->
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
                   <div>
@@ -38,6 +53,7 @@
                   </div>
                 </div>
               </td>
+              <!-- Plan Info -->
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
                   :class="{
@@ -47,12 +63,15 @@
                   {{ request.plan }}
                 </span>
               </td>
+              <!-- Payment Method -->
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {{ request.paymentMethod }}
               </td>
+              <!-- Request Date -->
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {{ formatDate(request.requestDate) }}
               </td>
+              <!-- Status -->
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
                   :class="{
@@ -64,31 +83,38 @@
                   {{ request.status }}
                 </span>
               </td>
+              <!-- Action Buttons -->
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <button
-                  v-if="request.status === 'pending'"
-                  @click="approveRequest(request._id)"
-                  class="text-green-600 hover:text-green-900 mr-4">
-                  Approve
-                </button>
-                <button
-                  v-if="request.status === 'pending'"
-                  @click="rejectRequest(request._id)"
-                  class="text-red-600 hover:text-red-900">
-                  Reject
-                </button>
-                <button
-                  v-if="request.status === 'approved'"
-                  @click="cancelSubscription(request.user._id)"
-                  class="text-orange-600 hover:text-orange-900">
-                  Cancel Subscription
-                </button>
-                <button
-                  v-if="request.status === 'cancelled'"
-                  @click="reactivateSubscription(request._id)"
-                  class="text-blue-600 hover:text-blue-900">
-                  Reactivate Subscription
-                </button>
+                <div class="flex space-x-2">
+                  <button
+                    v-if="request.status === 'pending'"
+                    @click="approveRequest(request._id)"
+                    class="text-green-600 hover:text-green-900"
+                  >
+                    Approve
+                  </button>
+                  <button
+                    v-if="request.status === 'pending'"
+                    @click="rejectRequest(request._id)"
+                    class="text-red-600 hover:text-red-900"
+                  >
+                    Reject
+                  </button>
+                  <button
+                    v-if="request.status === 'approved'"
+                    @click="cancelSubscription(request.user._id)"
+                    class="text-orange-600 hover:text-orange-900"
+                  >
+                    Cancel Subscription
+                  </button>
+                  <button
+                    v-if="request.status === 'cancelled'"
+                    @click="reactivateSubscription(request._id)"
+                    class="text-blue-600 hover:text-blue-900"
+                  >
+                    Reactivate Subscription
+                  </button>
+                </div>
               </td>
             </tr>
             <!-- Empty state -->
@@ -109,14 +135,41 @@ import { ref, onMounted } from 'vue'
 import axios from '@/services/axiosConfig'
 import AdminLayout from '@/layouts/AdminLayout.vue'
 
+/**
+ * SubscriptionRequests.vue
+ * Admin component for managing user subscription requests.
+ * Handles approval, rejection, and cancellation of subscription requests.
+ */
 export default {
   name: 'SubscriptionRequests',
   components: {
     AdminLayout
   },
   setup() {
+    // State management
     const subscriptionRequests = ref([])
 
+    /**
+     * Format date to local string
+     * @param {string} date - ISO date string
+     * @returns {string} Formatted date string
+     */
+    const formatDate = (date) => {
+      return new Date(date).toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      });
+    }
+
+    /**
+     * Fetch all subscription requests
+     * Retrieves and sorts requests by date, newest first
+     */
     const fetchRequests = async () => {
       try {
         const response = await axios.get('/api/subscription-requests')
@@ -129,6 +182,10 @@ export default {
       }
     }
 
+    /**
+     * Approve a subscription request
+     * @param {string} requestId - The ID of the request to approve
+     */
     const approveRequest = async (requestId) => {
       try {
         await axios.post(`/api/subscription-requests/${requestId}/approve`)
@@ -139,6 +196,10 @@ export default {
       }
     }
 
+    /**
+     * Reject a subscription request
+     * @param {string} requestId - The ID of the request to reject
+     */
     const rejectRequest = async (requestId) => {
       try {
         await axios.post(`/api/subscription-requests/${requestId}/reject`)
@@ -149,6 +210,10 @@ export default {
       }
     }
 
+    /**
+     * Cancel a subscription
+     * @param {string} userId - The ID of the user whose subscription to cancel
+     */
     const cancelSubscription = async (userId) => {
       try {
         const response = await axios.post(`/api/subscription-requests/${userId}/cancel`)
@@ -163,6 +228,10 @@ export default {
       }
     }
 
+    /**
+     * Reactivate a subscription
+     * @param {string} requestId - The ID of the request to reactivate
+     */
     const reactivateSubscription = async (requestId) => {
       try {
         const response = await axios.post(`/api/subscription-requests/${requestId}/reactivate`)
@@ -174,29 +243,18 @@ export default {
       }
     }
 
-    const formatDate = (date) => {
-      return new Date(date).toLocaleString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: true
-      });
-    }
-
+    // Component lifecycle
     onMounted(() => {
       fetchRequests()
     })
 
     return {
       subscriptionRequests,
+      formatDate,
       approveRequest,
       rejectRequest,
       cancelSubscription,
-      reactivateSubscription,
-      formatDate
+      reactivateSubscription
     }
   }
 }
