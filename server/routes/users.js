@@ -57,6 +57,40 @@ router.put('/profile', auth, async (req, res) => {
   }
 });
 
+// Get current user with populated data
+router.get('/me', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id)
+      .select('-password')
+      .populate({
+        path: 'cards',
+        select: '-__v'
+      });
+      
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Format the response
+    const userResponse = {
+      _id: user._id,
+      email: user.email,
+      name: user.name,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      status: user.status,
+      subscription: user.subscription,
+      cards: user.cards || [],
+      isAdmin: user.isAdmin
+    };
+
+    res.json(userResponse);
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    res.status(500).json({ message: 'Error fetching user data', error: error.message });
+  }
+});
+
 // Admin Routes
 // Middleware to check if user is admin
 const isAdmin = async (req, res, next) => {
