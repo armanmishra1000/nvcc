@@ -36,11 +36,11 @@
               <dl>
                 <dt class="text-sm font-medium text-gray-500 truncate">Active Subscriptions</dt>
                 <dd class="flex items-baseline">
-                  <div class="text-2xl font-semibold text-gray-900">845</div>
-                  <div class="ml-2 flex items-baseline text-sm font-semibold text-green-600">
+                  <div class="text-2xl font-semibold text-gray-900">{{ activeSubscriptions }}</div>
+                  <div v-if="subscriptionGrowth > 0" class="ml-2 flex items-baseline text-sm font-semibold text-green-600">
                     <ArrowUpIcon class="self-center flex-shrink-0 h-5 w-5 text-green-500" aria-hidden="true" />
                     <span class="sr-only">Increased by</span>
-                    5.4%
+                    {{ subscriptionGrowth }}%
                   </div>
                 </dd>
               </dl>
@@ -60,11 +60,11 @@
               <dl>
                 <dt class="text-sm font-medium text-gray-500 truncate">Total Cards</dt>
                 <dd class="flex items-baseline">
-                  <div class="text-2xl font-semibold text-gray-900">2,564</div>
-                  <div class="ml-2 flex items-baseline text-sm font-semibold text-green-600">
+                  <div class="text-2xl font-semibold text-gray-900">{{ totalCards }}</div>
+                  <div v-if="cardGrowth > 0" class="ml-2 flex items-baseline text-sm font-semibold text-green-600">
                     <ArrowUpIcon class="self-center flex-shrink-0 h-5 w-5 text-green-500" aria-hidden="true" />
                     <span class="sr-only">Increased by</span>
-                    7.8%
+                    {{ cardGrowth }}%
                   </div>
                 </dd>
               </dl>
@@ -153,6 +153,10 @@ export default {
   setup() {
     const totalUsers = ref(0)
     const userGrowth = ref(0)
+    const totalCards = ref(0)
+    const cardGrowth = ref(0)
+    const activeSubscriptions = ref(0)
+    const subscriptionGrowth = ref(0)
     const recentActivity = ref([
       {
         id: 1,
@@ -188,25 +192,52 @@ export default {
       try {
         const baseURL = process.env.VUE_APP_API_URL || 'http://localhost:5002'
         const token = localStorage.getItem('token')
-        const response = await axios.get(`${baseURL}/api/users`, {
+        
+        // Fetch users data
+        const usersResponse = await axios.get(`${baseURL}/api/users`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
         })
         
-        if (response.data && Array.isArray(response.data)) {
-          totalUsers.value = response.data.length
-          // Calculate growth (this is a placeholder - you might want to implement actual growth calculation)
+        if (usersResponse.data && Array.isArray(usersResponse.data)) {
+          totalUsers.value = usersResponse.data.length
           userGrowth.value = 5.2 // Placeholder growth rate
-        } else {
-          console.warn('Unexpected response format:', response.data)
-          totalUsers.value = 0
-          userGrowth.value = 0
         }
+
+        // Fetch cards data - using correct endpoint
+        const cardsResponse = await axios.get(`${baseURL}/api/cards`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+
+        if (cardsResponse.data && Array.isArray(cardsResponse.data)) {
+          totalCards.value = cardsResponse.data.length
+          cardGrowth.value = 7.8 // Placeholder growth rate
+        }
+
+        // Fetch subscription data
+        const subscriptionResponse = await axios.get(`${baseURL}/api/subscription-requests`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+
+        if (subscriptionResponse.data && Array.isArray(subscriptionResponse.data)) {
+          // Count only active subscriptions
+          activeSubscriptions.value = subscriptionResponse.data.filter(sub => sub.status === 'active').length
+          subscriptionGrowth.value = 5.4 // Placeholder growth rate
+        }
+
       } catch (error) {
         console.error('Error fetching dashboard data:', error)
         totalUsers.value = 0
         userGrowth.value = 0
+        totalCards.value = 0
+        cardGrowth.value = 0
+        activeSubscriptions.value = 0
+        subscriptionGrowth.value = 0
       }
     }
 
@@ -217,6 +248,10 @@ export default {
     return {
       totalUsers,
       userGrowth,
+      totalCards,
+      cardGrowth,
+      activeSubscriptions,
+      subscriptionGrowth,
       recentActivity
     }
   }
