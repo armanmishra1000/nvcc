@@ -358,10 +358,11 @@ router.get('/active', auth, async (req, res) => {
 router.get('/pending', auth, async (req, res) => {
   try {
     const requests = await SubscriptionRequest.find({
-      status: 'pending'
+      user: req.user._id
     })
     .populate('user', '-password')
-    .sort({ requestDate: -1 });
+    .sort({ requestDate: -1 })
+    .limit(1);
     
     res.json(requests);
   } catch (error) {

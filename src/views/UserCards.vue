@@ -18,7 +18,7 @@
 
       <div v-else>
         <!-- No Plan Warning -->
-        <div v-if="hasCheckedPlan && !subscription?.plan && !pendingSubscription" class="mb-6">
+        <div v-if="hasCheckedPlan && !subscription?.plan && (!pendingSubscription || pendingSubscription.status !== 'pending')" class="mb-6">
           <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg shadow-lg overflow-hidden">
             <div class="px-6 py-8">
               <div class="md:flex items-center justify-between">
@@ -101,7 +101,7 @@
         </div>
 
         <!-- Pending Subscription Message -->
-        <div v-if="pendingSubscription" class="mb-6">
+        <div v-if="pendingSubscription && pendingSubscription.status === 'pending'" class="mb-6">
           <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg shadow-sm">
             <div class="flex">
               <div class="flex-shrink-0">
@@ -424,9 +424,12 @@ const fetchUserData = async () => {
     hasCheckedPlan.value = true
 
     // Only check for pending subscription if no active subscription
+    // Only check for pending subscription if no active subscription
     if (!subscription.value?.status || subscription.value.status === 'inactive') {
       const pendingResponse = await axios.get('/api/subscription-requests/pending')
-      pendingSubscription.value = pendingResponse.data.length > 0 ? pendingResponse.data[0] : null
+      pendingSubscription.value = pendingResponse.data.length > 0 && pendingResponse.data[0].status === 'pending' 
+        ? pendingResponse.data[0] 
+        : null
     } else {
       pendingSubscription.value = null
     }
