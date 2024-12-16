@@ -84,7 +84,7 @@ const userSchema = new mongoose.Schema({
     }
   },
   subscriptionHistory: [subscriptionHistorySchema],
-  cards: [cardSchema],
+  cards: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Card' }],
   updateHistory: [updateHistorySchema],
   createdAt: {
     type: Date,

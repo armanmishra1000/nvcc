@@ -9,7 +9,7 @@ const cardSchema = new mongoose.Schema({
   type: {
     type: String,
     required: true,
-    enum: ['visa', 'mastercard', 'amex']
+    enum: ['Virtual Card', 'Physical Card']
   },
   expiryMonth: {
     type: String,
@@ -20,11 +20,6 @@ const cardSchema = new mongoose.Schema({
     type: String,
     required: true,
     match: /^\d{4}$/
-  },
-  cvv: {
-    type: String,
-    required: true,
-    match: /^\d{3,4}$/
   },
   holderName: {
     type: String,
@@ -42,50 +37,70 @@ const cardSchema = new mongoose.Schema({
     enum: ['active', 'inactive', 'blocked'],
     default: 'active'
   },
-  isAssigned: {
+  frozen: {
     type: Boolean,
     default: false
   },
-  assignedTo: {
+  owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    default: null
-  },
-  assignedAt: {
-    type: Date,
     default: null
   },
   createdAt: {
     type: Date,
     default: Date.now
   },
-  updatedAt: {
+  lastModified: {
     type: Date,
     default: Date.now
   }
 });
 
-// Update the updatedAt timestamp before saving
+// Update lastModified on save
 cardSchema.pre('save', function(next) {
-  this.updatedAt = Date.now();
+  this.lastModified = new Date();
   next();
 });
 
 // Method to assign card to a user
 cardSchema.methods.assignToUser = async function(userId) {
-  this.isAssigned = true;
-  this.assignedTo = userId;
-  this.assignedAt = Date.now();
+  if (this.owner) {
+    throw new Error('Card is already assigned to a user');
+  }
+  
+  this.owner = userId;
+  this.status = 'active';
   await this.save();
+  return this;
 };
 
 // Method to unassign card from user
 cardSchema.methods.unassignFromUser = async function() {
-  this.isAssigned = false;
-  this.assignedTo = null;
-  this.assignedAt = null;
+  if (!this.owner) {
+    throw new Error('Card is not assigned to any user');
+  }
+  
+  this.owner = null;
   await this.save();
+  return this;
 };
+
+// Virtual for last 4 digits
+cardSchema.virtual('lastFour').get(function() {
+  return this.number.slice(-4);
+});
+
+// Configure toJSON
+cardSchema.set('toJSON', {
+  virtuals: true,
+  transform: (doc, ret) => {
+    delete ret.__v;
+    delete ret.cvv;
+    // Only show last 4 digits of card number
+    ret.number = '*'.repeat(12) + ret.number.slice(-4);
+    return ret;
+  }
+});
 
 const Card = mongoose.model('Card', cardSchema);
 
