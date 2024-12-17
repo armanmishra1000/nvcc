@@ -84,7 +84,6 @@ const userSchema = new mongoose.Schema({
     }
   },
   subscriptionHistory: [subscriptionHistorySchema],
-  cards: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Card' }],
   updateHistory: [updateHistorySchema],
   createdAt: {
     type: Date,
@@ -105,11 +104,20 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-// Remove password when converting to JSON
-userSchema.methods.toJSON = function() {
-  const obj = this.toObject();
-  delete obj.password;
-  return obj;
-};
+// Virtual field for cards
+userSchema.virtual('cards', {
+  ref: 'Card',
+  localField: '_id',
+  foreignField: 'owner'
+});
+
+// Enable virtuals in JSON
+userSchema.set('toJSON', {
+  virtuals: true,
+  transform: function(doc, ret) {
+    delete ret.password;
+    return ret;
+  }
+});
 
 module.exports = mongoose.model('User', userSchema);

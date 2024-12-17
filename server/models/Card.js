@@ -9,7 +9,7 @@ const cardSchema = new mongoose.Schema({
   type: {
     type: String,
     required: true,
-    enum: ['Virtual Card', 'Physical Card']
+    enum: ['Virtual Card', 'Physical Card', 'mastercard', 'visa']
   },
   expiryMonth: {
     type: String,

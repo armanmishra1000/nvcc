@@ -499,9 +499,7 @@ const requestCard = async () => {
   newCardError.value = ''
   
   try {
-    await axios.post(`/api/cards/${selectedCard.value._id}/assign`, {
-      userId: user.value._id
-    })
+    await axios.post(`/api/cards/${selectedCard.value._id}/request`)
     
     // Refresh user data to show the new card
     await fetchUserData()
