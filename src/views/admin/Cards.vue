@@ -420,7 +420,7 @@ export default {
     // Fetch cards data
     const fetchCards = async () => {
       try {
-        const response = await axios.get('/api/admin/cards')
+        const response = await axios.get('/api/cards')
         cards.value = response.data
         filteredCards.value = response.data
       } catch (error) {
@@ -471,27 +471,27 @@ export default {
       try {
         if (editingCard.value) {
           // Update existing card
-          await axios.put(`/api/admin/cards/${editingCard.value.id}`, {
-            number: cardForm.value.number,
-            type: cardForm.value.type,
-            expiryMonth: cardForm.value.expiryMonth,
-            expiryYear: cardForm.value.expiryYear,
-            cvv: cardForm.value.cvv,
-            holderName: cardForm.value.holderName,
-            balance: parseFloat(cardForm.value.balance)
-          })
-        } else {
-          // Add new card
-          await axios.post('/api/admin/cards', {
-            number: cardForm.value.number,
-            type: cardForm.value.type,
-            expiryMonth: cardForm.value.expiryMonth,
-            expiryYear: cardForm.value.expiryYear,
-            cvv: cardForm.value.cvv,
-            holderName: cardForm.value.holderName,
-            balance: parseFloat(cardForm.value.balance)
-          })
-        }
+          await axios.put(`/api/cards/${editingCard.value.id}`, {
+    number: cardForm.value.number,
+    type: cardForm.value.type,
+    expiryMonth: cardForm.value.expiryMonth,
+    expiryYear: cardForm.value.expiryYear,
+    cvv: cardForm.value.cvv,
+    holderName: cardForm.value.holderName,
+    balance: parseFloat(cardForm.value.balance)
+  })
+} else {
+  // Add new card
+  await axios.post('/api/cards', {
+    number: cardForm.value.number,
+    type: cardForm.value.type,
+    expiryMonth: cardForm.value.expiryMonth,
+    expiryYear: cardForm.value.expiryYear,
+    cvv: cardForm.value.cvv,
+    holderName: cardForm.value.holderName,
+    balance: parseFloat(cardForm.value.balance)
+  })
+}
         // Refresh cards list
         await fetchCards()
         closeCardModal()
@@ -508,7 +508,7 @@ export default {
 
     const deleteCard = async () => {
       try {
-        await axios.delete(`/api/admin/cards/${editingCard.value.id}`)
+        await axios.delete(`/api/cards/${editingCard.value.id}`)
         // Refresh cards list
         await fetchCards()
         showDeleteModal.value = false
@@ -525,9 +525,9 @@ export default {
 
     const unassignCard = async (card) => {
       try {
-        await axios.put(`/api/admin/cards/${card.id}`, {
-          owner: null
-        })
+        await axios.put(`/api/cards/${card.id}`, {
+         owner: null
+      })
         // Refresh cards list
         await fetchCards()
       } catch (error) {
@@ -538,7 +538,7 @@ export default {
 
     const assignCard = async () => {
       try {
-        await axios.put(`/api/admin/cards/${editingCard.value.id}`, {
+        await axios.put(`/api/cards/${editingCard.value.id}`, {
           owner: selectedUserId.value
         })
         // Refresh cards list
