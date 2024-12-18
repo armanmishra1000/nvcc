@@ -51,92 +51,41 @@
     />
 
     <!-- Terminate Card Modal -->
-    <TransitionRoot appear :show="isTerminateModalOpen" as="div">
-      <Dialog as="div" @close="closeTerminateModal" class="relative z-10">
-        <TransitionChild
-          as="div"
-          enter="duration-300 ease-out"
-          enter-from="opacity-0"
-          enter-to="opacity-100"
-          leave="duration-200 ease-in"
-          leave-from="opacity-100"
-          leave-to="opacity-0"
-        >
-          <div class="fixed inset-0 bg-black bg-opacity-25" />
-        </TransitionChild>
-
-        <div class="fixed inset-0 overflow-y-auto">
-          <div class="flex min-h-full items-center justify-center p-4 text-center">
-            <TransitionChild
-              as="div"
-              enter="duration-300 ease-out"
-              enter-from="opacity-0 scale-95"
-              enter-to="opacity-100 scale-100"
-              leave="duration-200 ease-in"
-              leave-from="opacity-100 scale-100"
-              leave-to="opacity-0 scale-95"
-            >
-              <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
-                  Terminate Card
-                </DialogTitle>
-                
-                <div class="mt-2">
-                  <p class="text-sm text-gray-500">
-                    Are you sure you want to terminate this card? This action cannot be undone.
-                  </p>
-                </div>
-
-                <div class="mt-4 flex justify-end space-x-2">
-                  <button
-                    type="button"
-                    class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
-                    @click="closeTerminateModal"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    :disabled="loading"
-                    class="inline-flex justify-center rounded-md border border-transparent bg-red-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                    @click="terminateCard"
-                  >
-                    Terminate Card
-                  </button>
-                </div>
-              </DialogPanel>
-            </TransitionChild>
-          </div>
-        </div>
-      </Dialog>
-    </TransitionRoot>
+    <TerminateCardModal
+      :is-open="isTerminateModalOpen"
+      :loading="terminatingCard"
+      :card="cardToTerminate"
+      @close="closeTerminateModal"
+      @terminate="terminateCard"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { PlusIcon } from '@heroicons/vue/24/outline'
 import CardList from '@/components/CardList.vue'
 import NewCardModal from '@/components/NewCardModal.vue'
+import TerminateCardModal from '@/components/TerminateCardModal.vue'
 import axios from '@/services/axiosConfig'
 
 const loading = ref(false)
-const error = ref(null)
-const cards = ref([])
-const user = ref(null)
+const error = ref('')
 const subscription = ref(null)
-const hasCheckedPlan = ref(false)
 const pendingSubscription = ref(null)
-
-const isNewCardModalOpen = ref(false)
-const isTerminateModalOpen = ref(false)
-const cardToTerminate = ref(null)
+const hasCheckedPlan = ref(false)
+const cards = ref([])
 const availableCards = ref([])
-const selectedCard = ref(null)
 const loadingAvailableCards = ref(false)
 const requestingCard = ref(false)
-const newCardError = ref(null)
+const terminatingCard = ref(false)
+const selectedCard = ref(null)
+const cardToTerminate = ref(null)
+const isNewCardModalOpen = ref(false)
+const isTerminateModalOpen = ref(false)
+const newCardError = ref('')
+
+const user = ref(null)
 
 // Ensure each card has all required properties
 const processCard = (card) => {
@@ -151,7 +100,7 @@ const processCard = (card) => {
 // Fetch user data including cards
 const fetchUserData = async () => {
   loading.value = true
-  error.value = null
+  error.value = ''
   try {
     const userResponse = await axios.get('/api/users/me')
     user.value = userResponse.data
@@ -245,15 +194,19 @@ const requestCard = async () => {
   }
 }
 
-const terminateCard = async () => {
-  if (!cardToTerminate.value) return
+const terminateCard = async (card) => {
+  if (!card) return
   
   try {
-    await axios.delete(`/api/cards/${cardToTerminate.value._id}`)
+    terminatingCard.value = true
+    await axios.post(`/api/cards/${card._id}/terminate`)
     await fetchUserData()
     closeTerminateModal()
-  } catch (error) {
-    error.value = error.response?.data?.message || 'Failed to terminate card'
+  } catch (err) {
+    console.error('Error terminating card:', err)
+    error.value = 'Failed to terminate card. Please try again.'
+  } finally {
+    terminatingCard.value = false
   }
 }
 
